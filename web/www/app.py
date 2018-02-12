@@ -24,6 +24,8 @@ async def response_factory(app, handler):
                     body=app['__template__'].get_template(template).render(**resp).encode('utf-8'),
                     content_type='text/html',
                     charset='utf-8')
+
+        return web.HTTPBadRequest(body='Something went wrong')
     return response
 
 def init_jinja(app):

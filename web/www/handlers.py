@@ -21,3 +21,11 @@ async def test_template(request,*,name):
         '__template__' : 'test.html',
         'name' : name
     }
+
+@post('/internal/post/test/form')
+async def test_post_form(request,*,name):
+    return web.Response(body=name)
+
+@post('/internal/post/test/json')
+async def test_post_json(request,*,name):
+    return web.Response(body=name)
