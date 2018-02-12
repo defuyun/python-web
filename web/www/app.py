@@ -3,7 +3,7 @@
 from aiohttp import web
 from asyncio import AbstractEventLoop
 
-import logging; logging.basicConfig(level=logging.INFO)
+import logging; logging.basicConfig(level=logging.DEBUG)
 import asyncio
 import coroweb
 

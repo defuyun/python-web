@@ -12,24 +12,24 @@ from aiohttp import web
 def get(path):
     def decorator(func):
         logging.info('[HANDLER] register %s as GET handler' % func.__name__)
-        func.__path__ = path
-        func.__method__ = 'GET'
         @functools.wraps(func)
         def wrapper(*args, **kw):
             logging.info('[HANDLER] execute GET handler %s' % func.__name__)            
             return func(*args, **kw)
+        wrapper.__method__ = 'GET'
+        wrapper.__path__ = path
         return wrapper
     return decorator
 
 def post(path):
     def decorator(func):
         logging.info('[HANDLER] register %s as POST handler' % func.__name__)
-        func.__path__ = path
-        func.__method__ = 'POST'
         @functools.wraps(func)
         def wrapper(*args, **kw):
             logging.info('[HANDLER] execute POST handler %s' % func.__name__)            
             return func(*args, **kw)
+        wrapper.__method__ = 'GET'
+        wrapper.__path__ = path
         return wrapper
     return decorator
 
@@ -39,16 +39,17 @@ def __get_named_args__(fn):
     for name, param in sig.parameters.items():
         if param.kind == inspect.Parameter.KEYWORD_ONLY or param.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD:
             args.append(name)
-            logging.info('[HANDLER] added named arg to %s signature' % fn.__name__)
+    logging.info('[HANDLER] added named args (%s) to %s signature' % (', '.join(args), fn.__name__))
     return args
     
 def __get_required_args__(fn):
     args = []
     sig = inspect.signature(fn)
     for name, param in sig.parameters.items():
-        if (param.kind == inspect.Parameter.KEYWORD_ONLY or param.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD) and param.default == inspect.Parameter.empty:
+        if name != 'request' and (param.kind == inspect.Parameter.KEYWORD_ONLY or param.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD) and param.default == inspect.Parameter.empty:
             args.append(name)
-            logging.info('[HANDLER] added required arg to %s signature' % fn.__name__)
+    
+    logging.info('[HANDLER] added required args (%s) to %s signature' % (', '.join(args), fn.__name__))
     return args
 
 def __has_request_arg__(fn):
@@ -72,10 +73,11 @@ class RequestHandler(object):
         self.__has_kw_args__ = __has_kw_arg__(fn)
 
     async def __call__(self, request:aiohttp.web.Request):
+        logging.debug('[HANDLER] start calling %s' % self.__fn__.__name__)
         kw = dict(**request.match_info)
-        if self.__fn__.method == 'GET':
+        if self.__fn__.__method__ == 'GET':
             kw.update(request.query)
-        elif self.__fn__.method == 'POST':
+        elif self.__fn__.__method__ == 'POST':
             if request.content_type is None:
                 return web.HTTPBadRequest(body='Content type is missing')
 
@@ -108,7 +110,7 @@ class RequestHandler(object):
             kw['request'] = request
         
         logging.info('[HANDLER] calling %s with args %s' % (self.__fn__.__name__, kw))
-        return await self.__fn__(kw)
+        return await self.__fn__(**kw)
 
 def add_routes(app, name):
     mod = __import__(name, globals(), locals())
@@ -120,12 +122,13 @@ def add_routes(app, name):
         if not callable(fn):
             continue
 
-        method = getattr(fn, '__method__')
-        path = getattr(fn, '__path__')
+        method = getattr(fn, '__method__', None)
+        path = getattr(fn, '__path__', None)
         if method is None or path is None:
             continue
         
         if not inspect.iscoroutine(fn) and not inspect.isgeneratorfunction(fn):
             fn = asyncio.coroutine(func=fn)
-        
+
+        logging.info('[ADD_ROUTE] adding %s(%s) for route (%s, %s)' % (fn.__name__, ', '.join(inspect.signature(fn).parameters.keys()), method, path))
         app.router.add_route(method, path, RequestHandler(app, fn))       
