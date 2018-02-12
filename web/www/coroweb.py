@@ -5,6 +5,7 @@ import functools
 import logging
 import inspect
 import aiohttp
+import asyncio
 
 from aiohttp import web
 
@@ -108,3 +109,23 @@ class RequestHandler(object):
         
         logging.info('[HANDLER] calling %s with args %s' % (self.__fn__.__name__, kw))
         return await self.__fn__(kw)
+
+def add_routes(app, name):
+    mod = __import__(name, globals(), locals())
+    for attr in dir(mod):
+        if attr.startswith('_'):
+            continue
+
+        fn = getattr(mod, attr)
+        if not callable(fn):
+            continue
+
+        method = getattr(fn, '__method__')
+        path = getattr(fn, '__path__')
+        if method is None or path is None:
+            continue
+        
+        if not inspect.iscoroutine(fn) and not inspect.isgeneratorfunction(fn):
+            fn = asyncio.coroutine(func=fn)
+        
+        app.router.add_route(method, path, RequestHandler(app, fn))       
