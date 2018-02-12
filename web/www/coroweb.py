@@ -6,6 +6,7 @@ import logging
 import inspect
 import aiohttp
 import asyncio
+import os
 
 from aiohttp import web
 
@@ -14,7 +15,7 @@ def get(path):
         logging.info('[HANDLER] register %s as GET handler' % func.__name__)
         @functools.wraps(func)
         def wrapper(*args, **kw):
-            logging.info('[HANDLER] execute GET handler %s' % func.__name__)            
+            logging.debug('[HANDLER] execute GET handler %s' % func.__name__)            
             return func(*args, **kw)
         wrapper.__method__ = 'GET'
         wrapper.__path__ = path
@@ -26,9 +27,9 @@ def post(path):
         logging.info('[HANDLER] register %s as POST handler' % func.__name__)
         @functools.wraps(func)
         def wrapper(*args, **kw):
-            logging.info('[HANDLER] execute POST handler %s' % func.__name__)            
+            logging.debug('[HANDLER] execute POST handler %s' % func.__name__)            
             return func(*args, **kw)
-        wrapper.__method__ = 'GET'
+        wrapper.__method__ = 'POST'
         wrapper.__path__ = path
         return wrapper
     return decorator
@@ -88,10 +89,10 @@ class RequestHandler(object):
                     return web.HTTPBadRequest(body='Invalid JSON object')
             
                 kw.update(params)
-            elif content_type.startswith('application/x-www-form-urlencoded') or content_type.startswith('multipart/form-data'):
+            elif content_type.startswith('application/x-www-form-urlencoded'):
                 params = await request.post()
                 kw.update(params)
-            
+
             else:
                 return web.HTTPBadRequest(body='The content type is not supported')
         
@@ -109,7 +110,7 @@ class RequestHandler(object):
         if self.__has_request_arg__:
             kw['request'] = request
         
-        logging.info('[HANDLER] calling %s with args %s' % (self.__fn__.__name__, kw))
+        logging.debug('[HANDLER] calling %s with args %s' % (self.__fn__.__name__, kw))
         return await self.__fn__(**kw)
 
 def add_routes(app, name):
@@ -132,3 +133,8 @@ def add_routes(app, name):
 
         logging.info('[ADD_ROUTE] adding %s(%s) for route (%s, %s)' % (fn.__name__, ', '.join(inspect.signature(fn).parameters.keys()), method, path))
         app.router.add_route(method, path, RequestHandler(app, fn))       
+
+def add_statics(app):
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+    logging.info('[ADD_STATIC] adding %s as static path' % path)
+    app.router.add_static('/static',path)
