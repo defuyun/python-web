@@ -29,3 +29,9 @@ async def test_post_form(request,*,name):
 @post('/internal/post/test/json')
 async def test_post_json(request,*,name):
     return web.Response(body=name)
+
+@get('/tutorial/helloworld')
+async def hello_word():
+    return {
+        '__template__' : 'hello_world.html'
+    }
