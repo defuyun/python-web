@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+export NODE_PATH=/home/os/Documents/web/lib/node_modules
+export NPM_CONFIG_PREFIX=/home/os/Documents/web
+export npm_config_prefix=/home/os/Documents/web
+exec /home/os/Documents/web/bin/node "$@"
