@@ -18,3 +18,7 @@ async def sidebar_options(request):
     }
 
 @get('/api/content/posts')
+async def posts(request):
+    return {
+        'posts' : ['1','2','3','4']
+    }
