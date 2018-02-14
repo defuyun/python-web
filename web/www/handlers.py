@@ -8,5 +8,13 @@ from coroweb import get, post
 @get('/')
 async def index(request):
     return {
-        '__template__' : 'index.html'
+        '__template__' : 'index.html',
     }
+
+@get('/api/sidebar/options')
+async def sidebar_options(request):
+    return {
+        'options' : ['posts'],
+    }
+
+@get('/api/content/posts')

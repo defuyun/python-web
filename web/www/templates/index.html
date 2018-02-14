@@ -1,1 +1,72 @@
 <!-- nothing for now -->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Home </title>
+    </head>
+    <body ng-app='app' ng-controller='rootController as root'>
+        <div class='bg-header bg-col-100'>
+            header stuff
+        </div>
+        <div class='bg-container bg-col-100'>
+            <div class='bg-col-25 float-left'>
+                <div class='bg-side-bar' ng-controller='sideBarController as sideBar'>
+                    <ul class='bg-side-bar-options'>
+                        <li ng-repeat='x in sideBar.options'>{{x}}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class='bg-col-75 float-left'>
+                <div class='bg-content' ng-controller='contentController as content'>
+                    <ng-view></ng-view>
+                </div>
+            </div>
+        </div>
+    </body>
+    <foot>
+        <script src='/static/bower_components/angular/angular.js'></script>
+        <script src='/static/js/app.js'></script>
+    </foot>
+    <style>
+        .bg-container {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .bg-col-25 {
+            width : 25%;
+        }
+
+        .bg-col-75 {
+            width : 75%;
+        }
+
+        .bg-col-100 {
+            width : 100%;
+        }
+
+        .float-left {
+            float: left;
+        }
+
+        .bg-side-bar {
+            text-align: center;
+            padding: 15px;
+        }
+        
+        .bg-side-bar-options {
+            text-align: left;
+        }
+
+        .bg-content {
+            text-align: center;
+        }
+
+        .bg-header {
+            text-align: center;
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+</html>
