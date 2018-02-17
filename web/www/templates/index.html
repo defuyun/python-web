@@ -5,20 +5,20 @@
     <head>
         <title> Home </title>
     </head>
-    <body ng-app='app' ng-controller='rootController as root'>
+    <body ng-app='app' ng-controller='rootController as vm'>
         <div class='bg-header bg-col-100'>
             header stuff
         </div>
         <div class='bg-container bg-col-100'>
             <div class='bg-col-25 float-left'>
-                <div class='bg-side-bar' ng-controller='sideBarController as sideBar'>
+                <div class='bg-side-bar' ng-controller='sideBarController as vm'>
                     <ul class='bg-side-bar-options'>
-                        <li ng-repeat='x in sideBar.options'>{{x}}</li>
+                        <li ng-repeat='x in vm.options'>{{x}}</li>
                     </ul>
                 </div>
             </div>
             <div class='bg-col-75 float-left'>
-                <div class='bg-content' ng-controller='contentController as content'>
+                <div class='bg-content' ng-controller='contentController as vm'>
                     <ng-view></ng-view>
                 </div>
             </div>
@@ -26,6 +26,7 @@
     </body>
     <foot>
         <script src='/static/bower_components/angular/angular.js'></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-route.js"></script>
         <script src='/static/js/app.js'></script>
     </foot>
     <style>
