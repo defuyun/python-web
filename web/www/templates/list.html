@@ -1,3 +1,13 @@
 <ul class='bg-list'>
-    <li ng-repeat='x in vm.content'>{{x}}</li>
+    <li ng-repeat='year in vm.postList.years'>
+        <h2>{{year}}</h2>
+        <ul class='bg-list'>
+            <li ng-repeat='post in vm.postList.allPosts[year]'>
+                <a data-ng-click='vm.getBlog(post.page)'>{{post.title}}</a>
+                <span>{{post.author}}</span>
+                <span>{{post.date}}</span>
+            </li>
+        </ul>
+        <div class='bg-seperator'></div>
+    </li>
 </ul>

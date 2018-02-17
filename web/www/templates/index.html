@@ -4,70 +4,73 @@
 <html>
     <head>
         <title> Home </title>
+        <link rel='stylesheet' type='text/css' href='/static/css/reset.css'>
     </head>
+
     <body ng-app='app' ng-controller='rootController as vm'>
-        <div class='bg-header bg-col-100'>
-            header stuff
+        <div class='bg-top-line'>
         </div>
-        <div class='bg-container bg-col-100'>
-            <div class='bg-col-25 float-left'>
-                <div class='bg-side-bar' ng-controller='sideBarController as vm'>
-                    <ul class='bg-side-bar-options'>
-                        <li ng-repeat='x in vm.options'>{{x}}</li>
-                    </ul>
-                </div>
-            </div>
-            <div class='bg-col-75 float-left'>
-                <div class='bg-content' ng-controller='contentController as vm'>
-                    <ng-view></ng-view>
-                </div>
+        
+        <div class='bg-side-bar bg-row-100'>
+            <ul class='bg-list'>
+                <li ng-repeat='x in vm.optionList.options'>{{x}}</li>
+            </ul>
+        </div>
+
+        <div class='bg-container bg-row-100'>
+            <div class='bg-content bg-row-100'>
+                <ng-view></ng-view>
             </div>
         </div>
     </body>
-    <foot>
-        <script src='/static/bower_components/angular/angular.js'></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-route.js"></script>
-        <script src='/static/js/app.js'></script>
-    </foot>
+
+    <script src='/static/bower_components/angular/angular.js'></script>
+    <script src="/static/bower_components/angular-route/angular-route.js"></script>
+    <script src='/static/bower_components/webcomponentsjs/webcomponents-lite.js'></script>
+    <script src='/static/js/app.js'></script>
     <style>
+        html,body {
+            background-color: black;
+            color:azure;
+            font-family: Avenir, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            height : 100%;
+        }
+        
+        .bg-top-line {
+            position: fixed;
+            border-top: 8px solid grey;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+        }
+
         .bg-container {
-            margin-top: 10px;
-            margin-bottom: 10px;
+            display: block;
+            margin-top: 8px;
+            margin-bottom: 20px;
+            margin-left: 260px;
         }
 
-        .bg-col-25 {
-            width : 25%;
-        }
-
-        .bg-col-75 {
-            width : 75%;
+        .bg-side-bar {
+            margin-top: 8px;
+            padding-top: 20px;
+            max-width: 200px;
+            min-width: 200px;
+            text-align: center;
+            font-size: 0.8em;
+            position: fixed;
+            left: 0;
+            top: 8px;
         }
 
         .bg-col-100 {
             width : 100%;
         }
 
-        .float-left {
-            float: left;
-        }
-
-        .bg-side-bar {
-            text-align: center;
-            padding: 15px;
-        }
-        
-        .bg-side-bar-options {
-            text-align: left;
-        }
-
-        .bg-content {
-            text-align: center;
-        }
-
-        .bg-header {
-            text-align: center;
-            display: block;
-            margin-bottom: 10px;
+        .bg-row-100 {
+            height : 100%;
+            min-height : 100%;
         }
     </style>
 </html>
