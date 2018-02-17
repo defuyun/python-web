@@ -8,20 +8,16 @@
     </head>
 
     <body ng-app='app' ng-controller='rootController as vm'>
-        <div class='bg-container bg-border-bottom'>
-            <div class='bg-header'>
-            </div>
+        <div class='bg-top-line'>
+        </div>
+        
+        <div class='bg-side-bar bg-row-100'>
+            <ul class='bg-list'>
+                <li ng-repeat='x in vm.optionList.options'>{{x}}</li>
+            </ul>
         </div>
 
-        <div class='bg-container bg-col-20 bg-row-100 float-left'>
-            <div class='bg-side-bar bg-row-100'>
-                <ul class='bg-list'>
-                    <li ng-repeat='x in vm.optionList.options'>{{x}}</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class='bg-container bg-col-80 bg-row-100'>
+        <div class='bg-container bg-row-100'>
             <div class='bg-content bg-row-100'>
                 <ng-view></ng-view>
             </div>
@@ -30,43 +26,42 @@
 
     <script src='/static/bower_components/angular/angular.js'></script>
     <script src="/static/bower_components/angular-route/angular-route.js"></script>
+    <script src='/static/bower_components/webcomponentsjs/webcomponents-lite.js'></script>
     <script src='/static/js/app.js'></script>
     <style>
         html,body {
             background-color: black;
             color:azure;
+            font-family: Avenir, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
             height : 100%;
+        }
+        
+        .bg-top-line {
+            position: fixed;
+            border-top: 8px solid grey;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
         }
 
         .bg-container {
             display: block;
-            overflow: hidden;
-            margin-top: 10px;
-            margin-bottom: 10px;
+            margin-top: 8px;
+            margin-bottom: 20px;
+            margin-left: 260px;
         }
 
         .bg-side-bar {
-            padding: 15px;
-        }
-
-        .bg-content {
-            padding: 10px;
-        }
-
-        .bg-header {
-            padding: 15px;
-        }
-
-        .bg-col-20 {
-            width : 20%;
+            margin-top: 8px;
+            padding-top: 20px;
             max-width: 200px;
             min-width: 200px;
-        }
-
-        .bg-col-80 {
-            width : 80%;
-            max-width: 1200px;
-            min-width: 1200px;
+            text-align: center;
+            font-size: 0.8em;
+            position: fixed;
+            left: 0;
+            top: 8px;
         }
 
         .bg-col-100 {
@@ -76,14 +71,6 @@
         .bg-row-100 {
             height : 100%;
             min-height : 100%;
-        }
-
-        .bg-border-bottom {
-            border-bottom: 2px outset slategray;
-        }
-
-        .float-left {
-            float: left;
         }
     </style>
 </html>
