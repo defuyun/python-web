@@ -10,16 +10,15 @@
     <body ng-app='app' ng-controller='rootController as vm'>
         <div class='bg-top-line'>
         </div>
-        
-        <div class='bg-side-bar bg-row-100'>
-            <ul class='bg-list'>
-                <li ng-repeat='x in vm.optionList.options'>{{x}}</li>
-            </ul>
-        </div>
-
         <div class='bg-container bg-row-100'>
+            <div class='bg-side-bar bg-row-100'>
+                <ul class='bg-list'>
+                    <li ng-repeat='x in vm.optionList.options'>{{x}}</li>
+                </ul>
+            </div>
+
             <div class='bg-content bg-row-100'>
-                <ng-view></ng-view>
+                <ng-view class='bg-row-100'></ng-view>
             </div>
         </div>
     </body>
@@ -31,7 +30,7 @@
     <style>
         html,body {
             background-color: black;
-            color:azure;
+            color:silver;
             font-family: Avenir, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
             height : 100%;
         }
@@ -49,7 +48,7 @@
             display: block;
             margin-top: 8px;
             margin-bottom: 20px;
-            margin-left: 260px;
+            padding-top:30px;
         }
 
         .bg-side-bar {
@@ -58,14 +57,54 @@
             max-width: 200px;
             min-width: 200px;
             text-align: center;
-            font-size: 0.8em;
             position: fixed;
             left: 0;
             top: 8px;
         }
 
+        .bg-content {
+            margin-left: 200px;
+            max-width: 800px;
+            min-width: 800px;
+        }
+
+        .bg-outer-list {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .bg-post-link {
+            margin-top: 5px;
+            margin-left: 25px;
+            display: list-item;
+        }
+
+        .bg-big-title {
+            display: inline-block;
+            font-weight: 900;
+            color: white;
+            border-left: 8px solid silver;
+            padding-left: 10px;
+            font-size: 1.5em;
+            margin: 20px;
+        }
+
+        .bg-post-title {
+            border-bottom: 1px dotted silver;
+        }
+
+        .bg-post-date {
+            float: right;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
         .bg-col-100 {
             width : 100%;
+        }
+
+        .bg-col-50 {
+            width : 50%;
         }
 
         .bg-row-100 {
