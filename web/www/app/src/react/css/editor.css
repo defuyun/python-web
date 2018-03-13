@@ -1,0 +1,54 @@
+.bg-editor {
+  padding-left: 60px;
+  height: 90%;
+  width: 50%;
+  float: left; }
+
+.CodeFlask__textarea {
+  width: 50%;
+  margin-left: 0px !important;
+  padding-left: 60px !important; }
+
+.CodeFlask__pre {
+  width: 50%;
+  padding-left: 60px !important; }
+
+.CodeFlask__code {
+  padding: 0px !important; }
+
+.bg-publisher {
+  height: 100%;
+  width: 100%; }
+
+.bg-display {
+  width: 50%;
+  height: 90%;
+  float: left; }
+
+.bg-inner-display {
+  padding: 1em;
+  height: 100%;
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-size: 0.8em;
+  background: transparent;
+  white-space: pre-wrap !important;
+  line-height: 1em;
+  word-wrap: break-word; }
+
+.bg-inner-display > h1 {
+  font-size: 1.5em; }
+
+.bg-inner-display > h2 {
+  font-size: 1.2em; }
+
+.bg-inner-display > h3 {
+  font-size: 1em; }
+
+.bg-inner-display > h4 {
+  font-size: 0.8em; }
+
+.bg-inner-display > h5 {
+  font-size: 0.6em; }
+
+.bg-inner-display > h6 {
+  font-size: 0.5em; }

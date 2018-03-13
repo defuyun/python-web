@@ -134,7 +134,7 @@ def add_routes(app, name):
         logging.info('[ADD_ROUTE] adding %s(%s) for route (%s, %s)' % (fn.__name__, ', '.join(inspect.signature(fn).parameters.keys()), method, path))
         app.router.add_route(method, path, RequestHandler(app, fn))       
 
-def add_statics(app,root):
-    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), root)
-    logging.info('[ADD_STATIC] adding %s as static path' % path)
-    app.router.add_static('/%s' % 'static', path)
+def add_statics(app, path, root):
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), path)
+    logging.info('[ADD_STATIC] adding %s as static path using root %s' % (path, root))
+    app.router.add_static('/%s' % root, path)
