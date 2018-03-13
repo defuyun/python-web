@@ -4,9 +4,11 @@ from aiohttp import web
 from asyncio import AbstractEventLoop
 from jinja2 import Environment, FileSystemLoader
 from config import get_config
+from database import init_db
 
 import logging; logging.basicConfig(level=logging.DEBUG)
 import asyncio
+import aiomysql
 import coroweb
 import os
 
@@ -47,6 +49,7 @@ async def init(loop:AbstractEventLoop):
 
     app._config = get_config()
     init_jinja(app)
+    init_db(app, loop)
     coroweb.add_statics(app, app._config.static, 'static')
     coroweb.add_routes(app, 'handlers')
     srv = await loop.create_server(app.make_handler(), '127.0.0.1', 8080)
