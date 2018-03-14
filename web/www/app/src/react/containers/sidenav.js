@@ -2,13 +2,13 @@ import '../css/container.css'
 
 import React from 'react'
 import {connect} from 'react-redux'
-import fetchSideNav from '../actions/fetch-state'
+import {sidenav} from '../actions/index'
 import {withRouter, Link} from 'react-router-dom'
 
 class SideNav extends React.Component {
     constructor(props) {
         super(props)
-        this.props.fetchData()
+        this.props.fetchSidenav()
     }
 
     render() {
@@ -37,7 +37,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        fetchData : () => dispatch(fetchSideNav())
+        fetchSidenav : () => dispatch(sidenav())
     }
 }
 

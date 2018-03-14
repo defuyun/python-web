@@ -14,13 +14,16 @@ async def init_db(app, loop):
         user=app._config.db['user'], 
         password=app._config.db['password'], 
         db=app._config.db['db'], 
-        loop=loop
+        loop=loop,
+        autocommit=True
     )
 
-    logging.info('[DATABASE] Created pool to database %s' % app._config.db['db'])
+    logging.info('[DATABASE] Created pool to database [%s]' % app._config.db['db'])
 
-async def execute(query):
+async def execute(query, args=()):
     with (await pool) as conn:
         cursor = await conn.cursor()
-        await cursor.execute(query)
-        return cursor.fetchall()
+        await cursor.execute(query, args)
+        logging.debug('[DATABASE] Affected rows from update %s' % (cursor.rowcount))
+        ret = await cursor.fetchall()
+        return ret

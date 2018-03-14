@@ -49,7 +49,7 @@ async def init(loop:AbstractEventLoop):
 
     app._config = get_config()
     init_jinja(app)
-    init_db(app, loop)
+    await init_db(app, loop)
     coroweb.add_statics(app, app._config.static, 'static')
     coroweb.add_routes(app, 'handlers')
     srv = await loop.create_server(app.make_handler(), '127.0.0.1', 8080)
