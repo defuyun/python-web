@@ -4,7 +4,20 @@ import {connect} from 'react-redux'
 import {post} from '../actions/index'
 import showdown from 'showdown'
 
+import '../../../node_modules/prismjs/themes/prism.css'
+
 import '../css/editor.css'
+import '../css/post.css'
+import '../../../node_modules/github-markdown-css/github-markdown.css'
+
+import Prism from 'prismjs'
+import '../../../node_modules/prismjs/plugins/line-numbers/prism-line-numbers'
+import '../../../node_modules/prismjs/components/prism-clike'
+import '../../../node_modules/prismjs/components/prism-c'
+import '../../../node_modules/prismjs/components/prism-cpp'
+import '../../../node_modules/prismjs/components/prism-csharp'
+import '../../../node_modules/prismjs/components/prism-python'
+import '../../../node_modules/prismjs/components/prism-glsl'
 
 class Post extends React.Component {
     constructor(props) {
@@ -16,6 +29,12 @@ class Post extends React.Component {
         const converter = new showdown.Converter()
         this.setState({converter})
     }
+    
+    componentDidUpdate(prevProps, prevState) {
+        document.querySelectorAll('.markdown-body code').forEach((element) => {
+            Prism.highlightElement(element)
+        })
+    } 
 
     render() {
         return (
@@ -23,7 +42,7 @@ class Post extends React.Component {
                 <div className='bg-post-title'>
                     {this.props.post.title}
                 </div>
-                <div className='bg-post-content bg-inner-display' dangerouslySetInnerHTML={{__html:this.state.converter.makeHtml(this.props.post.text)}} />
+                <div className='bg-post-content bg-inner-display markdown-body' dangerouslySetInnerHTML={{__html:this.state.converter.makeHtml(this.props.post.text)}} />
             </div>
         )
     }

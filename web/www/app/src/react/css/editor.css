@@ -4,6 +4,9 @@
   width: 50%;
   float: left; }
 
+.CodeFlask {
+  overflow: auto !important; }
+
 .CodeFlask__textarea {
   width: 50%;
   margin-left: 0px !important;
@@ -15,6 +18,12 @@
 
 .CodeFlask__code {
   padding: 0px !important; }
+
+.markdown-body pre {
+  position: relative; }
+
+.markdown-body code {
+  position: relative; }
 
 .bg-publisher {
   height: 100%;
@@ -28,27 +37,27 @@
 .bg-inner-display {
   padding: 1em;
   height: 100%;
-  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-  font-size: 0.8em;
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
+  font-size: 0.8em !important;
   background: transparent;
   white-space: pre-wrap !important;
-  line-height: 1em;
+  line-height: 1em !important;
   word-wrap: break-word; }
 
 .bg-inner-display > h1 {
-  font-size: 1.5em; }
+  font-size: 1.5em !important; }
 
 .bg-inner-display > h2 {
-  font-size: 1.2em; }
+  font-size: 1.2em !important; }
 
 .bg-inner-display > h3 {
-  font-size: 1em; }
+  font-size: 1em !important; }
 
 .bg-inner-display > h4 {
-  font-size: 0.8em; }
+  font-size: 0.8em !important; }
 
 .bg-inner-display > h5 {
-  font-size: 0.6em; }
+  font-size: 0.6em !important; }
 
 .bg-inner-display > h6 {
-  font-size: 0.5em; }
+  font-size: 0.5em !important; }

@@ -8,11 +8,19 @@ import '../../../node_modules/prismjs/themes/prism.css'
 import '../../../node_modules/prismjs/plugins/line-numbers/prism-line-numbers.css'
 import '../../../node_modules/codeflask/src/codeflask.css'
 
-import prism from 'prismjs'
+import Prism from 'prismjs'
 import '../../../node_modules/prismjs/plugins/line-numbers/prism-line-numbers'
+import '../../../node_modules/prismjs/components/prism-clike'
+import '../../../node_modules/prismjs/components/prism-c'
+import '../../../node_modules/prismjs/components/prism-cpp'
+import '../../../node_modules/prismjs/components/prism-csharp'
+import '../../../node_modules/prismjs/components/prism-python'
+import '../../../node_modules/prismjs/components/prism-glsl'
 
 import CodeFlask from 'codeflask'
 import {editor} from '../actions/index'
+
+import '../../../node_modules/github-markdown-css/github-markdown.css'
 
 function S4() {
     return (((1+Math.random())*0x10000)|0).toString(16).substring(1); 
@@ -26,7 +34,7 @@ class Editor extends React.Component {
         const converter = new showdown.Converter()
         this.titleChange = this.titleChange.bind(this)
         this.submitPost = this.submitPost.bind(this)
-        this.resetEdit = this.resetEdit.bind(this)
+
         this.setState({converter})
         this.setState({publishing: false})
         this.setState({publishSuccess: false})
@@ -35,14 +43,15 @@ class Editor extends React.Component {
     componentDidMount() {
         const flask = new CodeFlask()
         this.setState({flask})
-        flask.run('.bg-editor', {language : 'javascript', lineNumbers: true})
+        flask.run('.bg-editor', {language : 'markdown', lineNumbers: true})
         if(this.props.edit.text) {
             flask.update(this.props.edit.text)
             this.refs.titleField.value = this.props.edit.title
         } else {
             this.props.onEdit({
-                ...this.props.edit,
-                postId : guid()
+                postId : guid(),
+                title : '',
+                text : ''
             })
         }
 
@@ -54,19 +63,17 @@ class Editor extends React.Component {
         })
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        document.querySelectorAll('.markdown-body code').forEach((element) => {
+            Prism.highlightElement(element)
+        })
+    } 
+
     titleChange(event) {
         this.props.onEdit({
             ...this.props.edit,
             title : event.target.value
         })
-    }
-
-    resetEdit() {
-        this.props.onEdit({
-            postId : guid()
-        })
-        this.state.flask.update('')
-        this.refs.titleField.value = ''
     }
 
     submitPost(event) {
@@ -106,7 +113,9 @@ class Editor extends React.Component {
                 </div>
 
                 <div className='bg-display'>
-                    <div className='bg-inner-display' dangerouslySetInnerHTML={{__html:this.state.converter.makeHtml(this.props.edit.text)}} />
+                    <div className='bg-inner-display markdown-body' dangerouslySetInnerHTML={{
+                            __html:this.props.edit.text ? this.state.converter.makeHtml(this.props.edit.text) : '',
+                        }} />
                     <input type='text' className='bg-title-input' placeholder='Please Enter a title' onChange={this.titleChange} ref='titleField'/>
                     <input type='submit' className='bg-submit-post' onClick={this.submitPost} value='Submit'/>
                 </div>
