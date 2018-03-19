@@ -1,3 +1,5 @@
+from config_overwrite import overwrite
+
 class Config(object):
     static = 'app/build/static'
     template = 'app/build'
@@ -8,4 +10,4 @@ class Config(object):
     }
 
 def get_config():
-    return Config()
+    return overwrite(Config())
