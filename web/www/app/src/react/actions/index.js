@@ -32,7 +32,24 @@ export const posts = () => (dispatch) => {
         response.json()
     )
     .then((responseJson) => {
-        const posts = responseJson.data
+        const posts = responseJson.data.map((post) => {
+            const [date, time] = post.created.split(' ')
+            const [year, month, day] = date.split('-')
+            const [hour, minute, second] = time.split(':')
+
+            return {
+                ...post,
+                created : {
+                    year,
+                    month,
+                    day,
+                    hour,
+                    minute,
+                    second
+                }
+            }
+        })
+
         dispatch(getPosts(posts))
     })
     .catch((error) => {

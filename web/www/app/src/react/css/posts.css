@@ -1,0 +1,19 @@
+.bg-posts {
+  padding: 20px; }
+
+.bg-posts-title {
+  display: inline-block;
+  width: 400px; }
+
+.bg-posts-created {
+  font-weight: 500; }
+
+.bg-posts-inner-title {
+  border-bottom: 1px dotted gainsboro;
+  text-decoration: none; }
+
+.bg-posts-item {
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important; }
+
+.bg-posts-item:hover {
+  background-color: lightblue; }

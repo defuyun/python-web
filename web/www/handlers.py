@@ -26,6 +26,9 @@ async def sidenav_options(request):
 
 @post('/publish')
 async def publish(request, *, post_id, title, text):
+    if not post_id or not title or not text:
+        return web.HTTPBadRequest()
+    
     query = "INSERT INTO posts (postId, title, post) values (%s,%s,%s)"
     await execute(query, (post_id, title, text))
     return web.HTTPOk()

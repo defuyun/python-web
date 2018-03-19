@@ -42,7 +42,7 @@ class Post extends React.Component {
                 <div className='bg-post-title'>
                     {this.props.post.title}
                 </div>
-                <div className='bg-post-content bg-inner-display markdown-body' dangerouslySetInnerHTML={{__html:this.state.converter.makeHtml(this.props.post.text)}} />
+                <div className='bg-post-content bg-editor-inner-display markdown-body' dangerouslySetInnerHTML={{__html:this.state.converter.makeHtml(this.props.post.text)}} />
             </div>
         )
     }

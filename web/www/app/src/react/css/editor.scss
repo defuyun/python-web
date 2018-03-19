@@ -1,12 +1,53 @@
 $line-number-margin: 60px;
 $editor-width: 50%;
 $display-width: 50%;
+$input-title-width: 400px;
+$edit-title-button-margin:10px;
 
 .bg-editor {
-    padding-left: $line-number-margin;
-    height: 90%;
+    height: 100%;
     width: $editor-width;
     float: left;
+}
+
+.bg-inner-editor {
+    width: 100%;
+    height: 95% !important;
+    padding-left: $line-number-margin;
+}
+
+.bg-editor-header {
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    vertical-align: middle;
+}
+
+.bg-editor-title-input {
+    border: none;
+    outline: none;
+    width: $input-title-width;
+    caret-color: skyblue;
+    margin-left : $line-number-margin;
+    text-align: center;
+}
+
+.bg-editor-title-edit-button {
+    font-size: 1.3em;
+    display: inline-block;
+    color: steelblue;
+    margin-left: $edit-title-button-margin;
+    padding: 0px;
+    vertical-align: middle;
+}
+
+.bg-editor-submit-post-button {
+    font-size: 1.3em;
+    display: inline-block;
+    color: steelblue;
+    margin-left: $edit-title-button-margin;
+    padding: 0px;
+    vertical-align: middle;
 }
 
 .CodeFlask {
@@ -36,18 +77,18 @@ $display-width: 50%;
     position: relative;
 }
 
-.bg-publisher {
+.bg-editor-publisher {
     height: 100%;
     width: 100%;
 }
 
-.bg-display {
+.bg-editor-display {
     width: $display-width;
-    height: 90%;
+    height: 100%;
     float: left;
 }
 
-.bg-inner-display {
+.bg-editor-inner-display {
     padding: 1em;
     height: 100%;
     font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
@@ -58,26 +99,30 @@ $display-width: 50%;
     word-wrap: break-word;
 }
 
-.bg-inner-display > h1 {
+.bg-editor-inner-display h1 {
     font-size: 1.5em !important;
 }
 
-.bg-inner-display > h2 {
+.bg-editor-inner-display h2 {
     font-size: 1.2em !important;
 }
 
-.bg-inner-display > h3 {
+.bg-editor-inner-display h3 {
     font-size: 1em !important;
 }
 
-.bg-inner-display > h4 {
+.bg-editor-inner-display h4 {
     font-size: 0.8em !important;
 }
 
-.bg-inner-display > h5 {
+.bg-editor-inner-display h5 {
     font-size: 0.6em !important;
 }
 
-.bg-inner-display > h6 {
+.bg-editor-inner-display h6 {
     font-size: 0.5em !important;
+}
+
+.bg-editor-inner-display li {
+    list-style-type: circle !important;
 }

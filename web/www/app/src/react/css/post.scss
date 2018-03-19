@@ -1,7 +1,23 @@
-.bg-inner-display {
+.bg-editor-inner-display {
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
     position: relative;
 }
 
-.bg-inner-display code {
+.bg-editor-inner-display code {
     position: relative;
+}
+
+.bg-post-title {
+    text-align: center;
+    font-weight: 900;
+    color: darkblue;
+    opacity: 0.5;
+    font-size: 1.5em;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.bg-post {
+    max-width: 1200px;
+    margin: 0 auto;
 }

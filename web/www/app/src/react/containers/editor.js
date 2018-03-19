@@ -19,6 +19,7 @@ import '../../../node_modules/prismjs/components/prism-glsl'
 
 import CodeFlask from 'codeflask'
 import {editor} from '../actions/index'
+import EditorHeader from './editor-header'
 
 import '../../../node_modules/github-markdown-css/github-markdown.css'
 
@@ -29,11 +30,13 @@ function S4() {
 const guid = () => (S4() + S4() + "-" + S4() + "-4" + S4().substr(0,3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
 
 class Editor extends React.Component {
+    constructor(props) {
+        super(props)
+        this.submitPost = this.submitPost.bind(this)
+    }
 
     componentWillMount() {
         const converter = new showdown.Converter()
-        this.titleChange = this.titleChange.bind(this)
-        this.submitPost = this.submitPost.bind(this)
 
         this.setState({converter})
         this.setState({publishing: false})
@@ -43,10 +46,9 @@ class Editor extends React.Component {
     componentDidMount() {
         const flask = new CodeFlask()
         this.setState({flask})
-        flask.run('.bg-editor', {language : 'markdown', lineNumbers: true})
+        flask.run('.bg-inner-editor', {language : 'markdown', lineNumbers: true})
         if(this.props.edit.text) {
             flask.update(this.props.edit.text)
-            this.refs.titleField.value = this.props.edit.title
         } else {
             this.props.onEdit({
                 postId : guid(),
@@ -69,13 +71,6 @@ class Editor extends React.Component {
         })
     } 
 
-    titleChange(event) {
-        this.props.onEdit({
-            ...this.props.edit,
-            title : event.target.value
-        })
-    }
-
     submitPost(event) {
         const data = {
             post_id : this.props.edit.postId,
@@ -84,6 +79,11 @@ class Editor extends React.Component {
         }
 
         this.setState({publishing: true})
+        
+        if(!this.props.edit.postId || !this.props.edit.title || !this.props.edit.text) {
+            console.log('failed to send message')
+            return
+        }
 
         fetch('/publish', {
             body : JSON.stringify(data),
@@ -108,16 +108,17 @@ class Editor extends React.Component {
 
     render() {
         return (
-            <div className='bg-publisher'>
+            <div className='bg-editor-publisher'>
                 <div className='bg-editor'>
+                    <EditorHeader submit={this.submitPost} />
+                    <div className='bg-inner-editor'>
+                    </div>
                 </div>
 
-                <div className='bg-display'>
-                    <div className='bg-inner-display markdown-body' dangerouslySetInnerHTML={{
+                <div className='bg-editor-display'>
+                    <div className='bg-editor-inner-display markdown-body' dangerouslySetInnerHTML={{
                             __html:this.props.edit.text ? this.state.converter.makeHtml(this.props.edit.text) : '',
                         }} />
-                    <input type='text' className='bg-title-input' placeholder='Please Enter a title' onChange={this.titleChange} ref='titleField'/>
-                    <input type='submit' className='bg-submit-post' onClick={this.submitPost} value='Submit'/>
                 </div>
             </div>
         )

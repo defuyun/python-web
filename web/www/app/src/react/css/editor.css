@@ -1,8 +1,42 @@
 .bg-editor {
-  padding-left: 60px;
-  height: 90%;
+  height: 100%;
   width: 50%;
   float: left; }
+
+.bg-inner-editor {
+  width: 100%;
+  height: 95% !important;
+  padding-left: 60px; }
+
+.bg-editor-header {
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  vertical-align: middle; }
+
+.bg-editor-title-input {
+  border: none;
+  outline: none;
+  width: 400px;
+  caret-color: skyblue;
+  margin-left: 60px;
+  text-align: center; }
+
+.bg-editor-title-edit-button {
+  font-size: 1.3em;
+  display: inline-block;
+  color: steelblue;
+  margin-left: 10px;
+  padding: 0px;
+  vertical-align: middle; }
+
+.bg-editor-submit-post-button {
+  font-size: 1.3em;
+  display: inline-block;
+  color: steelblue;
+  margin-left: 10px;
+  padding: 0px;
+  vertical-align: middle; }
 
 .CodeFlask {
   overflow: auto !important; }
@@ -25,16 +59,16 @@
 .markdown-body code {
   position: relative; }
 
-.bg-publisher {
+.bg-editor-publisher {
   height: 100%;
   width: 100%; }
 
-.bg-display {
+.bg-editor-display {
   width: 50%;
-  height: 90%;
+  height: 100%;
   float: left; }
 
-.bg-inner-display {
+.bg-editor-inner-display {
   padding: 1em;
   height: 100%;
   font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
@@ -44,20 +78,23 @@
   line-height: 1em !important;
   word-wrap: break-word; }
 
-.bg-inner-display > h1 {
+.bg-editor-inner-display h1 {
   font-size: 1.5em !important; }
 
-.bg-inner-display > h2 {
+.bg-editor-inner-display h2 {
   font-size: 1.2em !important; }
 
-.bg-inner-display > h3 {
+.bg-editor-inner-display h3 {
   font-size: 1em !important; }
 
-.bg-inner-display > h4 {
+.bg-editor-inner-display h4 {
   font-size: 0.8em !important; }
 
-.bg-inner-display > h5 {
+.bg-editor-inner-display h5 {
   font-size: 0.6em !important; }
 
-.bg-inner-display > h6 {
+.bg-editor-inner-display h6 {
   font-size: 0.5em !important; }
+
+.bg-editor-inner-display li {
+  list-style-type: circle !important; }

@@ -15,7 +15,9 @@ async def init_db(app, loop):
         password=app._config.db['password'], 
         db=app._config.db['db'], 
         loop=loop,
-        autocommit=True
+        autocommit=True,
+        use_unicode=True,
+        charset='utf8'
     )
 
     logging.info('[DATABASE] Created pool to database [%s]' % app._config.db['db'])
