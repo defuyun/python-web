@@ -1,0 +1,1 @@
+SELECT postId, title, created, modified from posts

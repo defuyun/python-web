@@ -71,7 +71,6 @@
 .bg-editor-inner-display {
   padding: 1em;
   height: 100%;
-  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important;
   font-size: 0.8em !important;
   background: transparent;
   white-space: pre-wrap !important;

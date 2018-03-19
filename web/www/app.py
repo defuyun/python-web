@@ -3,8 +3,9 @@
 from aiohttp import web
 from asyncio import AbstractEventLoop
 from jinja2 import Environment, FileSystemLoader
-from config import get_config
 from database import init_db
+from config.config import config
+from config.constants import constants
 
 import logging; logging.basicConfig(level=logging.DEBUG)
 import asyncio
@@ -37,7 +38,8 @@ def init_jinja(app):
         variable_start_string='{@',
         variable_end_string='@}'
     )
-    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), app._config.template)
+
+    path = config.template
     logging.info('[JINJA] setting %s to be path to template' % path)
     env = Environment(loader=FileSystemLoader(path), **options)
     app['__template__'] = env
@@ -47,11 +49,10 @@ async def init(loop:AbstractEventLoop):
         response_factory
     ])
 
-    app._config = get_config()
     init_jinja(app)
     await init_db(app, loop)
-    coroweb.add_statics(app, app._config.static, 'static')
-    coroweb.add_routes(app, 'handlers')
+    coroweb.add_statics(app, config.static, constants.web_static_root)
+    coroweb.add_routes(app, constants.web_handler_module)
     srv = await loop.create_server(app.make_handler(), '127.0.0.1', 8080)
     logging.info('[APP] server started on 127.0.0.1:8080')
     return srv

@@ -14,6 +14,11 @@ class Posts extends React.Component {
     render() {
         return (
             <div className='bg-posts'>
+                <div className='bg-posts-category'>
+                    <span className='bg-posts-category-item bg-posts-category-title'>Title</span>
+                    <span className='bg-posts-category-item bg-posts-category-created'>Created</span>
+                    <span className='bg-posts-category-item bg-posts-category-modified'>Modified</span>
+                </div>
                 <ul className='bg-posts-list'>
                     {this.props.posts.map((post) => 
                         <li key={post.postId} className='bg-posts-item'>
@@ -22,7 +27,8 @@ class Posts extends React.Component {
                                     <span className='bg-posts-inner-title'>{post.title}</span>
                                 </Link>
                             </div>
-                            <span className='bg-posts-created'>{`${post.created.year}/${post.created.month}/${post.created.day}`}</span>
+                            <span className='bg-posts-date bg-posts-created'>{`${post.created.year}/${post.created.month}/${post.created.day}`}</span>
+                            <span className='bg-posts-date bg-posts-modified'>{`${post.modified.year}/${post.modified.month}/${post.modified.day}`}</span>
                         </li>
                     )}
                 </ul>

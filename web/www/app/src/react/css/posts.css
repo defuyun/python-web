@@ -1,19 +1,42 @@
 .bg-posts {
   padding: 20px; }
 
+.bg-posts-list {
+  margin-left: 20px; }
+
+.bg-posts-item {
+  margin-bottom: 5px; }
+
 .bg-posts-title {
   display: inline-block;
   width: 400px; }
 
-.bg-posts-created {
-  font-weight: 500; }
+.bg-posts-date {
+  font-family: 'Lato', sans-serif !important;
+  font-weight: 900;
+  border-left: 8px solid antiquewhite;
+  padding-left: 10px;
+  color: cadetblue;
+  display: inline-block;
+  width: 400px; }
 
 .bg-posts-inner-title {
   border-bottom: 1px dotted gainsboro;
   text-decoration: none; }
 
-.bg-posts-item {
-  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace !important; }
-
 .bg-posts-item:hover {
   background-color: lightblue; }
+
+.bg-posts-category {
+  margin-bottom: 20px;
+  padding-bottom: 5px;
+  width: 1200px;
+  margin-left: 20px; }
+
+.bg-posts-category-item {
+  width: 400px;
+  display: inline-block;
+  font-family: 'Lato', sans-serif;
+  font-weight: bold;
+  border-left: 2px solid;
+  padding-left: 10px; }

@@ -6,7 +6,7 @@ import {connect} from 'react-redux'
 import '../css/editor.css'
 import '../../../node_modules/prismjs/themes/prism.css'
 import '../../../node_modules/prismjs/plugins/line-numbers/prism-line-numbers.css'
-import '../../../node_modules/codeflask/src/codeflask.css'
+import '../../frameworks/codeflask/codeflask.css'
 
 import Prism from 'prismjs'
 import '../../../node_modules/prismjs/plugins/line-numbers/prism-line-numbers'

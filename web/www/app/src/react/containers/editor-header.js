@@ -15,6 +15,12 @@ class EditorHeader extends React.Component {
         this.setState({titleDisabled:true})
     }
 
+    componentDidMount() {
+        if(this.props.edit.title) {
+            this.refs.titleField.value = this.props.edit.title
+        }
+    }
+
     titleChange(event) {
         this.props.onEdit({
             ...this.props.edit,

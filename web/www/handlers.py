@@ -6,7 +6,9 @@ import logging
 
 from aiohttp import web
 from coroweb import get, post
-from database import execute
+from database import execute, get_query
+
+from config.constants import constants
 
 @get('/')
 async def index(request):
@@ -29,13 +31,13 @@ async def publish(request, *, post_id, title, text):
     if not post_id or not title or not text:
         return web.HTTPBadRequest()
     
-    query = "INSERT INTO posts (postId, title, post) values (%s,%s,%s)"
+    query = await get_query(constants.db_publish_posts_filename)
     await execute(query, (post_id, title, text))
     return web.HTTPOk()
 
 @get('/posts')
 async def posts(request):
-    query = "SELECT postId, title, created, modified from posts"
+    query = await get_query(constants.db_get_posts_filename)
     result = list(map(lambda post : {
             'postId' : post[0],
             'title' : post[1],
@@ -49,7 +51,7 @@ async def posts(request):
 
 @get('/posts/{post_id}')
 async def get_post(request,*,post_id):
-    query = "SELECT * from posts where postId=%s"
+    query = await get_query(constants.db_get_post_filename)
     (result,) = await execute(query,(post_id,))
     return {
         'data': {

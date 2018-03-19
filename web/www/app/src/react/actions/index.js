@@ -19,6 +19,21 @@ const getPosts = (posts) => {
     }
 }
 
+const parseDate = (datetime) => {
+    const [date, time] = datetime.split(' ')
+    const [year, month, day] = date.split('-')
+    const [hour, minute, second] = time.split(':')
+
+    return {
+        year,
+        month,
+        day,
+        hour,
+        minute,
+        second
+    }
+}
+
 export const editor = (post) => {
     return {
         type : 'EDITOR_CHANGE_INPUT',
@@ -33,20 +48,10 @@ export const posts = () => (dispatch) => {
     )
     .then((responseJson) => {
         const posts = responseJson.data.map((post) => {
-            const [date, time] = post.created.split(' ')
-            const [year, month, day] = date.split('-')
-            const [hour, minute, second] = time.split(':')
-
             return {
                 ...post,
-                created : {
-                    year,
-                    month,
-                    day,
-                    hour,
-                    minute,
-                    second
-                }
+                created : parseDate(post.created),
+                modified : parseDate(post.modified)
             }
         })
 
