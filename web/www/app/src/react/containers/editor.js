@@ -21,7 +21,7 @@ import CodeFlask from 'codeflask'
 import {editor} from '../actions/index'
 import EditorHeader from './editor-header'
 
-import '../../../node_modules/github-markdown-css/github-markdown.css'
+import '../../frameworks/github/github-markdown.css'
 
 function S4() {
     return (((1+Math.random())*0x10000)|0).toString(16).substring(1); 

@@ -9,7 +9,7 @@ import '../../../node_modules/prismjs/themes/prism.css'
 
 import '../css/editor.css'
 import '../css/post.css'
-import '../../../node_modules/github-markdown-css/github-markdown.css'
+import '../../frameworks/github/github-markdown.css'
 
 import Prism from 'prismjs'
 import '../../../node_modules/prismjs/plugins/line-numbers/prism-line-numbers'
