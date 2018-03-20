@@ -1,0 +1,1 @@
+insert into user (userId, username, password, email, expire) values (%s,%s,%s,%s,now() + interval %s day)

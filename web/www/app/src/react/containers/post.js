@@ -54,10 +54,14 @@ class Post extends React.Component {
                     <div className='bg-post-title-text'>
                         {this.props.post.title}
                     </div>
-                    <div className='bg-post-title-edit' onClick={this.editPost}>
-                        <i class='fas fa-edit'></i>
-                        <span>edit</span>
-                    </div>
+                    {
+                        this.props.post.canEdit ? (
+                            <div className='bg-post-title-edit' onClick={this.editPost} >
+                                <i class='fas fa-edit'></i>
+                                <span>edit</span>
+                            </div>
+                        ) : null
+                    }
                 </div>
                 <div className='bg-post-content bg-editor-inner-display markdown-body' dangerouslySetInnerHTML={{__html:this.state.converter.makeHtml(this.props.post.text)}} />
             </div>

@@ -1,0 +1,1 @@
+select username, password, email, expire from user where userId=%s

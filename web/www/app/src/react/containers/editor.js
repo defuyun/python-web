@@ -86,9 +86,10 @@ class Editor extends React.Component {
         }
 
         fetch('/publish', {
+            credentials: 'include',
             body : JSON.stringify(data),
             headers: {
-                'content-type' : 'application/json'
+                'content-type' : 'application/json',
             },
             method : 'POST'
         }).then((response) => {

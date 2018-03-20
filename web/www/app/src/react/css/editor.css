@@ -66,7 +66,8 @@
 .bg-editor-display {
   width: 50%;
   height: 100%;
-  float: left; }
+  float: left;
+  overflow: auto; }
 
 .bg-editor-inner-display {
   padding: 1em;

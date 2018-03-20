@@ -3,12 +3,43 @@
 import asyncio
 import uuid
 import logging
+import hashlib
 
 from aiohttp import web
 from coroweb import get, post
 from database import execute, get_query
 
 from config.constants import constants
+from config.config import config
+
+async def __user2cookie__(user_id, username, password, email):
+    update_user_query = await get_query(constants.db_update_user)
+    get_expire_query = await get_query(constants.db_get_user_expire_date)
+
+    await execute(update_user_query, (config.cookie_expire_duration, user_id))
+    row = await execute(get_expire_query, (user_id,))
+    if not row:
+        return None
+    
+    ((expire,),) = row
+
+    s = '%s-%s-%s-%s-%s' % (username, password, str(expire), email, config.cookie_key)
+    sha1 = hashlib.sha1(s.encode('utf-8')).hexdigest()
+
+    logging.debug('[AUTHENTICATE] sha1 generated for user %s generated from %s' % (sha1, s))
+
+    return '%s-%s' % (user_id, sha1) 
+
+def __make_auth_response__(username, email, cookie):
+    resp = web.json_response({
+        'data': {
+            'username':username,
+            'email':email
+        }
+    })
+    resp.set_cookie(config.cookie_name, cookie, max_age=config.cookie_expire_duration_second, httponly=True)
+
+    return resp
 
 @get('/')
 async def index(request):
@@ -18,12 +49,20 @@ async def index(request):
 
 @get('/sidenav_options')
 async def sidenav_options(request):
+    sidenavs = [
+        {'id' : 'Home', 'icon' : 'fas fa-home', 'tag' : 'home'},
+        {'id' : 'Posts', 'icon' : 'fas fa-rss', 'tag' : 'posts'},
+        {'id' : 'Tags', 'icon' : 'fas fa-tags', 'tag' : 'tags'},
+    ]
+
+    if request.authenticate:
+        sidenavs.append({'id' : 'Edit', 'icon' : 'fas fa-edit', 'tag' : 'edit'})
+    else:
+        sidenavs.append({'id' : 'Register', 'icon' : 'fas fa-user-plus', 'tag' : 'register'})
+        sidenavs.append({'id' : 'Login', 'icon' : 'fas fa-sign-in-alt', 'tag' : 'login'})
+
     return {
-        'data' : [
-            {'id' : 'Home', 'icon' : 'fas fa-home', 'tag' : 'home'},
-            {'id' : 'Posts', 'icon' : 'fas fa-rss', 'tag' : 'posts'},
-            {'id' : 'Tags', 'icon' : 'fas fa-tags', 'tag' : 'tags'},
-            {'id' : 'Edit', 'icon' : 'fas fa-edit', 'tag' : 'edit'}]
+        'data':sidenavs
     }
 
 @post('/publish')
@@ -52,13 +91,45 @@ async def posts(request):
 @get('/posts/{post_id}')
 async def get_post(request,*,post_id):
     query = await get_query(constants.db_get_post_filename)
-    (result,) = await execute(query,(post_id,))
+    rows = await execute(query,(post_id,))
+    if not rows:
+        return web.HTTPBadRequest(body='post does not exist')
+
+    (result,) = rows 
     return {
         'data': {
             'postId':result[0],
             'title':result[1],
             'text':result[2],
             'created':str(result[3]),
-            'modified':str(result[4])
+            'modified':str(result[4]),
+            'canEdit':request.authenticate != None
         }
     }
+
+@post('/authenticate')
+async def auth(request,*,username,password):
+    query = await get_query(constants.db_get_user_by_name_filename)
+    rows = await execute(query,(username,))
+    if not rows:
+        return web.HTTPBadRequest(body='user does not exist')
+    
+    (result,) = rows
+    user_id, dbpass, email = result
+    if dbpass != password:
+        return web.HTTPBadRequest(body='incorrect password')
+
+    cookie = await __user2cookie__(user_id,username,password,email)
+    return __make_auth_response__(username, password, cookie)
+
+@post('/register')
+async def register(request,*,username, email, password, secret):
+    if secret != config.secret:
+        return web.HTTPBadRequest(body='incorrect secret')
+    
+    query = await get_query(constants.db_register_user)
+    user_id = str(uuid.uuid4().hex)
+    await execute(query,(user_id, username, password, email, 1))
+
+    cookie = await __user2cookie__(user_id, username, password, email)
+    return __make_auth_response__(username, password, cookie)

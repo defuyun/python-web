@@ -42,7 +42,9 @@ export const editor = (post) => {
 }
 
 export const posts = () => (dispatch) => {
-    fetch('/posts')
+    fetch('/posts', {
+        credentials:'include'
+    })
     .then((response) => 
         response.json()
     )
@@ -63,7 +65,9 @@ export const posts = () => (dispatch) => {
 }
 
 export const post = (postId) => (dispatch) => {
-    fetch(`/posts/${postId}`)
+    fetch(`/posts/${postId}`, {
+        credentials:'include'
+    })
     .then((response) => 
         response.json()
     )
@@ -77,7 +81,9 @@ export const post = (postId) => (dispatch) => {
 }
 
 export const sidenav = () => (dispatch) => {
-    fetch('/sidenav_options')
+    fetch('/sidenav_options', {
+        credentials:'include'
+    })
     .then((response) => 
         response.json()
     )

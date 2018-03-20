@@ -86,6 +86,7 @@ $edit-title-button-margin:10px;
     width: $display-width;
     height: 100%;
     float: left;
+    overflow: auto;
 }
 
 .bg-editor-inner-display {

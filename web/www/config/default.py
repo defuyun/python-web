@@ -13,3 +13,11 @@ class config_default(object):
     queries = os.path.join(root,constants.query_dirname)
     static = os.path.join(root, 'app/build/static')
     template = os.path.join(root, 'app/build')
+
+    cookie_name = 'python-app'
+    cookie_key = 'python-app'
+
+    cookie_expire_duration = 3
+    cookie_expire_duration_second = cookie_expire_duration * 3600 * 24
+
+    secret = 'wululu'

@@ -1,0 +1,1 @@
+select userId, password, email from user where username=%s

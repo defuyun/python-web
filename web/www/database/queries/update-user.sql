@@ -1,0 +1,1 @@
+update user set expire=now() + interval %s day where userId=%s

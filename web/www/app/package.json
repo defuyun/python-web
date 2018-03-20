@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "crypto-js": "^3.1.9-1",
     "github-markdown-css": "^2.10.0",
     "node-sass-chokidar": "^1.1.0",
     "npm-run-all": "^4.1.2",

@@ -6,6 +6,7 @@ from jinja2 import Environment, FileSystemLoader
 from database import init_db
 from config.config import config
 from config.constants import constants
+from factories import authentication_factory
 
 import logging; logging.basicConfig(level=logging.DEBUG)
 import asyncio
@@ -46,7 +47,7 @@ def init_jinja(app):
 
 async def init(loop:AbstractEventLoop):
     app = web.Application(loop=loop, middlewares=[
-        response_factory
+       authentication_factory, response_factory
     ])
 
     init_jinja(app)
