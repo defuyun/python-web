@@ -3,33 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "crypto-js": "^3.1.9-1",
-    "github-markdown-css": "^2.10.0",
-    "node-sass-chokidar": "^1.1.0",
-    "npm-run-all": "^4.1.2",
+    "antd": "^3.3.1",
+    "prop-types": "^15.6.1",
     "react": "^16.2.0",
-    "react-dom": "^16.2.0",
-    "react-scripts": "1.1.1"
+    "react-app-rewired": "1.1.1",
+    "react-dom": "^16.2.0"
   },
   "scripts": {
-    "build-css": "node-sass-chokidar src/ -o src/",
-    "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive",
-    "start-js": "react-scripts start",
-    "start": "npm-run-all -p watch-css start-js",
-    "build-js": "react-scripts build",
-    "build": "npm-run-all build-css build-js",
-    "test": "react-scripts test --env=jsdom",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test --env=jsdom",
     "eject": "react-scripts eject"
   },
   "devDependencies": {
-    "codeflask": "^0.3.0",
-    "prismjs": "^1.12.2",
-    "prop-type": "0.0.1",
+    "babel-plugin-import": "^1.6.7",
+    "react-app-rewire-less": "^2.1.1",
+    "react-app-rewired": "^1.5.0",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.2.2",
-    "redux": "^3.7.2",
-    "redux-thunk": "^2.2.0",
-    "redux-tool": "^1.0.0",
-    "showdown": "^1.8.6"
+    "react-scripts": "^1.1.1"
   }
 }
