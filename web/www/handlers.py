@@ -30,14 +30,14 @@ async def __user2cookie__(user_id, username, password, email):
 
     return '%s-%s' % (user_id, sha1) 
 
-def __make_auth_response__(username, email, cookie):
+def __make_auth_response__(username, email, cookie, age=config.cookie_expire_duration_second):
     resp = web.json_response({
         'data': {
             'username':username,
             'email':email
         }
     })
-    resp.set_cookie(config.cookie_name, cookie, max_age=config.cookie_expire_duration_second, httponly=True)
+    resp.set_cookie(config.cookie_name, cookie, max_age=age, httponly=True)
 
     return resp
 
@@ -50,16 +50,23 @@ async def index(request):
 @get('/sidenav_options')
 async def sidenav_options(request):
     sidenavs = [
-        {'id' : 'Home', 'icon' : 'fas fa-home', 'tag' : 'home'},
-        {'id' : 'Posts', 'icon' : 'fas fa-rss', 'tag' : 'posts'},
-        {'id' : 'Tags', 'icon' : 'fas fa-tags', 'tag' : 'tags'},
+        {'id' : 'Home', 'icon' : 'home', 'tag' : 'home', 'link' : '/home'},
+        {'id' : 'Posts', 'icon' : 'file', 'tag' : 'posts', 'link' : '/posts'},
+        # {'id' : 'Tags', 'icon' : 'tags', 'tag' : 'tags', 'link' : '/tags'},
     ]
 
     if request.authenticate:
-        sidenavs.append({'id' : 'Edit', 'icon' : 'fas fa-edit', 'tag' : 'edit'})
+        sidenavs.append({'id' : 'Edit', 'icon' : 'edit', 'tag' : 'edit', 'link' : '/edit'})
+        sidenavs.append([
+            {'id': 'Account', 'icon': 'user', 'tag': 'account'},
+            {'id' : 'Signout', 'icon' : 'logout', 'tag' : 'signout', 'link' : '/signout'},
+        ])
     else:
-        sidenavs.append({'id' : 'Register', 'icon' : 'fas fa-user-plus', 'tag' : 'register'})
-        sidenavs.append({'id' : 'Login', 'icon' : 'fas fa-sign-in-alt', 'tag' : 'login'})
+        sidenavs.append([
+            {'id': 'Account', 'icon': 'user', 'tag': 'account'},
+            {'id' : 'Register', 'icon' : 'user-add', 'tag' : 'register', 'link' : '/register'},
+            {'id' : 'Login', 'icon' : 'login', 'tag' : 'login', 'link' : '/login'}
+        ])
 
     return {
         'data':sidenavs
@@ -67,11 +74,26 @@ async def sidenav_options(request):
 
 @post('/publish')
 async def publish(request, *, post_id, title, text):
+    if not request.authenticate:
+        return web.HTTPBadRequest(body='not authenticated')
+
     if not post_id or not title or not text:
-        return web.HTTPBadRequest()
+        return web.HTTPBadRequest(body='missing one of the parameters')
     
     query = await get_query(constants.db_publish_posts_filename)
     await execute(query, (post_id, title, text))
+    return web.HTTPOk()
+
+@post('/delete')
+async def delete(request,*, post_id):
+    if not request.authenticate:
+        return web.HTTPBadRequest(body='not authenticated')
+    
+    if not post_id:
+        return web.HTTPBadRequest(body='missing post id')
+
+    query = await get_query(constants.db_delete_post)
+    await execute(query, (post_id,))
     return web.HTTPOk()
 
 @get('/posts')
@@ -107,7 +129,7 @@ async def get_post(request,*,post_id):
         }
     }
 
-@post('/authenticate')
+@post('/login')
 async def auth(request,*,username,password):
     query = await get_query(constants.db_get_user_by_name_filename)
     rows = await execute(query,(username,))
@@ -133,3 +155,10 @@ async def register(request,*,username, email, password, secret):
 
     cookie = await __user2cookie__(user_id, username, password, email)
     return __make_auth_response__(username, password, cookie)
+
+@post('/signout')
+async def signout(request):
+    if not request.authenticate:
+        return web.HTTPBadRequest(body='user not signed in')
+    
+    return __make_auth_response__('','','',age=-1)

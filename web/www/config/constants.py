@@ -12,6 +12,7 @@ class constants(object):
     db_get_user_expire_date = 'get-user-expire-date.sql'
     db_update_user = 'update-user.sql'
     db_register_user = 'register-user.sql'
+    db_delete_post = 'delete-post.sql'
 
     web_static_root = 'static'
     web_handler_module = 'handlers'

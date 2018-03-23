@@ -1,5 +1,57 @@
+@import './css/github-markdown.css';
+
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  min-width: 1400px;
+  min-height: 800px;
+}
+
+#root {
+  height: 100%;
+}
+
+#doge-editor {
+  width:100% !important;
+  height: calc(100% - 50px) !important;
+  font-size: 16px;
+}
+
+#doge-markdown-display {
+  zoom:90%;
+}
+
+.doge-content {
+  background: url('./images/knight.png');
+  background-position: center; 
+}
+
+.doge-content-container {
+  background: rgba(0,21,41,0.7);
+  box-shadow: 0px 0px 10px rgba(0,21,41);
+}
+
+.doge-split-border {
+  border-bottom-width: 2px;
+  border-image: linear-gradient(to right, rgb(0,58,140,0.5), rgba(0,0,0,0), rgba(0,0,0,0), rgba(0,0,0,0), rgba(0,0,0,0),rgb(0,80,179,0.5), rgb(0,80,179,0.2)) 10 stretch;
+  border-bottom-style: solid;
+}
+
+.doge-line-border {
+  border-bottom-width: 2px;
+  border-image: linear-gradient(to right, rgba(0,0,0,0), rgb(0,80,179,0.5), rgb(0,58,140,0.7),rgb(0,80,179,0.5), rgba(0,0,0,0)) 10 stretch;
+  border-bottom-style: solid;
+}
+
+.doge-editor-toolbar {
+  height: 50px;
+  padding-left: 40px;
+  width:100%;
+  background: #002240;
+  box-shadow: 0px 0px 10px rgba(0,21,41);
+}
+
+.doge-borderless-button {
+  border:none !important;
+  background: transparent !important;
 }
