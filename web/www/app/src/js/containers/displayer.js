@@ -2,8 +2,9 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {Row} from 'antd'
 
+import Showdown from 'showdown'
 import Prism from 'prismjs'
-import 'prismjs/themes/prism.css'
+
 import 'prismjs/components/prism-clike'
 import 'prismjs/components/prism-c'
 import 'prismjs/components/prism-cpp'
@@ -22,6 +23,17 @@ class Title extends React.Component {
 }
 
 class Displayer extends React.Component {
+    constructor(props) {
+        super(props)
+        this.converter = new Showdown.Converter({
+            tables:true,
+            strikethrough:true,
+            tasklists:true,
+            simpleLineBreaks:true,
+            openLinksInNewWindow:true
+        })
+    }
+
     componentDidUpdate(prevProps, prevState) {
         document.querySelectorAll('.markdown-body code').forEach((element) => {
             Prism.highlightElement(element)
@@ -34,8 +46,10 @@ class Displayer extends React.Component {
                 <Row style={{height:'5%',paddingLeft:'40px',paddingRight:'40px'}} >
                     <Title title={this.props.title}/>
                 </Row>
-                <Row id='doge-markdown-display' className='markdown-body' style={{height:'95%',padding:'20px', paddingLeft:'40px', paddingRight:'40px'}}>
-                    <Markdown markup={this.props.content} tables={true} strikethrough={true} tasklists={true} simpleLineBreaks={true} openLinksInNewWindow={true}/>
+                <Row id='doge-markdown-display' style={{height:'95%',padding:'20px', paddingLeft:'40px', paddingRight:'40px'}}>
+                    <div className='markdown-body' style={{height:'100%',width:'100%'}} dangerouslySetInnerHTML={{
+                        __html: this.props.content ? this.converter.makeHtml(this.props.content) : ''
+                    }} />
                 </Row>
             </div>
         )

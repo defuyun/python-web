@@ -1,4 +1,22 @@
 @import './css/github-markdown.css';
+@import './css/prism-dark.css';
+
+/* width */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background: rgba(0,21,41,0.7);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: radial-gradient(rgb(0,58,140,0.7) 10%, rgba(0,0,0,0) 70%);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: radial-gradient(rgb(0,58,140,0.5) 10%, rgba(0,0,0,0) 70%);
+}
 
 body {
   margin: 0;
@@ -15,10 +33,6 @@ body {
   width:100% !important;
   height: calc(100% - 50px) !important;
   font-size: 16px;
-}
-
-#doge-markdown-display {
-  zoom:90%;
 }
 
 .doge-content {
@@ -49,6 +63,12 @@ body {
   width:100%;
   background: #002240;
   box-shadow: 0px 0px 10px rgba(0,21,41);
+}
+
+.doge-borderless-input:disabled {
+  color: #fff;
+  background: #002240;
+  border: none;
 }
 
 .doge-borderless-button {

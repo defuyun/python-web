@@ -113,6 +113,7 @@ class PostEditor extends React.Component {
             <Row type='flex' align='middle' className='doge-editor-toolbar'>
                 <Col span={12}>
                     <Input
+                        className='doge-borderless-input'
                         size='default' 
                         placeholder='Input a title by clicking on the edit button' 
                         disabled={this.state.disableTitle} 
