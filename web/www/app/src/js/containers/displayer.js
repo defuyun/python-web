@@ -30,7 +30,8 @@ class Displayer extends React.Component {
             strikethrough:true,
             tasklists:true,
             simpleLineBreaks:true,
-            openLinksInNewWindow:true
+            openLinksInNewWindow:true,
+            headerLevelStart:2
         })
     }
 
@@ -42,7 +43,7 @@ class Displayer extends React.Component {
 
     render() {
         return (
-            <div style={{height:'100%', padding:'10px'}}>
+            <div style={{minHeight:'100%', padding:'10px'}}>
                 <Row style={{height:'5%',paddingLeft:'40px',paddingRight:'40px'}} >
                     <Title title={this.props.title}/>
                 </Row>
@@ -70,6 +71,20 @@ function postMapStateToProps(state) {
 } 
 
 class EditorDisplayerProt extends React.Component {
+    componentDidUpdate(prevProps, prevState) {
+        const editor = document.querySelector('.ace_scrollbar-v')
+        const displayer = document.getElementById('doge-displayer-container')
+        const conversion = displayer.scrollHeight/editor.scrollHeight
+
+        if(editor.scrollTop === 0) {
+            displayer.scrollTop = 0
+        } else {
+            const scrollBottom = editor.offsetHeight + editor.scrollTop
+            const convertedBottom = scrollBottom * conversion
+            const convertedTop = convertedBottom - displayer.offsetHeight
+            displayer.scrollTop = convertedTop
+        }
+    }
     render() {
        return <Displayer content={this.props.content} title={this.props.title}/>
     }

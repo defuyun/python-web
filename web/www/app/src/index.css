@@ -29,6 +29,10 @@ body {
   height: 100%;
 }
 
+#doge-markdown-display {
+  zoom: 95%;
+}
+
 #doge-editor {
   width:100% !important;
   height: calc(100% - 50px) !important;

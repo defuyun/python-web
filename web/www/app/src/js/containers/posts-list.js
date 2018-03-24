@@ -21,7 +21,7 @@ class PostsList extends React.Component {
                 itemLayout="horizontal"
                 dataSource={this.props.posts}
                 renderItem={item => (
-                    <List.Item className='doge-split-border' actions={[
+                    <List.Item style={{paddingLeft:'30px'}} className='doge-split-border' actions={[
                         <Link to={`/posts/${item.postId}`}>
                             read more
                         </Link>    
