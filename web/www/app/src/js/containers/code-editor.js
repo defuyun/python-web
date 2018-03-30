@@ -32,6 +32,8 @@ class CodeEditor extends React.Component {
                 keyboardHandler="vim"
                 name="doge-editor"
                 showPrintMargin={false}
+                wrapBehavioursEnabled={true}
+                wrapEnabled={true}
                 editorProps={{
                     $blockScrolling:Infinity
                 }}

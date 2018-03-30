@@ -1,10 +1,13 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {Row} from 'antd'
+import {Row, notification} from 'antd'
 
 import Showdown from 'showdown'
 import Prism from 'prismjs'
+import Katex from 'katex'
+import {newPlot} from 'plotly.js'
 
+import 'katex/dist/katex.css'
 import 'prismjs/components/prism-clike'
 import 'prismjs/components/prism-c'
 import 'prismjs/components/prism-cpp'
@@ -31,12 +34,67 @@ class Displayer extends React.Component {
             tasklists:true,
             simpleLineBreaks:true,
             openLinksInNewWindow:true,
-            headerLevelStart:2
+            headerLevelStart:2,
         })
+
+        this.supportedLanguages = [
+            'latex',
+            'javascript',
+            'cpp',
+            'csharp',
+            'c',
+            'glsl',
+            'python',
+            'plotting'
+        ]
     }
 
     componentDidUpdate(prevProps, prevState) {
-        document.querySelectorAll('.markdown-body code').forEach((element) => {
+        document.querySelectorAll('.markdown-body code:not([class])').forEach((element) => {
+            const firstBreak = element.innerHTML.indexOf(' ')
+            const firstWord = element.innerHTML.substr(0, firstBreak)
+
+            if(this.supportedLanguages.includes(firstWord)) {
+                element.innerHTML = element.innerHTML.replace(element.innerHTML.substring(0,firstBreak+1),'')
+                element.classList.add(firstWord)
+                element.classList.add(`language-${firstWord}`)
+            }
+        })
+
+        document.querySelectorAll('.markdown-body code.latex').forEach((element) => {
+            try {
+                const latexString = element.innerHTML
+                Katex.render(latexString, element)
+                element.removeAttribute('class')
+            } catch (error) {
+                notification.open({
+                    message: 'Latex parse error',
+                    description: error.message
+                })
+            }
+        })
+
+        document.querySelectorAll('.markdown-body code.plotting').forEach((element) => {
+            try {
+                const config = JSON.parse(element.innerHTML)
+                const plotDiv = document.createElement('div')
+                
+                const data = config.data
+                const layout = config.layout
+                
+                newPlot(plotDiv, data, layout)
+                element.innerHTML = ''
+                element.appendChild(plotDiv)
+                element.removeAttribute('class')
+            } catch(error) {
+                notification.open({
+                    message: 'Plot parse error',
+                    description: error.message
+                })
+            }
+        })
+
+        document.querySelectorAll('.markdown-body code[class]').forEach((element) => {
             Prism.highlightElement(element)
         })
     }

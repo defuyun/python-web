@@ -13,7 +13,8 @@ module.exports = function override(config, env) {
             "@border-color-split":"rgba(64,169,255,0.4)",
             "@input-bg":"transparent",
             "@popover-bg":"rgba(0,21,41,0.7)",
-            "@btn-default-bg":"rgba(0,21,41,0.7)"
+            "@btn-default-bg":"rgba(0,21,41,0.7)",
+            "@component-background":"rgba(0,21,41,0.7)"
         }
    })(config, env);
    config.resolve.alias.components = path.resolve('src/js/components')
@@ -21,5 +22,9 @@ module.exports = function override(config, env) {
    config.resolve.alias.containers = path.resolve('src/js/containers')
    config.resolve.alias.reducers = path.resolve('src/js/reducers')
    config.resolve.alias.common = path.resolve('src/js/common')
+   config.module.rules.push({
+       test:/node_modules/,
+       loader:'ify-loader'
+   })
    return config;
 };
