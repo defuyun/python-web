@@ -1,12 +1,12 @@
-# web
-## light weight web framework environment with support
-* Python 3.5
-* npm
-* bower
-* aiohttp
+# Blog
+personal blog website written using the framework + reactjs
+[demo] @ www.dogeengine.com
 
-## to activate the environment
-	source bin/activate
+[demo]: http://www.dogeengine.com
+# Front end Powered by
+* antd
+* ace editor
+* prismjs
+* katex
+* plotly
 
-## to run the framework after activating the environment
-	python web/www/app.py
