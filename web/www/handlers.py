@@ -172,7 +172,7 @@ async def upload(request,*,files):
 
     for file in files:
         filename = os.path.join(config.upload, file['filename'])
-        async with aiofiles.open(filename, mode='w') as f:
-            f.write(file['data'])
+        async with aiofiles.open(filename, mode='wb') as f:
+            await f.write(file['data'])
 
     return web.Response(body='files successfully uploaded')
