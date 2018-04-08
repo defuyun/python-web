@@ -23,8 +23,9 @@ module.exports = function override(config, env) {
    config.resolve.alias.reducers = path.resolve('src/js/reducers')
    config.resolve.alias.common = path.resolve('src/js/common')
    config.module.rules.push({
-       test:/node_modules/,
-       loader:'ify-loader'
+        test:/node_modules/,
+        loader:'ify-loader'
    })
+   console.log(config.module.rules)
    return config;
 };

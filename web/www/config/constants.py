@@ -16,4 +16,5 @@ class constants(object):
 
     web_static_root = 'static'
     web_handler_module = 'handlers'
+    web_upload_root = 'upload'
 

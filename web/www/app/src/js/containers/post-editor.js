@@ -1,6 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {Input,Col,Row,Button} from 'antd'
+import {Input,Col,Row,Button,Upload,notification} from 'antd'
 import {editorTitleChange, editorContentChange, editorIdChange, editorNewPost} from 'actions/actions'
 import {http_json} from 'common/http-helper'
 import {guid} from 'common/helper'
@@ -21,12 +21,12 @@ class PostEditor extends React.Component {
             {id:'new', icon:'file-add',click: this.newEdit},
             {id:'clone', icon:'copy',click: this.cloneEdit},
             {id:'submit',icon:'cloud-upload',click: this.submitPost},
-            {id:'clear',icon:'delete',click: this.clearEdit},
-            {id:'upload',icon:'upload',click: this.uploadFile},
+            {id:'clear',icon:'delete',click: this.clearEdit}
         ]
 
         this.state = {
-            disableTitle: true
+            disableTitle: true,
+            blankList: []
         }
 
         if(!this.props.id) {
@@ -73,8 +73,22 @@ class PostEditor extends React.Component {
         this.props.clear()
     }
 
-    uploadFile(event) {
+    uploadFile(info) {
+        const fileList = info.fileList.map((file) => {
+            if(file.response && file.response.status === 'success') {
+                file.url = file.response.url
+            }
+            return file
+        })
 
+        fileList.forEach(file => {
+            notification.open({
+                message : 'file upload',
+                description: file.name + 'upload status is:' + file.status
+            })
+        });
+
+        this.setState({blankList:[]})
     }
 
     titleChange(event) {
@@ -124,10 +138,13 @@ class PostEditor extends React.Component {
                         value={this.props.title}
                     />
                 </Col>
-                <Button.Group size={this.functionalities.length} style={{paddingLeft:'5px'}}>
+                <Button.Group size={this.functionalities.length} style={{paddingLeft:'5px',paddingTop:'20px'}}>
                     {this.functionalities.map((item) => 
                         <Button icon={item.icon} className='doge-borderless-button' onClick={item.click} />
                     )}
+                    <Upload action='/edit/upload' onChange={this.uploadFile} multiple={true} fileList={this.state.blankList}>
+                        <Button icon={'upload'} className='doge-borderless-button' />
+                    </Upload>
                 </Button.Group>
             </Row>
         )

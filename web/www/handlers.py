@@ -4,6 +4,8 @@ import asyncio
 import uuid
 import logging
 import hashlib
+import aiofiles
+import os
 
 from aiohttp import web
 from coroweb import get, post
@@ -162,3 +164,15 @@ async def signout(request):
         return web.HTTPBadRequest(body='user not signed in')
     
     return __make_auth_response__('','','',age=-1)
+
+@post('/edit/upload')
+async def upload(request,*,files):
+    if not request.authenticate:
+        return web.HTTPBadRequest(body='not authenticated')
+
+    for file in files:
+        filename = os.path.join(config.upload, file['filename'])
+        async with aiofiles.open(filename, mode='w') as f:
+            f.write(file['data'])
+
+    return web.Response(body='files successfully uploaded')

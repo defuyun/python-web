@@ -92,7 +92,18 @@ class RequestHandler(object):
             elif content_type.startswith('application/x-www-form-urlencoded'):
                 params = await request.post()
                 kw.update(params)
-
+            elif content_type.startswith('multipart/form-data'):
+                files = []
+                reader = aiohttp.MultipartReader.from_response(request)
+                while True:
+                    part = await reader.next()
+                    if part is None:
+                        break
+                    
+                    filedata = await part.read(decode=False)
+                    files.append({'filename':part.filename, 'data':filedata})
+                
+                kw['files'] = files
             else:
                 return web.HTTPBadRequest(body='The content type is not supported')
         

@@ -13,7 +13,7 @@ class config_default(object):
     queries = os.path.join(root,constants.query_dirname)
     static = os.path.join(root, 'app/build/static')
     template = os.path.join(root, 'app/build')
-
+    upload = os.path.join(root, 'app/upload')
     cookie_name = 'python-app'
     cookie_key = 'python-app'
 

@@ -79,3 +79,9 @@ body {
   border:none !important;
   background: transparent !important;
 }
+
+.doge-editor-upload {
+  background: #002240;
+  padding: 10px;
+  padding-left: 40px;
+}
