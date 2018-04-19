@@ -63,7 +63,7 @@ class Displayer extends React.Component {
 
         document.querySelectorAll('.markdown-body code.latex').forEach((element) => {
             try {
-                const latexString = element.innerHTML
+                const latexString = element.innerHTML.replace(/amp;/g,'')
                 Katex.render(latexString, element)
                 element.removeAttribute('class')
             } catch (error) {
