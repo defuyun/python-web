@@ -5,7 +5,6 @@ import {Row, notification} from 'antd'
 import Showdown from 'showdown'
 import Prism from 'prismjs'
 import Katex from 'katex'
-import {newPlot} from 'plotly.js'
 
 import 'katex/dist/katex.css'
 import 'prismjs/components/prism-clike'
@@ -45,7 +44,6 @@ class Displayer extends React.Component {
             'c',
             'glsl',
             'python',
-            'plotting'
         ]
     }
 
@@ -69,26 +67,6 @@ class Displayer extends React.Component {
             } catch (error) {
                 notification.open({
                     message: 'Latex parse error',
-                    description: error.message
-                })
-            }
-        })
-
-        document.querySelectorAll('.markdown-body code.plotting').forEach((element) => {
-            try {
-                const config = JSON.parse(element.innerHTML)
-                const plotDiv = document.createElement('div')
-                
-                const data = config.data
-                const layout = config.layout
-                
-                newPlot(plotDiv, data, layout)
-                element.innerHTML = ''
-                element.appendChild(plotDiv)
-                element.removeAttribute('class')
-            } catch(error) {
-                notification.open({
-                    message: 'Plot parse error',
                     description: error.message
                 })
             }
