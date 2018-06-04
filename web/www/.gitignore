@@ -1,3 +1,2 @@
-**/__pycache__/
-app/upload
-backup/
+database/backup/
+__pycache__/
