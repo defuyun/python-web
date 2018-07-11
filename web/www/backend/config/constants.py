@@ -6,6 +6,7 @@ class constants(object):
 
     backend_dirname = 'backend'
     frontend_dirname = 'frontend'
+    resources_dirname = 'resources'
 
     db_user_key = 'user'
     db_pass_key = 'password'

@@ -21,34 +21,63 @@ module.exports = (env, argv) => {
 		module : {
 			rules : [
 				{
-					test: /\.js$/,
+					test: /\.(js|jsx)$/,
 					exclude: /node_modules/,
 					use : {
-						loader: "babel-loader"
+						loader: 'babel-loader'
 					}
 				},
 				{
-					test: /\.scss$/,
+					test: /\.less$/,
 					use : [
 						'style-loader',
 						MiniCssExtractPlugin.loader,
 						'css-loader',
-						'postcss-loader',
-						'sass-loader'
+						{
+							loader : 'less-loader',
+							options : {
+								javascriptEnabled : true
+							}
+						}
 					]
+				},
+				{
+					test: /\.jpe?g$|\.gif$|\.ico$|\.png$|\.svg$/,
+					use: 'file-loader?name=[name].[ext]?[hash]'
+				},
+				{
+					test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+					loader: 'url-loader?limit=10000&mimetype=application/font-woff'
+				},
+				
+				{
+					test: /\.(ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+					loader: 'file-loader'
+				},
+				{
+					test: /\.otf(\?.*)?$/,
+					use: 'file-loader?name=/fonts/[name].  [ext]&mimetype=application/font-otf'
 				}
-			]
+			]	
+		},
+		resolve : {
+			alias : {
+				common : path.resolve('src/js/common'),
+				components : path.resolve('src/js/components'),
+				contents : path.resolve('src/js/contents')
+			}
 		},
 		plugins: [
 			new CleanWebpackPlugin('dist', {}),
 			new MiniCssExtractPlugin({
-				filename: 'style.[contenthash].css',
+				filename: '[name].[contenthash].css',
 			}),
 			new HtmlWebpackPlugin({
 				inject: false,
 				hash: true,
 				template: './src/index.html',
-				filename: 'index.html'
+				filename: 'index.html',
+				favicon: 'src/images/favicon.ico'
 			}),
 			new WebpackMd5Hash()
 		]

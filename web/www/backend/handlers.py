@@ -43,31 +43,6 @@ def __make_auth_response__(username, email, cookie, age=config.cookie_expire_dur
 
     return resp
 
-@get('/api/sidenav_options')
-async def sidenav_options(request):
-    sidenavs = [
-        {'id' : 'Home', 'icon' : 'home', 'tag' : 'home', 'link' : '/home'},
-        {'id' : 'Posts', 'icon' : 'file', 'tag' : 'posts', 'link' : '/posts'},
-        # {'id' : 'Tags', 'icon' : 'tags', 'tag' : 'tags', 'link' : '/tags'},
-    ]
-
-    if request.authenticate:
-        sidenavs.append({'id' : 'Edit', 'icon' : 'edit', 'tag' : 'edit', 'link' : '/edit'})
-        sidenavs.append([
-            {'id': 'Account', 'icon': 'user', 'tag': 'account'},
-            {'id' : 'Signout', 'icon' : 'logout', 'tag' : 'signout', 'link' : '/signout'},
-        ])
-    else:
-        sidenavs.append([
-            {'id': 'Account', 'icon': 'user', 'tag': 'account'},
-            {'id' : 'Register', 'icon' : 'user-add', 'tag' : 'register', 'link' : '/register'},
-            {'id' : 'Login', 'icon' : 'login', 'tag' : 'login', 'link' : '/login'}
-        ])
-
-    return {
-        'data':sidenavs
-    }
-
 @post('/api/publish')
 async def publish(request, *, post_id, title, text):
     if not request.authenticate:
@@ -165,7 +140,7 @@ async def upload(request,*,files):
         return web.HTTPBadRequest(body='not authenticated')
 
     for file in files:
-        filename = os.path.join(config.upload, file['filename'])
+        filename = os.path.join(config.resources, file['filename'])
         async with aiofiles.open(filename, mode='wb') as f:
             await f.write(file['data'])
 

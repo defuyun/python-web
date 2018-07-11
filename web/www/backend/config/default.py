@@ -8,10 +8,12 @@ class config_default(object):
         constants.db_table_key : 'blog'
     }
 
+    # move up 3 directories, so config -> backend -> root
     root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
     backend = os.path.join(root, constants.backend_dirname)
     queries = os.path.join(root, constants.query_dirname)
+    resources = os.path.join(root, constants.resources_dirname)
 
     cookie_name = 'python-app'
     cookie_key = 'python-app'
