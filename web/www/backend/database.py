@@ -31,10 +31,13 @@ async def execute(query, args=()):
     with (await pool) as conn:
         cursor = await conn.cursor()
         await cursor.execute(query, args)
-        logging.debug('[DATABASE] Affected rows from update %s' % (cursor.rowcount))
+        logging.debug('[DATABASE] Affected rows from execute %s' % (cursor.rowcount))
+        return cursor.rowcount
+    
+async def select(query, args=()):
+    with (await pool) as conn:
+        cursor = await conn.cursor()
+        await cursor.execute(query, args)
+        logging.debug('[DATABASE] Selected %s rows' % (cursor.rowcount))
         ret = await cursor.fetchall()
-        return ret
-
-async def get_query(name:str):
-    async with aiofiles.open(os.path.join(config.queries,name), 'r') as query:
-        return await query.read()
+        return ret   

@@ -12,7 +12,6 @@ class config_default(object):
     root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
     backend = os.path.join(root, constants.backend_dirname)
-    queries = os.path.join(root, constants.query_dirname)
     resources = os.path.join(root, constants.resources_dirname)
 
     cookie_name = 'python-app'
@@ -20,5 +19,6 @@ class config_default(object):
 
     cookie_expire_duration = 3
     cookie_expire_duration_second = cookie_expire_duration * 3600 * 24
+    cookie_expire_days = 3
 
     secret = 'wululu'

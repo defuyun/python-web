@@ -1,4 +1,4 @@
-const basUrl = 'http://127.0.0.1:8080';
+const baseUrl = 'http://127.0.0.1:8080';
 
 export const getUserInfoApi = baseUrl + '/api/userinfo';
 export const getPostsApi = baseUrl + '/api/posts';

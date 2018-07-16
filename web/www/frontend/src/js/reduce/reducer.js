@@ -18,7 +18,17 @@ const postsReducer = (state = [], action) => {
     }
 }
 
+const postReducer = (state = {}, action) => {
+    switch(action.type) {
+        case 'FETCH_POST_SUCCESS':
+            return action.post;
+        default:
+            return state;
+    }
+}
+
 export const rootReducer = combineReducers({
     userInfo : userInfoReducer,
-    posts : postsReducer
+    posts : postsReducer,
+    post : postReducer
 });

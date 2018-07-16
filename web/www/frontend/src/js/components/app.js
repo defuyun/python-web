@@ -7,9 +7,9 @@ import {connect} from 'react-redux'
 import {cookieName} from 'common/constants'
 import {getCookie} from 'common/utils'
 import {ContentDirectory} from 'contents/root';
+import {getUserInfo} from 'reduce/api';
 
 import * as log from 'loglevel';
-import { registerApiToProps } from 'components/action';
 
 class App extends React.Component {
     constructor(props) {
@@ -26,8 +26,10 @@ class App extends React.Component {
 
     componentDidMount() {
         if(getCookie(cookieName) != null) {
-            this.props.getUserInfo(() => {
-                log.info('[APP]: getUserInfo returned')
+            this.props.getUserInfo({
+                callback : () => {
+                    log.info('[APP]: getUserInfo returned')
+                }
             });
             log.info('[APP]: getUserInfo requested');
         }
@@ -57,8 +59,14 @@ class App extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        user : state.user
+        userInfo : state.userInfo
     }
 }
 
-export default connect(mapStateToProps,registerApiToProps('getUserInfo'))(App);
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getUserInfo : (args) => dispatch(getUserInfo(args))
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(App);

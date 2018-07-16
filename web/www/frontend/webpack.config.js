@@ -64,7 +64,8 @@ module.exports = (env, argv) => {
 			alias : {
 				common : path.resolve('src/js/common'),
 				components : path.resolve('src/js/components'),
-				contents : path.resolve('src/js/contents')
+				contents : path.resolve('src/js/contents'),
+				reduce : path.resolve('src/js/reduce')
 			}
 		},
 		plugins: [

@@ -13,3 +13,10 @@ export const postsActionCreator = ({posts}) => {
         posts
     };
 }
+
+export const postActionCreator = ({post}) => {
+    return {
+        'type' : 'FETCH_POST_SUCCESS',
+        post
+    }
+}

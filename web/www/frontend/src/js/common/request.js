@@ -9,8 +9,7 @@ const constructQueryString = (args) => {
     for(let key in args) {
         param += key + '=' + args[key] + '&';
     }
-    param.pop();
-    return encodeURI(param);
+    return encodeURI(param.slice(0,-1));
 }
 
 /*
@@ -78,29 +77,35 @@ const constructQueryString = (args) => {
 
 class RequestDispatcher {
     constructor() {
-        super();
         this.__constructRequest__ = this.__constructRequest__.bind(this);
         this.__inithttpRequest__ = this.__inithttpRequest__.bind(this);
-        this.__createRestApi__ = this.__constructRequest__.bind(this);
+        this.__createRestApi__ = this.__createRestApi__.bind(this);
 
         this.createRestApi = this.createRestApi.bind(this);
+        this.registerRequestInfoMiddleware = this.registerRequestInfoMiddleware.bind(this);
+        this.clearRequestInfoMiddleware = this.clearRequestInfoMiddleware.bind(this);
+
         this.requestInfoMiddlewares = [];
 
         log.info('[REQUEST] constructed request dispatcher');
     }
     
-    validateConfig = (config) => {
+    validateConfig(config) {
         return 'method' in config && 'url' in config;
     }
 
-    validateArgs = (args) => {
+    validateArgs(args) {
         return args === null || args instanceof Object;
     }
 
     // constructs a request object using the config
     __constructRequest__(config, args) {
-        if(!this.validateConfig(config)) {
-            log.error(`[REQUEST] invalid config in http request ${config}`);
+        let configLocal = {
+            ...config
+        };
+
+        if(!this.validateConfig(configLocal)) {
+            log.error(`[REQUEST] invalid config in http request ${configLocal}`);
             return null;
         }
 
@@ -108,30 +113,30 @@ class RequestDispatcher {
             log.error(`[REQUEST] args is in a invalid format ${args}`);
         }
 
-        let url = config.url;
-        config.pop('url');
+        let url = configLocal.url;
+        delete configLocal['url'];
 
-        if (config.method === 'POST') {
-            if ('body' in config) {
-                log.warn(`[REQUEST] body already exists in config of the request, ${config.body}, replacing it with ${args}`);
+        if (configLocal.method === 'POST') {
+            if ('body' in configLocal) {
+                log.warn(`[REQUEST] body already exists in config of the request, ${configLocal.body}, replacing it with ${args}`);
             }
             
-            config.body = JSON.stringify(args);
-            if (!'headers' in config) {
-                config.headers = {}
+            configLocal.body = JSON.stringify(args);
+            if (!'headers' in configLocal) {
+                configLocal.headers = {}
             }
 
-            config.headers.push({
+            configLocal.headers.push({
                 'content-type' : 'application/json'
             });
 
-            log.info(`[REQUEST] constructed POST request config ${config}`);
-        } else if (config.method = 'GET') {
+            log.info(`[REQUEST] constructed POST request config ${url}`);
+        } else if (configLocal.method = 'GET') {
             url += constructQueryString(args);
-            log.info(`[REQUEST] constructed GET request config ${config}`);
+            log.info(`[REQUEST] constructed GET request config ${url}`);
         }
 
-        return fetch(url, config);
+        return fetch(url, configLocal);
     };
 
 
@@ -143,51 +148,55 @@ class RequestDispatcher {
             return;
         }
 
-        request.then((response) => {
-            json = response.json();
-            json.push({response});
-            return json;
-        })
-        .then(callback)
-        .catch(callback);
+        request.then(async (response) => {
+            let json = await response.json();
+            json.response = response;
+            callback(json);
+        }).catch(callback);
     };
 
-    __createRestApi__ = (requestInfo) => (args) => {
-        let actionCreator = requestInfo.actionCreator;
-        let callback = args.callback;
+    __createRestApi__ (requestInfo) {
+        return (args) => {
+            let actionCreator = requestInfo.actionCreator;
+            let callback = args.callback;
 
-        if (callback) {
-            args.pop('callback');
-        }
+            if (callback) {
+                delete args['callback'];
+            }
 
-        if (actionCreator) {
-            return (dispatch) => {
-                // in the case we have dispatch, we want to run dispatch with the passed in callback function
-                // therefore we wrap them together and use this as the new callback function
-                let callbackWrapper = (json) => {
-                    dispatch(requestInfo.actionCreator(json));
-                    log.info(`[REQUEST] called dispatch in request response`);
-                    if (args.callback) {
-                        callback(json);
-                        log.info(`[REQUEST] called callback in request response`);
-                    }       
+            if (actionCreator) {
+                return (dispatch) => {
+                    // in the case we have dispatch, we want to run dispatch with the passed in callback function
+                    // therefore we wrap them together and use this as the new callback function
+                    let callbackWrapper = (json) => {
+                        if (json instanceof Error) {
+                            callback({error : json});
+                        } else {
+                            dispatch(requestInfo.actionCreator(json));
+                            log.info(`[REQUEST] called dispatch in request response`);
+                            if (callback) {
+                                callback(json);
+                                log.info(`[REQUEST] called callback in request response`);
+                            }       
+                        }
+                    }
+
+                    this.__inithttpRequest__({
+                        config : requestInfo.config,
+                        args : args,
+                        callback : callbackWrapper       
+                    });
                 }
-
-                this.__inithttpRequest__({
-                    config : requestInfo.config,
-                    args : args,
-                    callback : callbackWrapper       
-                });
             }
+    
+            this.__inithttpRequest__({
+                config : requestInfo.config,
+                args : args,
+                callback : callback ? callback : (json) => {
+                    log.info(`[REQUEST] no callback function specified for call with ${requestInfo}, using dummy instead`);
+                }
+            })
         }
- 
-        this.__inithttpRequest__({
-            config : requestInfo.config,
-            args : args,
-            callback : callback ? callback : (json) => {
-                log.info(`[REQUEST] no callback function specified for call with ${requestInfo}, using dummy instead`);
-            }
-        })
     };
 
     createRestApi(requestInfo) {
@@ -208,9 +217,8 @@ class RequestDispatcher {
         // however to continue reduce they need to return a function following the above signature
         // therefore we create an arrow function that takes in a dummy requestInfo, and returns the one calculated on the last run
         const finalResultGenerator = this.requestInfoMiddlewares.reduce((fun1, fun2) => {
-            updatedRequestInfo = fun2(fun1(updatedRequestInfo));
+            let updatedRequestInfo = fun2(fun1(updatedRequestInfo));
 
-            count += 1;
             return (placeholder) => {
                 return updatedRequestInfo;
             }

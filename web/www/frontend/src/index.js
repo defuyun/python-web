@@ -4,8 +4,9 @@ import {createStore, applyMiddleware} from 'redux';
 
 import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
-import {rootReducer} from 'components/reducer';
+import {rootReducer} from 'reduce/reducer';
 import App from 'components/app';
+import 'babel-polyfill';
 
 import * as log from 'loglevel';
 

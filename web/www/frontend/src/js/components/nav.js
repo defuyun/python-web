@@ -213,7 +213,7 @@ class NavMenu extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-    return {user : state.user};
+    return {userInfo : state.userInfo};
 }
 
 export default withRouter(connect(mapStateToProps)(NavMenu));

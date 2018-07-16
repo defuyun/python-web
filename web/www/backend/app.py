@@ -1,14 +1,15 @@
 #! /usr/bin/python3
 
+import logging; logging.basicConfig(level=logging.DEBUG)
+
 from aiohttp import web
 from asyncio import AbstractEventLoop
 from database import init_db
-from factories import authentication_factory
+from factories import authentication_factory, cors_factory
 
 from config.config import config
 from config.constants import constants
 
-import logging; logging.basicConfig(level=logging.DEBUG)
 import asyncio
 import aiomysql
 import coroweb
@@ -35,7 +36,7 @@ async def response_factory(app, handler):
 
 async def init(loop:AbstractEventLoop):
     app = web.Application(loop=loop, middlewares=[
-       authentication_factory, response_factory
+       cors_factory, authentication_factory, response_factory
     ])
 
     await init_db(app, loop)

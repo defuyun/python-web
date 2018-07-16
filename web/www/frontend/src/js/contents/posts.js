@@ -1,7 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {registerApiToProps} from 'components/action';
-
+import {getPosts} from 'reduce/api';
 import {withRouter} from 'react-router-dom';
 
 import * as log from 'loglevel';
@@ -15,19 +14,33 @@ class Posts extends React.Component {
     } 
 
     componentDidMount() {
-        this.props.getPosts(() => {
-            log.info('[POSTS]: Completed request for posts');
-            this.setState({
-                isLoading : false
-            })
+        this.props.getPosts({
+            callback : () => {
+                log.info('[POSTS]: Completed request for posts');
+                this.setState({
+                    isLoading : false
+                });
+            }
         });
 
         log.info('[POSTS]: posts have mounted');
     }
 
     render() {
-        return <div />
+        return this.props.posts.map((postInfo) => <div key={postInfo.id}> {postInfo.title} </div>);
     }
 }
 
-export default withRouter(connect(null, registerApiToProps('getPosts'))(Posts));
+const mapStateToProps = (state) => {
+    return {
+        posts : state.posts
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getPosts : (args) => dispatch(getPosts(args))
+    }
+}
+
+export default withRouter(connect(mapStateToProps,mapDispatchToProps)(Posts));
