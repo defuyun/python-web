@@ -1,1 +1,0 @@
-SELECT * from posts where postId=%s

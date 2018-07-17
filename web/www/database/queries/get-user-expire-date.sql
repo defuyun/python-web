@@ -1,1 +1,0 @@
-select expire from user where userId=%s

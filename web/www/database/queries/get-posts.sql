@@ -1,1 +1,0 @@
-SELECT postId, title, created, modified from posts order by created DESC;
