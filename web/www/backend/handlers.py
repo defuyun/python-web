@@ -107,7 +107,7 @@ async def getPosts(request):
     }
 
 @get('/api/post')
-async def getPost(request,*,id:str):
+async def getPost(request,*,postId:str):
     post = await Post.find(key='postId', value=id)
 
     if not post:

@@ -5,7 +5,6 @@ class Post extends React.Component {
     constructor(props) {
         super(props);
     }
-
 };
 
 const mapStateToProps = (state) => {

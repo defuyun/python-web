@@ -27,19 +27,19 @@ class Posts extends React.Component {
     }
 
     render() {
-        return this.props.posts.map((postInfo) => <div key={postInfo.id}> {postInfo.title} </div>);
+        return this.props.posts.map((postInfo) => <div key={postInfo.postId}> {postInfo.title} </div>);
     }
 }
 
 const mapStateToProps = (state) => {
     return {
-        posts : state.posts
+        posts : state.posts,
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        getPosts : (args) => dispatch(getPosts(args))
+        getPosts : (args) => dispatch(getPosts(args)),
     }
 }
 
