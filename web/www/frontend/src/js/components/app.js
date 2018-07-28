@@ -3,6 +3,8 @@ import {BrowserRouter, Route, Switch} from 'react-router-dom';
 
 import {Layout} from 'antd';
 import NavMenu from 'components/nav';
+import menu from 'components/menu';
+
 import {connect} from 'react-redux'
 import {cookieName} from 'common/constants'
 import {getCookie} from 'common/utils'
@@ -40,7 +42,7 @@ class App extends React.Component {
             <BrowserRouter>
             <Layout>
                 <Layout.Sider collapsible collapsed={this.state.sideNavCollapsed} onCollapse={this.toggleSideNavCollaps}>
-                    <NavMenu />
+                    <NavMenu menu={menu}/>
                 </Layout.Sider>
                 <Layout.Content>
                     <Switch>
@@ -60,12 +62,6 @@ class App extends React.Component {
 const mapStateToProps = (state) => {
     return {
         userInfo : state.userInfo
-    }
-}
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        getUserInfo : (args) => dispatch(getUserInfo(args))
     }
 }
 
