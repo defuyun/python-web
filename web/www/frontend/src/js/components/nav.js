@@ -1,9 +1,13 @@
 import React from  'react';
+import * as log from 'loglevel';
 import {Menu, Icon} from 'antd';
 import {connect} from 'react-redux';
-import {ACTIVE_ITEM_CHANGE} from 'reduce/type';
 
-import * as log from 'loglevel';
+// actions
+import {ACTIVE_ITEM_CHANGE} from 'actions/type';
+
+// components
+import Router from 'components/router';
 
 const shouldDisplay = (displaySetting, userInfo) => {
     return displaySetting == 0 || displaySetting == 1 && userInfo != null || displaySetting == 2 && userInfo == null;
@@ -85,17 +89,17 @@ const MenuListItem = ({item}) => {
 
 const NavMenu = ({menu, userInfo, activeItem, dispatch}) => {
     return (
-        <Menu onClick={({key}) => dispatch({type : ACTIVE_ITEM_CHANGE, item : menu[key]})} selectedKeys ={[activeItem]}>
+        <Menu onClick={({key}) => dispatch({type : ACTIVE_ITEM_CHANGE, item : menu[key]})} selectedKeys ={[activeItem ? activeItem.id : null]}>
             {constructNavMenu({menu, init : menu.init, userInfo}).map((item) => MenuListItem({item}))}
         </Menu>
     );
 };
 
-const mapStateToProps = (state) => {
+const selector = (state) => {
     return {
         userInfo : state.userInfo,
         activeItem : state.activeItem
     }
 }
 
-export default connect(mapStateToProps)(NavMenu);
+export default connect(selector)(NavMenu);

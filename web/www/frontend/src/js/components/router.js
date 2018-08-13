@@ -1,0 +1,191 @@
+import * as log from 'loglevel';
+import React from 'react';
+
+class Router{
+	constructor() {
+		log.info('[ROUTER] constructing new router');
+		this.update = this.update.bind(this);
+		this.push = this.push.bind(this);
+		this.hijackAnchor = this.hijackAnchor.bind(this);
+		this.registerStore = this.registerStore.bind(this);
+		this.registerRouterComponent = this.registerRouterComponent.bind(this);
+		this.deregisterRouterComponent = this.deregisterRouterComponent.bind(this);
+		this.registerComponent = this.registerComponent.bind(this);
+		this.deregisterComponent = this.deregisterComponent.bind(this);
+		
+		if (!window.history) {
+			log.error('[ROUTER] no history available');
+		}
+
+		this.routerComponents = [];
+		this.components = {};
+	}
+
+	hijackAnchor(evt) {
+		evt = evt || window.event;
+		let target = evt.target || evt.srcElement;
+
+		while(target) {
+			if(target instanceof HTMLAnchorElement) {
+				const [url, ...rest] = target.getAttribute('href').split('/');
+				if (url === location.hostname) {
+					log.info('[ROUTER] the link clicked on directs to an inner page');
+					evt.preventDefault();
+					const newLink = rest.join('/');
+					this.push(newLink);
+				}
+				break;
+			}
+			target = target.parentNode;
+		}
+	} 
+
+	push(path) {
+		window.history.pushState({}, null, path);
+		log.info(`[ROUTER] current location is ${window.location}`);
+		this.update();
+	}
+
+	update(routerComp = null, additionalProps ={}) {
+		const validPath = path => path !== '';
+
+		const url = location.pathname.split('/').filter(validPath);
+		let matchedComponent = null;
+		let matchedProps = null;
+
+		for (const [pathname, componentClass] of Object.entries(this.components)) {
+			const componentUrl = pathname.split('/').filter(validPath);
+			const props = {};
+			let matched = true;
+
+			for (let i = 0; i < componentUrl.length; i++) {
+				let saveToProp = false;
+				let currDir = componentUrl[i];
+				
+				if (currDir[0] === '<') {
+					saveToProp = true;
+					currDir = currDir.substr(1, currDir.length - 2);
+				}
+				const semiPos = currDir.indexOf(':');
+				
+				if (semiPos != -1) {
+					log.info(`ROUTER] using regex for ${currDir} at path ${location.pathname}`);
+					[regexStr, currDir] = currDir.split(':');
+					
+					const regexInst = RegExp(regexStr);
+					if (!regexInst.test(url[i])) {
+						matched = false;
+						break;
+					}
+				} else {
+					if (currDir !== url[i]) {
+						matched = false;
+						break;
+					}
+				}
+
+				log.info(`[ROUTER] regex matched for ${currDir} at ${location.pathname}`);
+
+				if (saveToProp) {
+					log.info(`[ROUTER] saving to prop ${currDir} : ${url[i]}`);
+					props[currDir] = url[i];
+				}
+
+			}
+
+			if (matched) {
+				matchedComponent = componentClass;
+				matchedProps = {...props, ...additionalProps};		
+				break;
+			}
+		}
+
+		if (matchedComponent === null) {
+			log.info(`[ROUTER] current path ${location.pathname} did not match any components`);
+		}
+
+		if (routerComp) {
+			routerComp.update(matchedComponent, matchedProps);
+		} else {
+			for (const rcomp of this.routerComponents) {
+				rcomp.update(matchedComponent, matchedProps);
+			}
+		}
+	}
+
+	registerStore(store) {
+		this.store = store;
+		if (!this.store) {
+			log.error('[ROUTER] registered store is null or undefined');
+			return;
+		}
+
+		if (!this.store.dispatch) {
+			log.error('[ROUTER] registered store does not contain dispatch');
+			return;
+		}
+	}
+
+	registerRouterComponent(component) {
+		if (this.routerComponents.length === 0) {
+			addEventListener('popstate', this.update);
+			addEventListener('click',this.hijackAnchor, true);
+		}
+		this.routerComponents.push(component);
+	}
+
+	deregisterRouterComponent(component) {
+		this.routerComponents.splice(routerComponents.indexOf(component),1);
+		if (routerComponents.length === 0) {
+			removeEventListner('popstate', this.update);
+			removeEventListner('click', this.hijackAnchor, true);
+		}
+	}
+
+	registerComponent(path, component) {
+		log.info(`[ROUTER] registering url ${path}`);
+		this.components[path] = component;	
+	}
+
+	deregisterComponent(path) {
+		delete this.components[path];
+	}
+};
+
+const router = new Router();
+
+class Route extends React.Component {
+	constructor(props) {
+		super(props);
+		this.update = this.update.bind(this);
+		this.state = {};
+	}
+
+	componentWillMount() {
+		router.registerRouterComponent(this);
+		router.update(this);
+	}
+
+	componentWillUnmount() {
+		router.deregisterRouterComponent(this);
+	}
+
+	update(component, props) {
+		this.setState({
+			component, props
+		});
+	} 
+
+	render() {
+		const {component, props} = this.state;
+
+		if (component) {
+			return React.createElement(component, {props});
+		}
+
+		return null;
+	}
+}
+
+export default Route;
+export {router}

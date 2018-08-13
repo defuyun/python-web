@@ -5,7 +5,7 @@ class config_default(object):
     db = {
         constants.db_user_key : 'web',
         constants.db_pass_key : 'password',
-        constants.db_table_key : 'blog'
+        constants.db_db_key: 'blog'
     }
 
     # move up 3 directories, so config -> backend -> root

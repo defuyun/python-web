@@ -18,14 +18,14 @@ async def init_db(app, loop):
         port=3306, 
         user=config.db[constants.db_user_key], 
         password=config.db[constants.db_pass_key], 
-        db=config.db[constants.db_table_key], 
+        db=config.db[constants.db_db_key], 
         loop=loop,
         autocommit=True,
         use_unicode=True,
         charset='utf8'
     )
 
-    logging.info('[DATABASE] Created pool to database [%s]' % config.db[constants.db_table_key])
+    logging.info('[DATABASE] Created pool to database [%s]' % config.db[constants.db_db_key])
 
 async def execute(query, args=()):
     with (await pool) as conn:

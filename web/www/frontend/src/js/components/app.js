@@ -1,68 +1,55 @@
 import React from 'react';
-import {BrowserRouter, Route, Switch} from 'react-router-dom';
-
-import {Layout} from 'antd';
-import NavMenu from 'components/nav';
-import menu from 'components/menu';
-
-import {connect} from 'react-redux'
-import {cookieName} from 'common/constants'
-import {getCookie} from 'common/utils'
-import {ContentDirectory} from 'contents/root';
-import {getUserInfo} from 'reduce/api';
 
 import * as log from 'loglevel';
+import {Layout} from 'antd';
+import {withState, lifecycle, compose} from 'recompose';
+import {connect} from 'react-redux'
 
-class App extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            sideNavCollapsed : true
-        }
-        this.toggleSideNavCollaps = this.toggleSideNavCollaps.bind(this);
-    }
+// actions
+import {NEW_API_REQUEST } from 'actions/type';
 
-    toggleSideNavCollaps(collapsed) {
-        this.setState({sideNavCollapsed : collapsed});
-    }
+// common
+import {cookieName} from 'common/constants';
+import {getCookie} from 'common/utils';
 
-    componentDidMount() {
-        if(getCookie(cookieName) != null) {
-            this.props.getUserInfo({
-                callback : () => {
-                    log.info('[APP]: getUserInfo returned')
-                }
-            });
-            log.info('[APP]: getUserInfo requested');
-        }
-    }
+// components
+import NavMenu from 'components/nav';
+import Route from 'components/router';
 
-    render() {
-        return (
-            <BrowserRouter>
-            <Layout>
-                <Layout.Sider collapsible collapsed={this.state.sideNavCollapsed} onCollapse={this.toggleSideNavCollaps}>
-                    <NavMenu menu={menu}/>
-                </Layout.Sider>
-                <Layout.Content>
-                    <Switch>
-                        {Object.entries(ContentDirectory).map(([key,panel]) => {
-                            return (
-                                <Route key={key} path={panel.url} component={panel.component} />
-                            )
-                        })}
-                    </Switch>
-                </Layout.Content>
-            </Layout>
-            </BrowserRouter>
-        );
-    }
+// contents
+import {getUserInfo} from 'contents/api';
+import api from 'contents/api';
+import menu from 'contents/menu';
+
+const App = ({expand, setExpand}) => {
+	return (
+		<Layout>
+			<Layout.Sider collapsible collapsed={expand} onCollapse={() => setExpand(!expand)}>
+				<NavMenu menu={menu}/>
+			</Layout.Sider>
+			<Layout.Content>
+				<Route />
+			</Layout.Content>
+		</Layout>
+	);
 }
 
-const mapStateToProps = (state) => {
-    return {
-        userInfo : state.userInfo
-    }
-}
+const enhance = compose(
+	withState('expand', 'setExpand', false),
+	lifecycle({
+		componentDidMount() {
+			const {dispatch} = this.props;
+			if (!dispatch) {
+				log.error('[APP]: no dispatch in app component, did you add connect?');
+			}
 
-export default connect(mapStateToProps,mapDispatchToProps)(App);
+			if(getCookie(cookieName) != null) {
+				dispatch({type: NEW_API_REQUEST, api: api[getUserInfo]})
+				log.info('[APP]: dispatched get user info');
+			}
+		}
+	}),
+);
+
+export default connect()(enhance(App));
+

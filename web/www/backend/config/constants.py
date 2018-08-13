@@ -9,7 +9,7 @@ class constants(object):
 
     db_user_key = 'user'
     db_pass_key = 'password'
-    db_table_key = 'db'
+    db_db_key = 'db'
 
     web_handler_module = 'handlers'
     web_upload_root = 'upload'

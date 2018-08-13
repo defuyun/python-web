@@ -65,7 +65,8 @@ module.exports = (env, argv) => {
 				common : path.resolve('src/js/common'),
 				components : path.resolve('src/js/components'),
 				contents : path.resolve('src/js/contents'),
-				reduce : path.resolve('src/js/reduce')
+				actions : path.resolve('src/js/actions'),
+				middleware : path.resolve('src/js/middleware'),
 			}
 		},
 		plugins: [
