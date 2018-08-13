@@ -6,9 +6,6 @@ import {connect} from 'react-redux';
 // actions
 import {ACTIVE_ITEM_CHANGE} from 'actions/type';
 
-// components
-import Router from 'components/router';
-
 const shouldDisplay = (displaySetting, userInfo) => {
     return displaySetting == 0 || displaySetting == 1 && userInfo != null || displaySetting == 2 && userInfo == null;
 }
@@ -89,7 +86,7 @@ const MenuListItem = ({item}) => {
 
 const NavMenu = ({menu, userInfo, activeItem, dispatch}) => {
     return (
-        <Menu onClick={({key}) => dispatch({type : ACTIVE_ITEM_CHANGE, item : menu[key]})} selectedKeys ={[activeItem ? activeItem.id : null]}>
+        <Menu onClick={({key}) => dispatch({type : ACTIVE_ITEM_CHANGE, item : key})} selectedKeys ={[activeItem]}>
             {constructNavMenu({menu, init : menu.init, userInfo}).map((item) => MenuListItem({item}))}
         </Menu>
     );

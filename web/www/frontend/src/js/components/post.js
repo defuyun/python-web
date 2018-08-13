@@ -1,13 +1,22 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import {lifecycle, compose} from 'recompose';
 
-export const Post = ({title, content}) => {
+const Post = ({perusingPost, dispatch}) => {
 	return (
 		<div>
-			<h1> title </h1>
+			<h1> perusingPost.title </h1>
 			<div>
-				content
+				perusingPost.content
 			</div>
 		</div>
 	)
 }
+
+const selector = (state) => {
+	return {
+		perusingPost : state.perusingPost,
+	}
+}
+
+export default Post;

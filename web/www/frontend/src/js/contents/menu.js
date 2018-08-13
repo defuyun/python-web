@@ -3,14 +3,7 @@ import Posts from 'components/posts';
 import Post from 'components/post';
 
 // use home as the initial item
-export const home = 'home';
-export const posts = 'posts';
-export const post = 'post';
-export const edit = 'edit';
-export const register = 'register';
-export const login = 'login';
-export const logout = 'logout';
-export const account = 'account';
+import {home, posts, post, edit, account, register, login, logout} from 'actions/type';
 
 export default {
     [home] : {

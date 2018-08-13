@@ -1,9 +1,9 @@
 import {combineReducers} from 'redux';
 
 //actions
-import {ACTIVE_ITEM_SET, FETCH_USERINFO_SUCCESS, FETCH_POSTS_SUCCESS, FETCH_POST_SUCCESS} from 'actions/type';
+import {ACTIVE_ITEM_SET, FETCH_USERINFO_SUCCESS, FETCH_POSTS_SUCCESS, FETCH_POST_SUCCESS, CURRENT_PAGE_CHANGE} from 'actions/type';
 
-const activeItemReducer = (state = {}, action) => {
+const activeItemReducer = (state = '', action) => {
 	switch(action.type) {
 		case ACTIVE_ITEM_SET:
 			return action.activeItem;
@@ -39,9 +39,19 @@ const postReducer = (state = {}, action) => {
     }
 }
 
+const currentPageReducer = (state = 0, action) => {
+	switch(action.type) {
+		case CURRENT_PAGE_CHANGE:
+			return action.currentPage;
+		default:
+			return state;
+	}
+}
+
 export const rootReducer = combineReducers({
     userInfo : userInfoReducer,
     posts : postsReducer,
     post : postReducer,
 	activeItem : activeItemReducer,
+	currentPage : currentPageReducer,
 });

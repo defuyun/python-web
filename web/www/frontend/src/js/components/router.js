@@ -24,11 +24,11 @@ class Router{
 	hijackAnchor(evt) {
 		evt = evt || window.event;
 		let target = evt.target || evt.srcElement;
-
+		log.info('[ROUTER] hi jack triggered');
 		while(target) {
 			if(target instanceof HTMLAnchorElement) {
 				const [url, ...rest] = target.getAttribute('href').split('/');
-				if (url === location.hostname) {
+				if (url === location.hostname || url === '') {
 					log.info('[ROUTER] the link clicked on directs to an inner page');
 					evt.preventDefault();
 					const newLink = rest.join('/');
@@ -46,8 +46,12 @@ class Router{
 		this.update();
 	}
 
-	update(routerComp = null, additionalProps ={}) {
+	update(routerComp = null) {
 		const validPath = path => path !== '';
+		
+		if(routerComp instanceof PopStateEvent) {
+			routerComp = null;
+		}
 
 		const url = location.pathname.split('/').filter(validPath);
 		let matchedComponent = null;
@@ -55,6 +59,9 @@ class Router{
 
 		for (const [pathname, componentClass] of Object.entries(this.components)) {
 			const componentUrl = pathname.split('/').filter(validPath);
+			if (componentUrl.length !== url.length) {
+				continue;
+			}
 			const props = {};
 			let matched = true;
 
@@ -70,6 +77,8 @@ class Router{
 				
 				if (semiPos != -1) {
 					log.info(`ROUTER] using regex for ${currDir} at path ${location.pathname}`);
+					let regexStr;
+
 					[regexStr, currDir] = currDir.split(':');
 					
 					const regexInst = RegExp(regexStr);
@@ -95,7 +104,7 @@ class Router{
 
 			if (matched) {
 				matchedComponent = componentClass;
-				matchedProps = {...props, ...additionalProps};		
+				matchedProps = {...props};		
 				break;
 			}
 		}

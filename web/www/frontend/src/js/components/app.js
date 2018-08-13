@@ -6,7 +6,7 @@ import {withState, lifecycle, compose} from 'recompose';
 import {connect} from 'react-redux'
 
 // actions
-import {NEW_API_REQUEST } from 'actions/type';
+import {NEW_API_REQUEST, getUserInfo} from 'actions/type';
 
 // common
 import {cookieName} from 'common/constants';
@@ -17,8 +17,6 @@ import NavMenu from 'components/nav';
 import Route from 'components/router';
 
 // contents
-import {getUserInfo} from 'contents/api';
-import api from 'contents/api';
 import menu from 'contents/menu';
 
 const App = ({expand, setExpand}) => {
@@ -44,7 +42,7 @@ const enhance = compose(
 			}
 
 			if(getCookie(cookieName) != null) {
-				dispatch({type: NEW_API_REQUEST, api: api[getUserInfo]})
+				dispatch({type: NEW_API_REQUEST, api: getUserInfo})
 				log.info('[APP]: dispatched get user info');
 			}
 		}
