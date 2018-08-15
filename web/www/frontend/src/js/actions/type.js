@@ -5,6 +5,8 @@ export const FETCH_USERINFO_SUCCESS = 'FETCH_USERINFO_SUCCESS';
 export const FETCH_POSTS_SUCCESS = 'FETCH_POSTS_SUCCESS';
 export const FETCH_POST_SUCCESS = 'FETCH_POST_SUCCESS';
 export const CURRENT_PAGE_CHANGE = 'CURRENT_PAGE_CHANGE';
+export const DELETE_POST_REQUEST = 'DELETE_POST_REQUEST';
+export const EDIT_POST_REQUEST = 'EDIT_POST_REQUEST';
 
 export const getUserInfo = 'getUserInfo';
 export const getPosts = 'getPosts';

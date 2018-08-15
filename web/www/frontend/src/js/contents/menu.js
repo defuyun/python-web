@@ -16,7 +16,6 @@ export default {
         next : posts,
         url : '/home',
 		// cachable: should we go through the whole render cycle if the selected item is the current active item
-		cachable: true,
 		component: null,
     },
 
@@ -27,7 +26,6 @@ export default {
         display : 0,
         next : edit,
         url : '/posts',
-		cachable: false,
 		component: Posts,
     },
 
@@ -35,7 +33,6 @@ export default {
 	[post] : {
 		id : post,
 		url : '/posts/<:postId>',
-		cachable: false,
 		component: Post,
 	},
 
@@ -46,7 +43,6 @@ export default {
         display : 1,
         next : account,
         url : '/edit',
-		cachable: true,
 		component: null,
     },
 
@@ -70,7 +66,6 @@ export default {
         display : 2,
         next : login,
         url : '/register',
-		cachable: true,
 		component: null,
     },
 
@@ -81,7 +76,6 @@ export default {
         display : 2,
         next : logout,
         url : '/login',
-		cachable: true,
 		component: null,
     },
 

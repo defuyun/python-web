@@ -5,10 +5,25 @@ import {lifecycle, compose} from 'recompose';
 import * as log from 'loglevel';
 
 // actions
-import {NEW_API_REQUEST, getPosts} from 'actions/type';
+import {NEW_API_REQUEST,CURRENT_PAGE_CHANGE, getPosts} from 'actions/type';
+
+// common
+import {itemPerPage, baseUrl} from 'common/constants';
+
+// componensts
+import PostList from 'components/postlist';
+import Paging from 'components/paging';
 
 const Posts = ({posts, currentPage, dispatch}) => {
-	return posts.map((postInfo) => <a key={postInfo.postId} href={`/posts/${postInfo.postId}`}><div> {postInfo.title} </div></a> );
+	const totalPages = posts.length / itemPerPage + posts.length % itemPerPage === 0 ? 0 : 1;
+	const displayableItems = posts.slice(currentPage * itemPerPage, Math.min(posts.length, (currentPage + 1) * itemPerPage));
+
+	return (
+	   	<div>
+			<PostList posts={displayableItems} />
+			<Paging totalPages={totalPages} activePage={currentPage} onClickFunc={(pageNo) => dispatch({type: CURRENT_PAGE_CHANGE, newPage: pageNo})}/>
+		</div>
+	);
 }
 
 const enhance = compose(

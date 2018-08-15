@@ -27,8 +27,13 @@ class Router{
 		log.info('[ROUTER] hi jack triggered');
 		while(target) {
 			if(target instanceof HTMLAnchorElement) {
-				const [url, ...rest] = target.getAttribute('href').split('/');
-				if (url === location.hostname || url === '') {
+				let url = target.getAttribute('href');
+				if (url.startsWith('http')) {
+					url = url.slice(url.indexOf('/') + 2);
+				}
+
+				const [hostname, ...rest] = url.split('/');
+				if (hostname.startsWith(location.hostname) || hostname === '') {
 					log.info('[ROUTER] the link clicked on directs to an inner page');
 					evt.preventDefault();
 					const newLink = rest.join('/');
@@ -93,7 +98,7 @@ class Router{
 					}
 				}
 
-				log.info(`[ROUTER] regex matched for ${currDir} at ${location.pathname}`);
+				log.info(`[ROUTER] regex matched for ${pathname} at ${location.pathname}`);
 
 				if (saveToProp) {
 					log.info(`[ROUTER] saving to prop ${currDir} : ${url[i]}`);

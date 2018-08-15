@@ -30,7 +30,7 @@ const postsReducer = (state = [], action) => {
     }
 }
 
-const postReducer = (state = {}, action) => {
+const perusingPostReducer = (state = {}, action) => {
     switch(action.type) {
         case FETCH_POST_SUCCESS:
             return action.post;
@@ -42,7 +42,7 @@ const postReducer = (state = {}, action) => {
 const currentPageReducer = (state = 0, action) => {
 	switch(action.type) {
 		case CURRENT_PAGE_CHANGE:
-			return action.currentPage;
+			return action.newPage;
 		default:
 			return state;
 	}
@@ -51,7 +51,7 @@ const currentPageReducer = (state = 0, action) => {
 export const rootReducer = combineReducers({
     userInfo : userInfoReducer,
     posts : postsReducer,
-    post : postReducer,
+    perusingPost : perusingPostReducer,
 	activeItem : activeItemReducer,
 	currentPage : currentPageReducer,
 });
