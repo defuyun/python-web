@@ -1,87 +1,132 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const WebpackMd5Hash = require('webpack-md5-hash');
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const PurifyCssPlugin = require('purifycss-webpack');
+const ReactRootPlugin = require('html-webpack-root-plugin');
+const UglifyJsPlugin = require('webpack-uglify-harmony-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
-// env is undefined unless you set the value manually on the command line,
-// in my configure I'd have to set this in the package.json script
-module.exports = (env, argv) => {
+const path = require('path');
+const glob = require('glob');
+const webpack = require('webpack');
+
+const workspace = path.join(__dirname, 'src');
+
+module.exports = env => {
 	return {
-		entry: {
-			main : './src/index.js'
-		},
+		mode : env.mode,
+		
 		output : {
-			path : path.resolve(__dirname, `dist/${argv.mode}`),
-			filename : '[name].[chunkhash].js'
+			filename : '[name].[chunkhash:5].js',
+			chunkFilename : '[name].[chunkhash:5].js',
 		},
-		stats : {
-			children : false
+
+		entry : {
+			app : [`${workspace}/index.js`],
 		},
+
 		module : {
 			rules : [
 				{
-					test: /\.(js|jsx)$/,
-					exclude: /node_modules/,
-					use : {
-						loader: 'babel-loader'
-					}
+					test : /\.css$/,
+					exclude : '/node_modules/',
+					use : [
+						MiniCssExtractPlugin.loader,
+						{
+							loader : "css-loader",
+							options : {
+								// the importLoaders options tells us how many loaders after css-loader do we apply to @import css files
+								// you have 2 files style.css, body.css and in style.css you import body.css
+								// without importLoader option set, only style.css will be parsed by postcss-loader （or should I say postcss-loader does not
+								// deal with import, leaves it alone and throws it into css-loader, css-loader sees the import and if importLoader is set, it will
+								// ask postcss-loader to parse this import)
+								importLoaders : 1,
+								modules : true,
+								localIdentName : 'whitelist[hash:base64:10]',
+							}
+						},
+						{
+							loader : 'postcss-loader',
+							options : {
+								plugins: () => ([
+									require('autoprefixer'),
+									require('precss'),
+								]),
+							}
+						}
+					],
 				},
 				{
-					test: /\.less$/,
+					test : /\.(png|jpg|gif)$/i,
 					use : [
-						'style-loader',
-						MiniCssExtractPlugin.loader,
-						'css-loader',
 						{
-							loader : 'less-loader',
+							loader : 'url-loader',
 							options : {
-								javascriptEnabled : true
+								limit : 8192,
+								name : './images/[name].[hash:5].[ext]'
 							}
 						}
 					]
 				},
 				{
-					test: /\.jpe?g$|\.gif$|\.ico$|\.png$|\.svg$/,
-					use: 'file-loader?name=[name].[ext]?[hash]'
+					test : /\.(svg)$/,
+					use : 'file-loader'
 				},
 				{
-					test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-					loader: 'url-loader?limit=10000&mimetype=application/font-woff'
-				},
-				
-				{
-					test: /\.(ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-					loader: 'file-loader'
-				},
-				{
-					test: /\.otf(\?.*)?$/,
-					use: 'file-loader?name=/fonts/[name].  [ext]&mimetype=application/font-otf'
+					test : /\.(ts|js|tsx|jsx)$/,
+					exclude : '/node_modules/',
+					use : {
+						loader : 'babel-loader',
+						options : {
+							presets : [
+								// esmodule (I don't know what this is) is needed for transform runtime to compile,
+								// or rather the compiled code from transform runtime is fed into preset env, and since transform
+								// runtime uses this esmodule standard you need to set this option in order for preset env to understand the code
+								['@babel/preset-env', {targets: {'esmodules': true}}],
+								['@babel/preset-react', {development : env.mode === 'development'}],
+							],
+							plugins : [
+								'@babel/plugin-transform-runtime',
+								'@babel/plugin-syntax-dynamic-import',
+								['react-css-modules',{exclude : '/node_modules/', generateScopedName : 'whitelist[hash:base64:10]'}],
+							],
+						}
+					}
 				}
-			]	
+			]
 		},
-		resolve : {
-			alias : {
-				common : path.resolve('src/js/common'),
-				components : path.resolve('src/js/components'),
-				contents : path.resolve('src/js/contents'),
-				actions : path.resolve('src/js/actions'),
-				middleware : path.resolve('src/js/middleware'),
+
+		optimization : {
+			splitChunks : {
+				chunks : 'initial',
+			},
+
+			minimizer : [
+				new UglifyJsPlugin(),
+				new OptimizeCssAssetsPlugin(),
+			],
+
+			runtimeChunk : {
+				name : 'manifest',
 			}
 		},
-		plugins: [
-			new CleanWebpackPlugin('dist', {}),
-			new MiniCssExtractPlugin({
-				filename: '[name].[contenthash].css',
-			}),
+
+		plugins : [
 			new HtmlWebpackPlugin({
-				inject: false,
-				hash: true,
-				template: './src/index.html',
-				filename: 'index.html',
-				favicon: 'src/images/favicon.ico'
+				favicon : './images/favicon.ico'
 			}),
-			new WebpackMd5Hash()
+			new ReactRootPlugin(),
+			new MiniCssExtractPlugin({
+				filename : '[name].[contenthash:5].css'
+			}),
+			new PurifyCssPlugin({
+				paths : glob.sync(`${workspace}/**/*.js`, {nodir : true}),
+				purifyOptions : {
+					whitelist : ['*whitelist*'],
+				},
+			}),
+			new webpack.DefinePlugin(env),
+			new CleanWebpackPlugin(['dist']),
 		]
 	}
 }

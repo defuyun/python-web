@@ -1,0 +1,5 @@
+$color : red;
+
+.app {
+	background : $color;
+}

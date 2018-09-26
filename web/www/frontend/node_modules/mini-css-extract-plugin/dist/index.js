@@ -157,13 +157,13 @@ class MiniCssExtractPlugin {
         const renderedModules = Array.from(chunk.modulesIterable).filter(module => module.type === NS);
         if (renderedModules.length > 0) {
           result.push({
-            render: () => this.renderContentAsset(renderedModules, compilation.runtimeTemplate.requestShortener),
+            render: () => this.renderContentAsset(compilation, chunk, renderedModules, compilation.runtimeTemplate.requestShortener),
             filenameTemplate: this.options.filename,
             pathOptions: {
               chunk,
               contentHashType: NS
             },
-            identifier: `mini-css-extract-plugin.${chunk.id}`,
+            identifier: `${pluginName}.${chunk.id}`,
             hash: chunk.contentHash[NS]
           });
         }
@@ -172,13 +172,13 @@ class MiniCssExtractPlugin {
         const renderedModules = Array.from(chunk.modulesIterable).filter(module => module.type === NS);
         if (renderedModules.length > 0) {
           result.push({
-            render: () => this.renderContentAsset(renderedModules, compilation.runtimeTemplate.requestShortener),
+            render: () => this.renderContentAsset(compilation, chunk, renderedModules, compilation.runtimeTemplate.requestShortener),
             filenameTemplate: this.options.chunkFilename,
             pathOptions: {
               chunk,
               contentHashType: NS
             },
-            identifier: `mini-css-extract-plugin.${chunk.id}`,
+            identifier: `${pluginName}.${chunk.id}`,
             hash: chunk.contentHash[NS]
           });
         }
@@ -253,7 +253,7 @@ class MiniCssExtractPlugin {
             },
             contentHashType: NS
           });
-          return Template.asString([source, '', '// mini-css-extract-plugin CSS loading', `var cssChunks = ${JSON.stringify(chunkMap)};`, 'if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);', 'else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {', Template.indent(['promises.push(installedCssChunks[chunkId] = new Promise(function(resolve, reject) {', Template.indent([`var href = ${linkHrefPath};`, `var fullhref = ${mainTemplate.requireFn}.p + href;`, 'var existingLinkTags = document.getElementsByTagName("link");', 'for(var i = 0; i < existingLinkTags.length; i++) {', Template.indent(['var tag = existingLinkTags[i];', 'var dataHref = tag.getAttribute("data-href") || tag.getAttribute("href");', 'if(tag.rel === "stylesheet" && (dataHref === href || dataHref === fullhref)) return resolve();']), '}', 'var existingStyleTags = document.getElementsByTagName("style");', 'for(var i = 0; i < existingStyleTags.length; i++) {', Template.indent(['var tag = existingStyleTags[i];', 'var dataHref = tag.getAttribute("data-href");', 'if(dataHref === href || dataHref === fullhref) return resolve();']), '}', 'var linkTag = document.createElement("link");', 'linkTag.rel = "stylesheet";', 'linkTag.type = "text/css";', 'linkTag.onload = resolve;', 'linkTag.onerror = function(event) {', Template.indent(['var request = event && event.target && event.target.src || fullhref;', 'var err = new Error("Loading CSS chunk " + chunkId + " failed.\\n(" + request + ")");', 'err.request = request;', 'reject(err);']), '};', 'linkTag.href = fullhref;', 'var head = document.getElementsByTagName("head")[0];', 'head.appendChild(linkTag);']), '}).then(function() {', Template.indent(['installedCssChunks[chunkId] = 0;']), '}));']), '}']);
+          return Template.asString([source, '', `// ${pluginName} CSS loading`, `var cssChunks = ${JSON.stringify(chunkMap)};`, 'if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);', 'else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {', Template.indent(['promises.push(installedCssChunks[chunkId] = new Promise(function(resolve, reject) {', Template.indent([`var href = ${linkHrefPath};`, `var fullhref = ${mainTemplate.requireFn}.p + href;`, 'var existingLinkTags = document.getElementsByTagName("link");', 'for(var i = 0; i < existingLinkTags.length; i++) {', Template.indent(['var tag = existingLinkTags[i];', 'var dataHref = tag.getAttribute("data-href") || tag.getAttribute("href");', 'if(tag.rel === "stylesheet" && (dataHref === href || dataHref === fullhref)) return resolve();']), '}', 'var existingStyleTags = document.getElementsByTagName("style");', 'for(var i = 0; i < existingStyleTags.length; i++) {', Template.indent(['var tag = existingStyleTags[i];', 'var dataHref = tag.getAttribute("data-href");', 'if(dataHref === href || dataHref === fullhref) return resolve();']), '}', 'var linkTag = document.createElement("link");', 'linkTag.rel = "stylesheet";', 'linkTag.type = "text/css";', 'linkTag.onload = resolve;', 'linkTag.onerror = function(event) {', Template.indent(['var request = event && event.target && event.target.src || fullhref;', 'var err = new Error("Loading CSS chunk " + chunkId + " failed.\\n(" + request + ")");', 'err.request = request;', 'reject(err);']), '};', 'linkTag.href = fullhref;', 'var head = document.getElementsByTagName("head")[0];', 'head.appendChild(linkTag);']), '}).then(function() {', Template.indent(['installedCssChunks[chunkId] = 0;']), '}));']), '}']);
         }
         return source;
       });
@@ -273,11 +273,89 @@ class MiniCssExtractPlugin {
     return obj;
   }
 
-  renderContentAsset(modules, requestShortener) {
-    modules.sort((a, b) => a.index2 - b.index2);
+  renderContentAsset(compilation, chunk, modules, requestShortener) {
+    let usedModules;
+
+    const [chunkGroup] = chunk.groupsIterable;
+    if (typeof chunkGroup.getModuleIndex2 === 'function') {
+      // Store dependencies for modules
+      const moduleDependencies = new Map(modules.map(m => [m, new Set()]));
+
+      // Get ordered list of modules per chunk group
+      // This loop also gathers dependencies from the ordered lists
+      // Lists are in reverse order to allow to use Array.pop()
+      const modulesByChunkGroup = Array.from(chunk.groupsIterable, cg => {
+        const sortedModules = modules.map(m => {
+          return {
+            module: m,
+            index: cg.getModuleIndex2(m)
+          };
+        }).filter(item => item.index !== undefined).sort((a, b) => b.index - a.index).map(item => item.module);
+        for (let i = 0; i < sortedModules.length; i++) {
+          const set = moduleDependencies.get(sortedModules[i]);
+          for (let j = i + 1; j < sortedModules.length; j++) {
+            set.add(sortedModules[j]);
+          }
+        }
+
+        return sortedModules;
+      });
+
+      // set with already included modules in correct order
+      usedModules = new Set();
+
+      const unusedModulesFilter = m => !usedModules.has(m);
+
+      while (usedModules.size < modules.length) {
+        let success = false;
+        let bestMatch;
+        let bestMatchDeps;
+        // get first module where dependencies are fulfilled
+        for (const list of modulesByChunkGroup) {
+          // skip and remove already added modules
+          while (list.length > 0 && usedModules.has(list[list.length - 1])) list.pop();
+
+          // skip empty lists
+          if (list.length !== 0) {
+            const module = list[list.length - 1];
+            const deps = moduleDependencies.get(module);
+            // determine dependencies that are not yet included
+            const failedDeps = Array.from(deps).filter(unusedModulesFilter);
+
+            // store best match for fallback behavior
+            if (!bestMatchDeps || bestMatchDeps.length > failedDeps.length) {
+              bestMatch = list;
+              bestMatchDeps = failedDeps;
+            }
+            if (failedDeps.length === 0) {
+              // use this module and remove it from list
+              usedModules.add(list.pop());
+              success = true;
+              break;
+            }
+          }
+        }
+
+        if (!success) {
+          // no module found => there is a conflict
+          // use list with fewest failed deps
+          // and emit a warning
+          const fallbackModule = bestMatch.pop();
+          compilation.warnings.push(new Error(`chunk ${chunk.name || chunk.id} [mini-css-extract-plugin]\n` + 'Conflicting order between:\n' + ` * ${fallbackModule.readableIdentifier(requestShortener)}\n` + `${bestMatchDeps.map(m => ` * ${m.readableIdentifier(requestShortener)}`).join('\n')}`));
+          usedModules.add(fallbackModule);
+        }
+      }
+    } else {
+      // fallback for older webpack versions
+      // (to avoid a breaking change)
+      // TODO remove this in next mayor version
+      // and increase minimum webpack version to 4.12.0
+      modules.sort((a, b) => a.index2 - b.index2);
+      usedModules = modules;
+    }
     const source = new ConcatSource();
     const externalsSource = new ConcatSource();
-    for (const m of modules) {
+    for (const m of usedModules) {
       if (/^@import url/.test(m.content)) {
         // HACK for IE
         // http://stackoverflow.com/a/14676665/1458162
