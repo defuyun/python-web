@@ -31,8 +31,17 @@ const contextMenuTree = {
 		icon : 'edit',
 		tag : 'edit',
 		display : 1,
-		next : 'account',
+		next : 'tags',
 		url : '/edit',
+	},
+
+	tags : {
+		id : 'tags',
+		icon : 'tags',
+		tag : 'tags',
+		display : 0,
+		next : 'account',
+		url : '/tags',
 	},
 
 	account : {

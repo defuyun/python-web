@@ -1,16 +1,28 @@
 @import './constants.css';
 
+.display {
+	top : 0;
+}
+
+.hide {
+	top : -80px;
+}
+
 .navbar {
+	position : fixed;
+	left : 0;
+	right : 0;
 	border-style : $border-style;
 	border-width : $nav-border-width;
 	border-color : $border-color;
-	background-color : rgba(255,255,255,0.95);
 	display : flex;
+	background-color : rgba(255,255,255,0.95);
 	justify-content : center;
 	min-height : $nav-height;
 	max-height : $nav-height;
 	padding-left : $nav-padding-side;
 	padding-right : $nav-padding-side;
+	transition : top 0.5s linear;
 }
 
 .navbar > :global(.single-button), :global(.search-group-button){
@@ -34,4 +46,17 @@
 	border-style : $border-style;
 	border-width : 0px 1px 0 1px;
 	border-color : $border-color;
+}
+
+.navbar :global(.visibility-toggle-button) {
+	display : flex;
+	align-items : flex-end;
+	position : fixed;
+	right : 0;
+	top : 0;
+	transition : transform 1s;
+}
+
+.navbar :global(.false) {
+	transform : rotate(180deg); 
 }

@@ -1,6 +1,6 @@
 @import './constants.css';
 
-.button, .button-inverse{
+.button {
 	min-width : $button-min-width;
 	max-width : $button-max-width;
 	cursor : pointer;
@@ -10,27 +10,25 @@
 	height : 100%;
 }
 
-.button > :global(.button-icon),:global(.button-text) {
+.button > :global(.button-icon), .button > :global(.button-text) {
 	width : 100%;
-	padding : $button-item-padding;
 }
 
 .button > :global(.button-text) {
 	text-align : center;
+	padding: $button-item-padding;
 }
 
-.button-inverse > :global(.button-icon),:global(.button-text) {
-	width : 100%;
-}
-
-.button-inverse > :global(.button-text) {
-	text-align : center;
-}
-
-.button-inverse:hover {
+.inverse:hover {
 	background : blue;
 }
 
-.button-inverse:hover > :global(.button-text) {
+.inverse:hover > :global(.button-text) {
 	color : white;
+}
+
+.border {
+	border-style : $border-style;
+	border-width : 1px 1px 1px 1px;
+	border-color : $border-color;
 }

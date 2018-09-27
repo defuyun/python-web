@@ -1,11 +1,21 @@
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {library} from '@fortawesome/fontawesome-svg-core';
-import {faUserPlus, faUser, faSignInAlt, faFile, faSearch, faHome, faEdit} from '@fortawesome/free-solid-svg-icons';
+import {faAngleUp, 
+	faAngleDown, 
+	faAngleDoubleUp, 
+	faUserPlus, 
+	faUser, 
+	faSignInAlt,
+ 	faFile, 
+	faSearch, 
+	faHome, 
+	faEdit,
+	faTags} from '@fortawesome/free-solid-svg-icons';
 
 import * as log from 'loglevel';
 
-library.add(faFile, faSearch, faHome, faEdit, faUserPlus, faUser, faSignInAlt);
+library.add(faTags, faAngleUp, faAngleDown,faAngleDoubleUp, faFile, faSearch, faHome, faEdit, faUserPlus, faUser, faSignInAlt);
 
 const Icon = (props) => {
 	if (! 'icon' in props) {
