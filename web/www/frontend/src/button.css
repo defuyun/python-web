@@ -1,0 +1,36 @@
+@import './constants.css';
+
+.button, .button-inverse{
+	min-width : $button-min-width;
+	max-width : $button-max-width;
+	cursor : pointer;
+	display : flex;
+	flex-wrap : wrap;
+	align-content : center;
+	height : 100%;
+}
+
+.button > :global(.button-icon),:global(.button-text) {
+	width : 100%;
+	padding : $button-item-padding;
+}
+
+.button > :global(.button-text) {
+	text-align : center;
+}
+
+.button-inverse > :global(.button-icon),:global(.button-text) {
+	width : 100%;
+}
+
+.button-inverse > :global(.button-text) {
+	text-align : center;
+}
+
+.button-inverse:hover {
+	background : blue;
+}
+
+.button-inverse:hover > :global(.button-text) {
+	color : white;
+}

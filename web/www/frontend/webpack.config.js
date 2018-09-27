@@ -51,6 +51,8 @@ module.exports = env => {
 								plugins: () => ([
 									require('autoprefixer'),
 									require('precss'),
+									require('postcss-calc'),
+									require('postcss-import'),
 								]),
 							}
 						}

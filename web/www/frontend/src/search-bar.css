@@ -1,0 +1,22 @@
+@import './constants.css';
+
+.search-bar {
+	min-width : $search-bar-width;
+	max-width : $search-bar-width;
+	display : flex;
+	align-items: center;
+	padding : $search-bar-padding;
+}
+
+.search-bar > input {
+	margin-left : $search-bar-input-margin;
+	width : $search-bar-input-width;
+	height : $search-bar-input-height;
+	border : none;
+	outline : none;
+	background : none;
+}
+
+.search-bar :global(.search-button) {
+	width : $button-min-width;
+}

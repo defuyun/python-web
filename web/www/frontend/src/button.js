@@ -2,6 +2,8 @@ import React from 'react';
 import * as log from 'loglevel';
 import Icon from './icon.js';
 
+import style from './button.css';
+
 class Button extends React.Component {
 	constructor(props) {
 		super(props);
@@ -24,18 +26,19 @@ class Button extends React.Component {
 		}
 		
 		// inversible defaults to true so turn off you need to specify false	
-		const iconElement = icon ? <Icon icon={icon} inverse={inversible === false ? false : this.state.hover}/> : null;
+		const iconElement = icon ? <Icon className='button-icon' icon={icon} inverse={inversible === false ? false : this.state.hover}/> : null;
+		const textElement = text ? <div className={'button-text'}>{text}</div> : null;
 
 		return (
 			<div
 				onMouseEnter = {this.hoverHandle(true)}
 				onMouseLeave = {this.hoverHandle(false)}
 				onClick = {clickHandle}
-				style = {{cursor:'pointer'}}
 				className = {'button'}
+				styleName = {inversible === false ?  'style.button' : 'style.button-inverse'}
 			>
 				{iconElement}
-				{text}
+				{textElement}	
 			</div>
 		);
 	}

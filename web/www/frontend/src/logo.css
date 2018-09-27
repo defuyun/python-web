@@ -1,0 +1,13 @@
+@import './constants.css';
+
+.logo {
+	display : flex;
+	align-items : center;
+	justify-content : center;
+}
+
+.logo > :global(.logo-img) {
+	max-width : $logo-img-width;
+	height : auto;
+	border-radius : $logo-img-border-radius;
+}

@@ -1,0 +1,28 @@
+$nav-height : 80px;
+$nav-item-padding : 5px;
+$nav-padding-side : 20px;
+$nav-border-width : 0 0 1px;
+
+$button-min-width : 50px;
+$button-max-width : 100px;
+$button-item-padding : 5px;
+
+$dropdown-item-height : $nav-height;
+$dropdown-min-width : $button-min-width;
+$dropdown-max-width : $button-max-width;
+
+$search-bar-width : 200px;
+$search-bar-input-margin : 0px;
+$search-bar-border : 1px;
+$search-bar-padding : 10px;
+
+$search-bar-input-height : 30px;
+$search-bar-input-width: 130px;
+
+$icon-default-width : 16px;
+
+$logo-img-width : 50px;
+$logo-img-border-radius: 50%;
+
+$border-style : solid;
+$border-color : #f0f0f0;

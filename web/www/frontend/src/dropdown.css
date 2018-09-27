@@ -1,0 +1,24 @@
+@import './constants.css';
+
+.dropdown {
+	display : flex;
+	flex-direction : column;
+	position : relative;
+	min-width : $dropdown-min-width;
+  max-width : $dropdown-max-width;
+}
+
+.dropdown > :global(.dropdown-items) {
+	position : absolute;
+	top : $dropdown-item-height;
+	display : none;
+}
+
+.dropdown:hover > :global(.dropdown-items) {
+	display : flex;
+	flex-direction : column;
+}
+
+.dropdown :global(.dropdown-button) {
+	height : $dropdown-item-height;
+}

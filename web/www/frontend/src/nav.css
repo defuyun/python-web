@@ -1,3 +1,37 @@
+@import './constants.css';
+
 .navbar {
+	border-style : $border-style;
+	border-width : $nav-border-width;
+	border-color : $border-color;
+	background-color : rgba(255,255,255,0.95);
 	display : flex;
+	justify-content : center;
+	min-height : $nav-height;
+	max-height : $nav-height;
+	padding-left : $nav-padding-side;
+	padding-right : $nav-padding-side;
+}
+
+.navbar > :global(.single-button), :global(.search-group-button){
+	display : flex;
+	justify-content : flex-start;
+}
+
+.navbar > :global(.logo) {
+	flex : 2 1 auto;
+}
+
+.navbar > :global(.single-button) {
+	flex : 7 2 auto;
+}
+
+.navbar > :global(.search-group-button) {
+	flex : 2 1 auto;
+}
+
+.navbar :global(.search-bar) {
+	border-style : $border-style;
+	border-width : 0px 1px 0 1px;
+	border-color : $border-color;
 }
