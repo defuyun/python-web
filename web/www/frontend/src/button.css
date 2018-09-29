@@ -2,7 +2,6 @@
 
 .button {
 	min-width : $button-min-width;
-	max-width : $button-max-width;
 	cursor : pointer;
 	display : flex;
 	flex-wrap : wrap;
@@ -21,14 +20,18 @@
 
 .inverse:hover {
 	background : blue;
+	border-color : blue;
 }
 
-.inverse:hover > :global(.button-text) {
+.inverse:hover > :global(.button-text), .inverse:hover > :global(.button-icon) {
 	color : white;
 }
 
 .border {
 	border-style : $border-style;
 	border-width : 1px 1px 1px 1px;
-	border-color : $border-color;
+}
+
+.disable {
+	cursor : default !important;
 }

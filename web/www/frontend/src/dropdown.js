@@ -12,12 +12,12 @@ const dropdown = ({itemList}) => {
 	return (
 		<div className='dropdown' styleName={'style.dropdown'}>
 			<div className='dropdown-button'>
-				<Button text={head.tag} icon={head.icon} inversible={true}/>
+				<Button {...head} inversible={1}/>
 			</div>
 			<div className='dropdown-items'>
 				{copy.map(item => 
 						<div key={item.id} className='dropdown-button'>
-							<Button text={item.tag} icon={item.icon} inversible={true}/>
+							<Button {...item} inversible={1}/>
 						</div>
 				)}
 			</div>

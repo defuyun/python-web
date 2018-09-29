@@ -2,6 +2,9 @@ import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {library} from '@fortawesome/fontawesome-svg-core';
 import {faAngleUp, 
+	faAt,
+	faKey,
+	faUsersCog,
 	faAngleDown, 
 	faAngleDoubleUp, 
 	faUserPlus, 
@@ -15,7 +18,7 @@ import {faAngleUp,
 
 import * as log from 'loglevel';
 
-library.add(faTags, faAngleUp, faAngleDown,faAngleDoubleUp, faFile, faSearch, faHome, faEdit, faUserPlus, faUser, faSignInAlt);
+library.add(faAt, faKey, faUsersCog, faTags, faAngleUp, faAngleDown,faAngleDoubleUp, faFile, faSearch, faHome, faEdit, faUserPlus, faUser, faSignInAlt);
 
 const Icon = (props) => {
 	if (! 'icon' in props) {

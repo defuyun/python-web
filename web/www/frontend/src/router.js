@@ -1,7 +1,7 @@
 import * as log from 'loglevel';
 import React from 'react';
 
-class Router{
+class __Router{
 	constructor() {
 		log.info('[ROUTER] constructing new router');
 		this.update = this.update.bind(this);
@@ -109,7 +109,7 @@ class Router{
 
 			if (matched) {
 				matchedComponent = componentClass;
-				matchedProps = {...props};		
+				matchedProps = {...props};
 				break;
 			}
 		}
@@ -166,13 +166,14 @@ class Router{
 	}
 };
 
-const router = new Router();
+const router = new __Router();
 
-class Route extends React.Component {
+class Router extends React.Component {
 	constructor(props) {
 		super(props);
 		this.update = this.update.bind(this);
-		this.state = {};
+		this.state = {delay : false};
+		this.setDelay = this.setDelay.bind(this);
 	}
 
 	componentWillMount() {
@@ -185,13 +186,25 @@ class Route extends React.Component {
 	}
 
 	update(component, props) {
+		const prevc = this.state.component, prevp = this.state.props;
 		this.setState({
-			component, props
+			component, props, prevc, prevp, delay : true
 		});
-	} 
+	}
+
+	setDelay(delay) {
+		function sd() {
+			this.setState({delay});
+		}
+		return sd.bind(this);
+	}
 
 	render() {
-		const {component, props} = this.state;
+		const {component, props, delay, prevc, prevp} = this.state;
+		if (delay && prevc) {
+			setTimeout(this.setDelay(false), 600);
+			return React.createElement(prevc, {...prevp,delay})
+		}
 
 		if (component) {
 			return React.createElement(component, {props});
@@ -201,4 +214,5 @@ class Route extends React.Component {
 	}
 }
 
-export default Route;
+export default Router;
+export {router};

@@ -1,0 +1,29 @@
+@import './constants.css';
+
+.form {
+	display : flex;
+	flex-direction : column;
+}
+
+.form :global(.feedback-input-item) {
+	padding : $form-input-item-padding;
+}
+
+.form :global(.button-group) {
+	padding : $form-input-item-padding;
+}
+
+.form :global(.input) {
+	border : 1px solid;
+	height : $form-input-height;
+}
+
+.form :global(.button-group) {
+	height : $form-input-height;
+}
+
+.form :global(.invalid-feedback) {
+	padding-top : $invalid-feedback-top-padding;
+	font-size : 80%;
+	color : red;
+}

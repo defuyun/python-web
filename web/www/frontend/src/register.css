@@ -1,0 +1,13 @@
+@import './constants.css';
+
+.register {
+	max-width : $form-max-width;
+	padding : $register-padding-top $register-padding-side $register-padding-bottom;
+	margin : 0 auto;
+}
+
+.register :global(.to-login) {
+	font-size : 90%;
+	padding : $form-input-item-padding;
+	padding-top : 0;
+}

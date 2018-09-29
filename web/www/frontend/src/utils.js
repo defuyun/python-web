@@ -65,3 +65,42 @@ export const partition = (arr, filter) => {
 
 	return [p1, p2];
 }
+
+
+function empty(str) {
+	log.info(`[UTILS] empty filter with ${str}`);
+	return str.length === 0;
+}
+
+function lessThan(length) {
+	return function(str) {
+		log.info(`[UTILS] lessThan filter with ${str} and length ${length}`);
+		return str.length < length;
+	}
+}
+
+function moreThan(length) {
+	return function(str) {
+		log.info(`[UTILS] moreThan filter with ${str} and length ${length}`);
+		return str.length > length;
+	}
+}
+
+function match(regex) {
+	return function(str) {
+		log.info(`[UTILS] match filter with ${str} and regex ${regex}`);
+		return !regex.test(str);
+	}
+}
+
+function createAggregate(append,orig) {
+	function aggregatedFunction(...args) {
+		append(...args);
+		if (orig instanceof Function) {
+			orig(...args);
+		}
+	}
+	return aggregatedFunction;
+}
+
+export {empty ,lessThan, moreThan, match, createAggregate};

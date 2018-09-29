@@ -1,0 +1,15 @@
+.animate {
+	transition: all 0.5s ease-in;
+}
+
+.animate:global(.enter) {
+	opacity : 0.01;
+}
+
+.animate:global(.show) {
+	opacity : 1;
+}
+
+.animate:global(.exit) {
+	opacity : 0.01;
+}

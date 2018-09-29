@@ -2,27 +2,38 @@ $nav-height : 80px;
 $nav-item-padding : 5px;
 $nav-padding-side : 20px;
 $nav-border-width : 0 0 1px;
+$nav-button-max-width : 100px;
 
 $button-min-width : 50px;
-$button-max-width : 100px;
 $button-item-padding : 5px;
 
 $dropdown-item-height : $nav-height;
 $dropdown-min-width : $button-min-width;
-$dropdown-max-width : $button-max-width;
+$dropdown-max-width : $nav-button-max-width;
 
 $search-bar-width : 200px;
 $search-bar-input-margin : 0px;
 $search-bar-border : 1px;
 $search-bar-padding : 10px;
 
-$search-bar-input-height : 30px;
-$search-bar-input-width: 130px;
-
 $icon-default-width : 16px;
+$icon-max-width : 50px;
 
 $logo-img-width : 50px;
 $logo-img-border-radius: 50%;
 
 $border-style : solid;
 $border-color : #f0f0f0;
+
+$input-left-padding : 5px;
+
+$form-max-width : 270px;
+$form-input-item-padding : 10px;
+
+$register-padding-top : 100px;
+$register-padding-side : 10px;
+$register-padding-bottom : 20px;
+$register-button-group-padding : $form-input-item-padding;
+$form-input-height : 30px;
+
+$invalid-feedback-top-padding : 5px

@@ -2,7 +2,7 @@ const contextMenuTree = {
 	home : {
 		id : 'home',
 		icon : 'home',
-		tag : 'home',
+		text : 'home',
 		// this field specifies does this option require user login to display
 		// 0: does not matter, 1: yes, 2: no
 		display : 0,
@@ -14,7 +14,7 @@ const contextMenuTree = {
 	posts : {
 		id : 'posts',
 		icon : 'file',
-		tag : 'posts',
+		text : 'posts',
 		display : 0,
 		next : 'edit',
 		url : '/posts',
@@ -29,7 +29,7 @@ const contextMenuTree = {
 	edit : {
 		id : 'edit',
 		icon : 'edit',
-		tag : 'edit',
+		text : 'edit',
 		display : 1,
 		next : 'tags',
 		url : '/edit',
@@ -38,15 +38,15 @@ const contextMenuTree = {
 	tags : {
 		id : 'tags',
 		icon : 'tags',
-		tag : 'tags',
+		text : 'tags',
 		display : 0,
 		next : 'account',
 		url : '/tags',
 	},
 
 	account : {
-		icon : 'user',
-		tag : 'account',
+		icon : 'users-cog',
+		text : 'account',
 		display : 0,
 		children : [
 			'register',
@@ -60,27 +60,25 @@ const contextMenuTree = {
 	register : {
 		id : 'register',
 		icon : 'user-plus',
-		tag : 'register',
+		text : 'register',
 		display : 2,
 		next : 'login',
 		url : '/register',
-		component: null,
 	},
 
 	login : {
 		id: 'login',
 		icon : 'sign-in-alt',
-		tag : 'login',
+		text : 'login',
 		display : 2,
 		next : 'logout',
 		url : '/login',
-		component: null,
 	},
 
 	logout : {
 		id: 'logout',
 		icon : 'sign-out-alt',
-		tag : 'logout',
+		text : 'logout',
 		display : 1,
 		next : null
 	},
@@ -141,5 +139,9 @@ const constructNavMenu = ({menu = contextMenuTree, init = null, userInfo = null}
 	return sidenav;
 }
 
-export default contextMenuTree;
+const cloneMenu = () => {
+	return {...contextMenuTree};
+}
+
+export default cloneMenu();
 export {constructNavMenu};

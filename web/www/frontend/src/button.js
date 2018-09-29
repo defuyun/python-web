@@ -1,24 +1,17 @@
 import React from 'react';
 import * as log from 'loglevel';
 import Icon from './icon.js';
+import {propsFilter} from './utils.js';
 
 import style from './button.css';
 
 class Button extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {hover : false};
-		this.hoverHandle = this.hoverHandle.bind(this);
 	}
 
-	hoverHandle(hoverStatus) {
-		return () => {
-			this.setState({hover : hoverStatus});
-		}
-	}
-  
 	render() {
-		const {text, icon, clickHandle, inversible, border} = this.props;
+		const {text, icon, inversible, border, disable} = this.props;
 
 		if (text === undefined && icon === undefined) {
 			log.error('[BUTTON] both text and icon are not defined');
@@ -26,22 +19,22 @@ class Button extends React.Component {
 		}
 		
 		// inversible defaults to true so turn off you need to specify false	
-		const iconElement = icon ? <Icon className='button-icon' icon={icon} inverse={inversible ? this.state.hover : false}/> : null;
+		const iconElement = icon ? <Icon className='button-icon' icon={icon} /> : null;
 		const textElement = text ? <div className={'button-text'}>{text}</div> : null;
 		
 		const baseStylename = 'style.button';
-		const buttonInverse = inversible ? ' inverse' : '';
-		const buttonBorder = border ? ' border' : '';
+		const buttonInverse = inversible ? ' style.inverse' : '';
+		const buttonBorder = border ? ' style.border' : '';
+		const buttonDisable = disable ? ' style.disable' : '';
 		
-		const buttonStylename = baseStylename + buttonInverse + buttonBorder;
-
+		const buttonStylename = baseStylename + buttonInverse + buttonBorder + buttonDisable;
+		log.info(`[BUTTON] button style name for ${text || icon} : ${buttonStylename}`);
+		
 		return (
 			<div
-				onMouseEnter = {this.hoverHandle(true)}
-				onMouseLeave = {this.hoverHandle(false)}
-				onClick = {clickHandle}
 				className = {'button'}
 				styleName = {buttonStylename}
+				{...this.props}
 			>
 				{iconElement}
 				{textElement}	

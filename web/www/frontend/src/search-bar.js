@@ -1,14 +1,25 @@
 import React from 'react';
-import Button from './button.js'
+import Input from './input.js';
 
 import style from './search-bar.css';
 
-const SearchBar = ({clickHandle}) => 
-<div className='search-bar' styleName={'style.search-bar'}> 
-	<div className='search-button'>
-		<Button icon={'search'} inversible={false} />
+const SearchBar = ({onClick}) =>
+	<div className='search-bar' styleName={'style.search-bar'}> 
+		<Input 
+				iconProps={
+					{
+						onClick : onClick,
+						icon : 'search'
+					}
+				}
+				
+				inputProps={
+					{
+						type : 'text',
+						placeholder : 'Search'
+					}
+				}
+		/>
 	</div>
-	<input type='text' name='keyword' placeholder='Search'/>
-</div>
 
 export default SearchBar;

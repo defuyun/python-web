@@ -4,7 +4,9 @@ import Button from './button.js';
 import SearchBar from './search-bar.js';
 import Dropdown from './dropdown.js';
 
-import {constructNavMenu} from './menu-model.js';
+import {connect} from 'react-redux';
+
+import menu, {constructNavMenu} from './menu-model.js';
 import {partition} from './utils.js';
 import * as log from 'loglevel';
 
@@ -17,10 +19,9 @@ const SingleButtons = ({buttonItems}) => {
 		<div className='single-button'>
 			{buttonItems.map(
 					item => <Button 
-						key = {item.id}
-						text = {item.tag}
-						icon = {item.icon}
-						inversible = {true}
+						key={item.id}
+						{...item}
+						inversible = {1}
 					/>
 			)}
 		</div>	
@@ -44,12 +45,16 @@ const SearchGroupButtons = ({dropdownItems}) => {
 class Nav extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {visible : true};
-	}
+		const {dispatch} = props;
+		
+		for(let value of Object.values(menu)) {
+			if (value.url) {
+				value.onClick = () => dispatch({type : 'NAV_ITEM_CHANGE', id : value.id});
+			}
+		}
 
-	componentWillMount() {
-		const [buttonItems, dropdownItems ]= partition(constructNavMenu({}), (val) => !Array.isArray(val));
-		this.setState({buttonItems, dropdownItems});	
+		const [buttonItems, dropdownItems]= partition(constructNavMenu({menu}), (val) => !Array.isArray(val));
+		this.state = {visible : true, buttonItems, dropdownItems};
 	}
 
 	render() {
@@ -69,11 +74,11 @@ class Nav extends React.Component {
 				<SearchGroupButtons dropdownItems={dropdownItems} />
 
 				<div className={`visibility-toggle-button ${visible.toString()}`}>
-					<Button icon={'angle-up'} inversible={false} clickHandle={ () => this.setState({visible : !visible})}/>
+					<Button icon={'angle-up'} inversible={0} onClick={ () => this.setState({visible : !visible})}/>
 				</div>
 			</div>
 		)
 	}
 }
 
-export default Nav;
+export default connect()(Nav);

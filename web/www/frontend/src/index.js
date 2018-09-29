@@ -1,7 +1,20 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {render} from 'react-dom';
+import {Provider} from 'react-redux';
+import {createStore, applyMiddleware} from 'redux';
+import {rootReducer} from './reducer.js';
+import {navigationMiddleware} from './middleware.js';
+
 import App from './app.js';
 
-ReactDOM.render(
-	<App />, document.getElementById('root')	
+const store = createStore(
+	rootReducer,
+	applyMiddleware(navigationMiddleware)
+);
+
+render(
+	<Provider store={store}>
+		<App />
+	</Provider>, 
+	document.getElementById('root')	
 );
