@@ -140,7 +140,16 @@ async def userAuth(request,*,username:str,password:str):
 async def userRegister(request,*,username, email, password, secret):
     if secret != config.secret:
         return web.HTTPBadRequest(body='incorrect secret')
+    user = await User.find(key='username', value=username)
+
+    if user:
+        return web.HTTPBadRequest(body='username already exists')
     
+    user = await User.find(key='email', value=email)
+    
+    if user:
+        return web.HTTPBadRequest(body='email already exists')
+
     userId = str(uuid.uuid4().hex)
     expire = getExpireDateTime(config.cookie_expire_days)
 

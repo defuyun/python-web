@@ -48,7 +48,15 @@ async def authentication_factory(app, handler):
 
 async def cors_factory(app, handler):
     async def response(request):
-        resp = await handler(request)
-        resp.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:8000'
+        resp = None
+
+        if request.method == 'OPTIONS':
+            resp = web.HTTPOk(body='accepted')
+        else:
+            resp = await handler(request)
+        
+        resp.headers['Access-Control-Allow-Origin'] = 'http://localhost:8000'
+        resp.headers['Access-Control-Allow-Methods'] = 'OPTIONS, POST, GET, DELETE, PUT'
+        resp.headers['Access-Control-Allow-Headers'] = '*'
         return resp
     return response
