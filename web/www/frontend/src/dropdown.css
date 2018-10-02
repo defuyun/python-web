@@ -21,4 +21,5 @@
 
 .dropdown :global(.dropdown-button) {
 	height : $dropdown-item-height;
+	display : flex;
 }

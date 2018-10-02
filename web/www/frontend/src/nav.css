@@ -60,7 +60,8 @@
 	position : fixed;
 	right : 0;
 	top : 0;
-	transition : transform 1s;
+	width : 50px;
+	transition : all 1s;
 }
 
 .navbar :global(.false) {

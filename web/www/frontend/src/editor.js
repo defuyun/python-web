@@ -10,6 +10,8 @@ import 'brace/mode/markdown';
 import 'brace/theme/xcode';
 import 'brace/keybinding/vim';
 
+import './editor.css';
+
 class Editor extends React.Component {
 	constructor(props) {
 		super(props);
@@ -19,6 +21,8 @@ class Editor extends React.Component {
 		} else {
 			this.state = {...this.genp()};
 		}
+
+		this.state.displaySide = false;
 
 		this.newp = this.newp.bind(this);
 		this.save = this.save.bind(this);
@@ -67,22 +71,29 @@ class Editor extends React.Component {
 		const filelist = this.state.filelist || [];
 		const errorlist = this.state.errorlist || [];
 		const title = this.state.title || '';
+		
+		const {displaySide} = this.state;
 
 		return (
-			<div className='editor'>
+			<div className='editor' styleName='editor'>
 				<div className='tools'>
 					<Input inputProps={{
 						onChange : event => this.setState({title : event.target.value}),
 						placeholder : 'input a title to start editing',
 						value : title,
 					}}/>
-					<Button key='new' icon='plus' onClick={this.newp} />
-					<Button key='save' icon='save' onClick={this.save} />
-					<Button key='upload' icon='file-upload' onClick={this.upload} />
-					<Button key='erase' icon='eraser' onClick={this.erase}/>
+					<div className='button-group'>
+						<Button key='new' icon='plus' onClick={this.newp} inversible={1} />
+						<Button key='save' icon='save' onClick={this.save} inversible={1}/>
+						<Button key='upload' icon='file-upload' onClick={this.upload} inversible={1}/>
+						<Button key='erase' icon='eraser' onClick={this.erase} inversible={1}/>
+					</div>
 				</div>
 				<div className='text-editor'>
 					<div className='cog'>
+						<div className={'side-toggle' + (displaySide ? ' display' : '')}>
+							<Button icon='angle-right' onClick={() => this.setState({displaySide : !displaySide})} />
+						</div>
 						<div className='file-list'>
 							{filelist.map(item => <div className='file'> item.name </div>)}
 						</div>
@@ -90,12 +101,16 @@ class Editor extends React.Component {
 							{errorlist.map(item => <div className='error'> item.error </div>)}
 						</div>
 					</div>
-					<AceEditor
-						mode='markdown'
-						theme='xcode'
-						keyboardHandler='vim'
-						wrapEnabled={true}
-					/>
+					<div className={'ace-editor'} styleName='ace-editor'>
+						<AceEditor
+							mode='markdown'
+							theme='xcode'
+							keyboardHandler='vim'
+							wrapEnabled={true}
+							height='100%'
+							width='100%'
+						/>
+					</div>
 				</div>
 			</div>
 		);		

@@ -1,0 +1,64 @@
+@import './constants.css';
+
+.editor {
+	position : relative;
+	left : 0;
+	top : 0;
+	bottom : 0;
+	height : 100%;
+	width : 50%;
+	min-width : 440px;
+}
+
+.editor > :global(.tools) {
+	display : flex;
+	min-height : 30px;
+}
+
+.editor > :global(.tools) > :global(.input) {
+	min-width : 200px;
+	width : 100%;
+	padding-left : 40px;
+}
+
+.editor > :global(.text-editor) {
+	position : relative;
+	height : 100%;
+	display : flex;
+}
+
+.editor > :global(.tools) > :global(.button-group) {
+	display : flex;
+	justify-content : center;
+}
+
+.editor > :global(.tools) > :global(.button-group) > :global(.button){
+	max-width : 50px;
+}
+
+.ace-editor {
+	width : 100%;
+	height : 100%;
+	display : flex;
+	position : relative;
+}
+
+.editor > :global(.text-editor) > :global(.cog) > :global(.side-toggle) {
+	position : absolute;
+	top : 0;
+	bottom : 0;
+	left : 0;
+	z-index : 10;
+	display : flex;
+	transition : all 0.5s linear;
+}
+
+.editor > :global(.text-editor) > :global(.cog) > :global(.side-toggle.display) {
+	left : 100px;
+	transform : rotate(180deg);
+}
+
+.editor > :global(.text-editor) > :global(.cog) > :global(.side-toggle) > :global(.button){
+	min-width : 10px !important;
+	max-width : 10px !important;
+}

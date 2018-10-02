@@ -6,7 +6,7 @@
 	display : flex;
 	flex-wrap : wrap;
 	align-content : center;
-	height : 100%;
+	align-items : center;
 }
 
 .button > :global(.button-icon), .button > :global(.button-text) {
