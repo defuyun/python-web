@@ -13,6 +13,15 @@ const webpack = require('webpack');
 const workspace = path.join(__dirname, 'src');
 
 module.exports = env => {
+	console.log(env.mode === 'development');
+
+	if (env.mode === 'development'){
+		console.log('dev mode on');
+		env['BASE_URL'] = JSON.stringify('http://localhost:8080');
+	} else {
+		env['BASE_URL'] = JSON.stringify('');
+	}
+
 	return {
 		mode : env.mode,
 		

@@ -72,7 +72,7 @@ class RequestDispatcher {
         };
 
         if(!this.validateConfig(configLocal)) {
-            log.error(`[REQUEST] invalid config in http request ${configLocal}`);
+            log.error(`[REQUEST] invalid config in http request ${JSON.stringify(configLocal)}`);
             return null;
         }
 
@@ -89,18 +89,16 @@ class RequestDispatcher {
             }
             
             configLocal.body = JSON.stringify(args);
-            if (!'headers' in configLocal) {
+            if (!('headers' in configLocal)) {
                 configLocal.headers = {}
             }
 
-            configLocal.headers.push({
-                'content-type' : 'application/json'
-            });
-
-            log.info(`[REQUEST] constructed POST request config ${url}`);
+            configLocal.headers['content-type'] = 'application/json';
+            
+						log.info(`[REQUEST] constructed POST request config ${JSON.stringify(configLocal)}`);
         } else if (configLocal.method = 'GET') {
             url += constructQueryString(args);
-            log.info(`[REQUEST] constructed GET request config ${url}`);
+            log.info(`[REQUEST] constructed GET request config ${JSON.stringify(configLocal)}`);
         }
 
         return fetch(url, configLocal);
@@ -146,11 +144,18 @@ class RequestDispatcher {
     // for example when we test the app on our local machine we might want to enable cors
     // this requires us to add a new field in the request, using a middleware to do this allows us to easily remove it when we don't need it
     registerConfigMiddleware(middlewares) {
-        this.configMiddlewares.push(...middlewares);
+        this.configMiddlewares.push(middlewares);
     }
 
     clearConfigMiddleware() {
         this.configMiddlewares = [];
     }
 }
-export default new RequestDispatcher();
+
+const requestDispatcher = new RequestDispatcher();
+requestDispatcher.registerConfigMiddleware((config) => {
+	config.mode = 'cors';
+	return config;
+})
+
+export default requestDispatcher;

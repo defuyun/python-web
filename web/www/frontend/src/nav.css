@@ -24,6 +24,7 @@
 	padding-left : $nav-padding-side;
 	padding-right : $nav-padding-side;
 	transition : top 0.5s linear;
+	z-index : $nav-z;
 }
 
 .navbar :global(.button) {

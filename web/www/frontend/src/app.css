@@ -1,5 +1,21 @@
-$color : red;
+@import './constants.css';
 
 body {
 	margin : 0px;
+}
+
+.app > :global(.container.on-modal) {
+	opacity : 0.5;
+}
+
+.app {
+	position : relative;
+}
+
+.app > :global(.cover.on-modal) {
+	position : absolute;
+	width : 100%;
+	height : 100%;
+	z-index : $modal-cover-z;
+	min-height : 80px;
 }

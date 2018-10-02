@@ -1,0 +1,47 @@
+@import 'constants.css';
+
+.modal-container {
+	display : none;
+}
+
+.modal-container:global(.display) {
+	display : block;
+}
+
+.modal {
+	border : 1px solid;
+	border-top : 1px solid $border-color;
+	max-width : $form-max-width;
+	min-width : $modal-min-width;
+	padding : $modal-padding;
+	margin-left : auto;
+	margin-right : auto;
+	position : fixed;
+	top : -200px;
+	left : 0;
+	right : 0;
+	display : flex;
+	flex-direction : column;
+	z-index : $modal-z;
+	transition : top 0.5s ease-in;
+}
+
+.modal:global(.display) {
+	top: 0;
+}
+
+.modal > :global(.modal-text) {
+	padding : $form-input-item-padding;
+	border: 1px solid;
+	border-left : 5px solid;
+}
+
+.modal > :global(.modal-title) {
+	padding-bottom : 10px;
+}
+
+.modal > :global(.modal-button) {
+	width : $modal-button-width;
+	padding-top : $modal-button-top-padding;
+	align-self : flex-end;
+}

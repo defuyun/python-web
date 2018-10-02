@@ -3,6 +3,7 @@ import {FeedbackInput} from './input.js';
 import Button from './button.js';
 import * as log from 'loglevel';
 import {createAggregate} from './utils.js';
+import {connect} from 'react-redux';
 
 import style from './form.css';
 
@@ -27,7 +28,7 @@ const _runFilters = (value, filters) => {
 class Form extends React.Component {
 	constructor(props) {
 		super(props);
-		const {inputGroup, submitButton} = this.props;
+		const {inputGroup, submitButton, dispatch} = this.props;
 		
 		this.state ={};
 
@@ -55,7 +56,7 @@ class Form extends React.Component {
 			
 			let aggregatedClick =  () => {
 				if (!this.onClick()) {
-					alert('You have some invalid inputs');
+					dispatch({type : 'DISPLAY_MESSAGE', text : 'There are invalid entries in your form', msgType : 'error'});
 					return;
 				}
 
@@ -137,4 +138,4 @@ class Form extends React.Component {
 	}
 }
 
-export default Form;
+export default connect()(Form);

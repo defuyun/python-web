@@ -24,13 +24,17 @@ export const getCookie = (name) => {
         log.warn('[UTIL] Can you believe it, your browser does not have cookie!')
         return null;
     }
-
-    let pairs = document.cookie.split(';');
-
+    
+		log.info(`[UTIL] cookies : ${JSON.stringify(document.cookies)}`);
+		
+		let pairs = document.cookie.split(';');
+		
     if (pairs == null || pairs.length == 0) {
         log.info(`[UTILS]: cookie is empty while calling getCookie with param ${name}`);
         return null;
     }
+		
+		log.info(`[UTIL] pairs of cookies : ${JSON.stringify(pairs)}`);
 
     for(var entry of pairs) {
         if (entry.split('='[0]) == name) {

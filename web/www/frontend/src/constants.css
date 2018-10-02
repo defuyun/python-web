@@ -34,6 +34,19 @@ $register-padding-top : 100px;
 $register-padding-side : 10px;
 $register-padding-bottom : 20px;
 $register-button-group-padding : $form-input-item-padding;
-$form-input-height : 30px;
 
-$invalid-feedback-top-padding : 5px
+$login-padding-top : $register-padding-top;
+$login-padding-side : $register-padding-side;
+$login-padding-bottom : $register-padding-bottom;
+$login-button-group-padding : $form-input-item-padding;
+
+$form-input-height : 30px;
+$invalid-feedback-top-padding : 5px;
+$modal-padding : 10px;
+$modal-min-width : 200px;
+$modal-button-width : 100px;
+$modal-button-top-padding : 20px;
+
+$nav-z : 100;
+$modal-z : 103;
+$modal-cover-z : 101;

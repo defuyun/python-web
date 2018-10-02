@@ -87,8 +87,8 @@ const contextMenuTree = {
 	init : 'home',
 }
 
-const shouldDisplay = (displaySetting, userInfo) => {
-    return displaySetting == 0 || displaySetting == 1 && userInfo != null || displaySetting == 2 && userInfo == null;
+export const shouldDisplay = (displaySetting, userInfo) => {
+    return displaySetting == 0 || displaySetting == 1 && userInfo && userInfo.userId || displaySetting == 2 && !(userInfo && userInfo.userId);
 }
 
 // this converts the dictionary format to menu item format

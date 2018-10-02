@@ -1,13 +1,16 @@
 import React from 'react';
 import Button from './button.js';
 import Form from './form.js';
+import {connect} from 'react-redux';
 
+import menu from './menu-model.js';
 import style from './register.css';
 import {empty, lessThan, moreThan, match} from './utils.js';
+import * as log from 'loglevel';
 
-const inputGroup = [
+let inputGroup = [
 	{	
-		key : 'user',
+		key : 'username',
 		filters : [
 			{
 				filter : empty,
@@ -26,7 +29,7 @@ const inputGroup = [
 		inputProps : {placeholder : 'username', type : 'text'},
 	},
 	{
-		key : 'at',
+		key : 'email',
 		filters : [
 			{	
 				filter : empty,
@@ -41,7 +44,7 @@ const inputGroup = [
 		inputProps : {placeholder : 'email', type : 'text'},
 	},
 	{
-		key : 'pass',
+		key : 'password',
 		filters : [
 			{
 				filter : empty,
@@ -72,7 +75,7 @@ const inputGroup = [
 	},
 ];
 
-const submitButton = {
+let submitButton = {
 	text : 'Submit',
 	border : 1,
 	inversible : 1,
@@ -82,16 +85,36 @@ const submitButton = {
 class Register extends React.Component {
 	constructor(props) {
 		super(props);
+		this.createOnChange = this.createOnChange.bind(this);
+		submitButton.onClick = this.onClick.bind(this);
+		for(let input of inputGroup) {
+			input.inputProps.onChange = this.createOnChange(input.key);
+		}
+	}
+
+	createOnChange(key) {
+		function onChange(event) {
+			this.setState({[key] : event.target.value});
+		}
+		return onChange.bind(this);
+	}
+
+	onClick() {
+		const {dispatch} = this.props;
+		const {username, email, password, secret} = this.state;
+		
+		log.info(`[REGISTER] dispatching api with val : ${username}, ${email}, ${secret}`);
+		dispatch({type : 'API_CALL', id : 'register', params : {username,email,password,secret}});
 	}
 
 	render() {
 		return (
 			<div key='register' className='register-box' styleName='register'>
 				<Form inputGroup={inputGroup} submitButton={submitButton} />
-				<div className='to-login'> or if you already have an account <a href='/login'> login </a></div>
+				<div className='to-login'> or if you already have an account <a href={menu.login.url}> login </a></div>
 			</div>		
 		);
 	}
 }
 
-export default Register;
+export default connect()(Register);
