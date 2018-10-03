@@ -12,13 +12,13 @@
 
 .editor > :global(.tools) {
 	display : flex;
-	min-height : 30px;
+	min-height : $editor-tools-height;
 }
 
 .editor > :global(.tools) > :global(.input) {
-	min-width : 200px;
+	min-width : $editor-tools-input-width;
 	width : 100%;
-	padding-left : 40px;
+	padding-left : $editor-tools-input-left-padding;
 }
 
 .editor > :global(.text-editor) {
@@ -33,7 +33,7 @@
 }
 
 .editor > :global(.tools) > :global(.button-group) > :global(.button){
-	max-width : 50px;
+	max-width : $editor-tools-button-max-width;
 }
 
 .ace-editor {
@@ -43,22 +43,4 @@
 	position : relative;
 }
 
-.editor > :global(.text-editor) > :global(.cog) > :global(.side-toggle) {
-	position : absolute;
-	top : 0;
-	bottom : 0;
-	left : 0;
-	z-index : 10;
-	display : flex;
-	transition : all 0.5s linear;
-}
 
-.editor > :global(.text-editor) > :global(.cog) > :global(.side-toggle.display) {
-	left : 100px;
-	transform : rotate(180deg);
-}
-
-.editor > :global(.text-editor) > :global(.cog) > :global(.side-toggle) > :global(.button){
-	min-width : 10px !important;
-	max-width : 10px !important;
-}

@@ -2,6 +2,7 @@ import React from 'react';
 import AceEditor from 'react-ace';
 import Input from './input.js';
 import Button from './button.js';
+import Cog from './cog.js';
 
 import {connect} from 'react-redux';
 import {guid} from './utils.js';
@@ -21,8 +22,6 @@ class Editor extends React.Component {
 		} else {
 			this.state = {...this.genp()};
 		}
-
-		this.state.displaySide = false;
 
 		this.newp = this.newp.bind(this);
 		this.save = this.save.bind(this);
@@ -68,11 +67,9 @@ class Editor extends React.Component {
 	}
 
 	render() {
-		const filelist = this.state.filelist || [];
-		const errorlist = this.state.errorlist || [];
 		const title = this.state.title || '';
 		
-		const {displaySide} = this.state;
+		const {errorlist, filelist} = this.state;
 
 		return (
 			<div className='editor' styleName='editor'>
@@ -90,17 +87,7 @@ class Editor extends React.Component {
 					</div>
 				</div>
 				<div className='text-editor'>
-					<div className='cog'>
-						<div className={'side-toggle' + (displaySide ? ' display' : '')}>
-							<Button icon='angle-right' onClick={() => this.setState({displaySide : !displaySide})} />
-						</div>
-						<div className='file-list'>
-							{filelist.map(item => <div className='file'> item.name </div>)}
-						</div>
-						<div className='error-list'>
-							{errorlist.map(item => <div className='error'> item.error </div>)}
-						</div>
-					</div>
+					<Cog errorlist={errorlist} filelist={filelist} />
 					<div className={'ace-editor'} styleName='ace-editor'>
 						<AceEditor
 							mode='markdown'

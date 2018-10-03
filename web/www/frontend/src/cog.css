@@ -1,0 +1,54 @@
+@import './constants.css';
+
+.cog {
+	position : absolute;
+	top : 0;
+	bottom : 0;
+	left : -$editor-side-width-raw;
+	min-width : $editor-side-width;
+	z-index : $editor-side-z;
+	display : flex;
+	transition : all 0.5s linear;
+	border : 1px solid $border-color;
+	border-radius : 0 15px 15px 0;
+	opacity : 0.7;
+	background : ghostwhite;
+	flex-direction : column;
+}
+
+.cog:global(.display) {
+	left : 0;
+}
+
+.cog > :global(.side-toggle) {
+	position : absolute;
+	top : 0;
+	bottom : 0;
+	right : 0;
+	display : flex;
+	border-left : 1px solid $border-color;
+	opacity : 0.5;
+}
+
+.cog > :global(.side-toggle):hover {
+	opacity : 1;
+}
+
+.cog > :global(.side-toggle) > :global(.button){
+	min-width : 10px !important;
+	max-width : 10px !important;
+}
+
+.cog:global(.display) > :global(.side-toggle) > :global(.button){
+	transform : rotate(180deg);
+}
+
+.file-list {
+	padding : $editor-side-toggle-width;	
+	height : 100%;
+}
+
+.error-list {
+	padding : $editor-side-toggle-width;	
+	height : 100%;
+}

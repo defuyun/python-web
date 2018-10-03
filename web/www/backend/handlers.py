@@ -10,7 +10,7 @@ import datetime
 
 from aiohttp import web
 from coroweb import get, post
-from model import User, Post
+from model import User, Post, Session
 
 from config.constants import constants
 from config.config import config
@@ -21,8 +21,8 @@ def getExpireDateTime(days):
 def getCurrentDateTime():
     return str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
-async def __user2cookie__(user:User):
-    s = '%s-%s-%s-%s-%s' % (user.username, user.password, user.expire, user.email, config.cookie_key)
+async def __user2cookie__(user:User, session:Session):
+    s = '%s-%s-%s-%s-%s' % (user.username, user.password, session.expire, user.email, config.cookie_key)
     sha1 = hashlib.sha1(s.encode('utf-8')).hexdigest()
 
     logging.debug('[AUTHENTICATE] sha1 generated for user %s generated from %s' % (sha1, s))
@@ -118,22 +118,34 @@ async def getPost(request,*,postId:str):
     }
 
 @post('/api/user/login')
-async def userAuth(request,*,username:str,password:str):
-    user = await User.find(key='username',value=username)
-
+async def userAuth(request,*,email:str,password:str):
+    user = await User.find(key='email',value=email)
+    
     if not user:
         return web.HTTPBadRequest(body='user does not exist')
     
     if user.password != password:
         return web.HTTPBadRequest(body='incorrect password')
+    
+    u_agent = request.headers['User-Agent']
 
-    user.expire = getExpireDateTime(config.cookie_expire_days)
-    success = await user.update()
+    s = '%s-%s' % (user.userId, u_agent)
+    s_id = hashlib.sha1(s.encode('utf-8')).hexdigest()
+    
+    session = await Session.find(key='sessionId', value=s_id)
+    success = False
+
+    if not session:
+        session = Session(sessionId=s_id, userId=user.userId, userAgent=u_agent, expire=getExpireDateTime(config.cookie_expire_days))
+        success = await session.save()
+    else :
+        session.expire = getExpireDateTime(config.cookie_expire_days)
+        success = await session.update()
 
     if not success:
         return web.HTTPBadRequest(body='failed to update expire time')
 
-    cookie = await __user2cookie__(user)
+    cookie = await __user2cookie__(user, session)
     return __make_auth_response__(user, cookie)
 
 @post('/api/user/register')
@@ -151,29 +163,50 @@ async def userRegister(request,*,username, email, password, secret):
         return web.HTTPBadRequest(body='email already exists')
 
     userId = str(uuid.uuid4().hex)
-    expire = getExpireDateTime(config.cookie_expire_days)
 
-    user = User(username=username, email=email, password=password, userId=userId, expire=expire)
+    user = User(username=username, email=email, password=password, userId=userId)
     success = await user.save()
 
     if not success:
         return web.HTTPBadRequest(body='failed to register')
+    
+    expire = getExpireDateTime(config.cookie_expire_days)
+    
+    s = '%s-%s' % (userId, request.headers['User-Agent'])
+    s_id = hashlib.sha1(s.encode('utf-8')).hexdigest()
 
-    cookie = await __user2cookie__(user)
+    session = Session(sessionId=s_id, userId=userId, userAgent=request.headers['User-Agent'], expire=expire)
+    success = await session.save()
+
+    cookie = await __user2cookie__(user, session)
     return __make_auth_response__(user, cookie)
 
 @post('/api/user/signout')
 async def userSignout(request):
-    if not request.user:
+    if not request.session:
         return web.HTTPBadRequest(body='user not signed in')
     
-    request.user.expire = getCurrentDateTime()
-    success = await request.user.update()
+    request.session.expire = getCurrentDateTime()
+    success = await request.session.update()
 
     if not success:
         return web.HTTPBadRequest(body='failed to expire session')
 
     return __make_auth_response__(User(), None, age=-1)
+
+@get('/api/user/info')
+async def userInfo(request):
+    if not request.user:
+        return {'user' : {}}
+    
+    request.session.expire = getExpireDateTime(config.cookie_expire_days)
+    success = await request.session.update()
+
+    if not success:
+        return web.HTTPBadRequest(body='failed to update session')
+    
+    cookie = await __user2cookie__(request.user, request.session)
+    return __make_auth_response__(request.user, cookie)
 
 @post('/api/user/delete')
 async def userDelete(request):

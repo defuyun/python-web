@@ -5,7 +5,7 @@ create table user (
     username VARCHAR(255) not null,
     password CHAR(40) not null,
     email VARCHAR(255) not null,
-    expire datetime not null,
     primary key(userId),
-    unique(username)
+    unique(email),
+		unique(username)
 ) character set = utf8;

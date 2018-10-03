@@ -20,14 +20,12 @@ module.exports = env => {
 		env['BASE_URL'] = JSON.stringify('');
 	}
 
-	filename = env.server === 'dev' ?  '[name].[hash:5].js' : '[name].[chunkhash:5].js';
-
 	return {
 		mode : env.mode,
 	
 		output : {
-			filename : filename,
-			chunkFilename : filename,
+			filename : '[name].[chunkhash:5].js',
+			chunkFilename : '[name].[chunkhash:5].js',
 		},
 
 		entry : {

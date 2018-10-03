@@ -228,7 +228,6 @@ class User(Model):
     username = StringField(id='username', unique=True)
     password = StringField(id='password', ddl='CHAR(40)')
     email = StringField(id='email')
-    expire = DateField(id='expire')
 
 class Post(Model):
     __table__ = 'posts'
@@ -238,3 +237,11 @@ class Post(Model):
     post = TextField(id='post')
     created = DateField(id='created')
     modified = DateField(id='modified')
+
+class Session(Model):
+    __table__ = 'session'
+    
+    sessionId = StringField(id='sessionId', ddl='CHAR(40)', primary=True)
+    userId = StringField(id='userId', ddl='CHAR(38)')
+    userAgent = StringField(id='userAgent', ddl='VARCHAR(255)')
+    expire = DateField(id='expire')
