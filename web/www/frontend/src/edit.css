@@ -11,5 +11,5 @@
 }
 
 .edit:global(.on-nav) {
-	top : $nav-height;
+	padding-top : $nav-height;
 }

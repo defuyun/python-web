@@ -100,8 +100,12 @@ class RequestHandler(object):
                     if part is None:
                         break
                     
+                    filename = part.filename;
+                    ext_index = filename.rfind('.')
+                    extension = None if ext_index == -1 or ext_index + 1 == len(filename) else filename[ext_index:] 
+
                     filedata = await part.read(decode=False)
-                    files.append({'filename':part.filename, 'data':filedata})
+                    files.append({'filename':filename, 'extension': extension, 'data':filedata})
                 
                 kw['files'] = files
             else:

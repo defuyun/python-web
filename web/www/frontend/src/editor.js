@@ -1,15 +1,11 @@
 import React from 'react';
-import AceEditor from 'react-ace';
 import Input from './input.js';
 import Button from './button.js';
 import Cog from './cog.js';
+import AceEditor from './text-editor.js';
 
 import {connect} from 'react-redux';
 import {guid} from './utils.js';
-
-import 'brace/mode/markdown';
-import 'brace/theme/xcode';
-import 'brace/keybinding/vim';
 
 import './editor.css';
 
@@ -68,9 +64,12 @@ class Editor extends React.Component {
 
 	render() {
 		const title = this.state.title || '';
+		const {errors, files} = this.state;
+		const lists = [
+			{key : 'files', header : 'files', items : files || []},
+			{key : 'errors', header : 'errors', items : errors || []},
+		];
 		
-		const {errorlist, filelist} = this.state;
-
 		return (
 			<div className='editor' styleName='editor'>
 				<div className='tools'>
@@ -87,17 +86,8 @@ class Editor extends React.Component {
 					</div>
 				</div>
 				<div className='text-editor'>
-					<Cog errorlist={errorlist} filelist={filelist} />
-					<div className={'ace-editor'} styleName='ace-editor'>
-						<AceEditor
-							mode='markdown'
-							theme='xcode'
-							keyboardHandler='vim'
-							wrapEnabled={true}
-							height='100%'
-							width='100%'
-						/>
-					</div>
+					<Cog lists={lists} />
+					<AceEditor onChange={content => this.setState({content})}/>
 				</div>
 			</div>
 		);		
@@ -106,8 +96,9 @@ class Editor extends React.Component {
 
 const map = state => {
 	return {
-		draft : state.draft
+		draft : state.draft,
+		navisible : state.navisible,
 	}
 }
 
-export default connect()(Editor);
+export default connect(map)(Editor);

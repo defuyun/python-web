@@ -1,0 +1,9 @@
+.ace-editor {
+	height : 100%;
+	width : 100%;
+}
+
+.ace-editor > :global(.ace-editor) {
+	height : 100%;
+	width : 100%;
+}

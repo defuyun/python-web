@@ -4,14 +4,13 @@
 	position : absolute;
 	top : 0;
 	bottom : 0;
-	left : -$editor-side-width-raw;
+	left : calc(-1 * $editor-side-width);
 	min-width : $editor-side-width;
 	z-index : $editor-side-z;
 	display : flex;
 	transition : all 0.5s linear;
-	border : 1px solid $border-color;
-	border-radius : 0 15px 15px 0;
 	opacity : 0.7;
+	border-top : 1px solid lightgray;
 	background : ghostwhite;
 	flex-direction : column;
 }
@@ -24,9 +23,12 @@
 	position : absolute;
 	top : 0;
 	bottom : 0;
-	right : 0;
+	right : -10px;
 	display : flex;
-	border-left : 1px solid $border-color;
+	border : 1px solid lightgray;
+	border-left : 0;
+	background : ghostwhite;
+	border-radius : 0 15px 15px 0;
 	opacity : 0.5;
 }
 
@@ -43,12 +45,28 @@
 	transform : rotate(180deg);
 }
 
-.file-list {
+.list {
 	padding : $editor-side-toggle-width;	
 	height : 100%;
+	display : none;
 }
 
-.error-list {
-	padding : $editor-side-toggle-width;	
-	height : 100%;
+.list:global(.active) {
+	display : flex;
+}
+
+.cog > :global(.headers) {
+	display : flex;
+}
+
+.cog > :global(.headers) > :global(.header-button:hover) {
+	background : lightgray;
+}
+
+.cog > :global(.headers) > :global(.header-button.active) {
+	border-bottom : 2px solid lightblue;
+}
+
+.cog > :global(.headers) :global(.button-text) {
+	padding : 0px;
 }

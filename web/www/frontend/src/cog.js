@@ -1,5 +1,4 @@
 import React from 'react';
-
 import Button from './button.js';
 
 import './cog.css';
@@ -7,34 +6,40 @@ import './cog.css';
 class Cog extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {display : false};
+		const {lists} = this.props;
+		this.state = {display : false, active : lists[0] ? lists[0].key : null}
 	}
 
 	render(){
-		const {filelist, errorlist} = this.props;
-		const {display} = this.state;
+		const {lists} = this.props;
+		const {display, active} = this.state;
 
 		return (
 			<div className={'cog' + (display ? ' display' : '')} styleName='cog'>
 				<div className='side-toggle'>
 					<Button icon='angle-right' onClick={() => this.setState({display : !display})} />
 				</div>
-				<div className='file-list' styleName='file-list'>
-					<div className='files'>
-						<div className='file-list-header'> 
-							Files
+				<div className='headers'>
+					{lists.map(list => 
+						<div key={list.key} className={'header-button' + (active === list.key ? ' active' : '')}>
+							<Button text={list.header} onClick={() => this.setState({active : list.key})}/> 
 						</div>
-						{filelist ? filelist.map(item => <div className='file'> item.name </div>) : null}
-					</div>
+					)}
 				</div>
-				<div className='error-list' styleName='error-list'>
-					<div className='errors'>
-						<div className='error-list-header'> 
-							Errors
-						</div>
-						{errorlist ? errorlist.map(item => <div className='error'> item.error </div>) : null}
-					</div>
-				</div>
+				
+				{lists.map(list => {
+					return (
+						<div key={list.key} className={active === list.key ? 'active' : ''} styleName='list'>
+							<div className='items'>
+								{list.items.map(item =>
+									<div className='list-item'>
+										{item.text}
+									</div>
+								)}
+							</div>
+						</div>		
+					);									 
+				})}
 			</div>
 		);
 	}

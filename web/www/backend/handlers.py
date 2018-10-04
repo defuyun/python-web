@@ -7,6 +7,7 @@ import hashlib
 import aiofiles
 import os
 import datetime
+import re
 
 from aiohttp import web
 from coroweb import get, post
@@ -222,12 +223,29 @@ async def userDelete(request):
 
 @post('/api/edit/upload')
 async def editUpload(request,*,files):
-    if not request.authenticate:
+    if not request.user:
         return web.HTTPBadRequest(body='not authenticated')
-
+    
+    fails = []
     for file in files:
-        filename = os.path.join(config.resources, file['filename'])
-        async with aiofiles.open(filename, mode='wb') as f:
+        extension = file[extension]
+        
+        if extension is None:
+            fails.append({'filename' : file['filename'], 'error': 'NO_EXTENSION'})
+            continue
+
+        directory = os.path.join(config.resources, request.user.userId)
+        if not os.path.exists(directory):
+            os.makedir(directory)
+
+        filename = os.path.join(directory, file['filename']))
+        
+        if os.path.isfile(filename):
+            fails.append({'filename': file['filename'], 'error' : 'FILE_EXISTS'})
+            continue
+
+        mode = 'wb' if re.match('^\.(jpg|png|gif|svg)$',file['extension'], flags=re.IGNORECASE) else 'w'
+        async with aiofiles.open(filename, mode=mode) as f:
             await f.write(file['data'])
 
-    return web.Response(body='files successfully uploaded')
+    return {'fails' : fails}
