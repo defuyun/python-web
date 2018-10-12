@@ -6,6 +6,8 @@ import {Resources, Errors, Tags} from './cog-components.js';
 import * as log from 'loglevel';
 import './cog.css';
 
+import {hot} from 'react-hot-loader';
+
 class Cog extends React.Component {
 	constructor(props) {
 		super(props);
@@ -32,6 +34,12 @@ class Cog extends React.Component {
 	}
 
 	render() {
+		const {draft} = this.props;
+		
+		if (draft.update !== this.update) {
+			draft.setupdate(this.update);
+		}
+
 		const {active} = this.state;
 		const content = React.createElement(this.components[active], this.props);
 		return (
@@ -49,4 +57,4 @@ class Cog extends React.Component {
 	}
 }
 
-export default Cog;
+export default hot(module)(Cog);

@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "./src/index.js",
   "scripts": {
-    "start": "webpack-dev-server -d --env.mode development --port 8000",
+		"start": "webpack-dev-server -d --env.mode development --port 8000",
+    "start:hot": "webpack-dev-server -d --env.mode development --env.hot hot --hot --port 8000",
     "build": "webpack --env.mode production",
     "build:stat": "npm run build -- --json > stat.json",
     "dev": "webpack --env.mode development",
@@ -41,6 +42,7 @@
     "precss": "^3.1.2",
     "purify-css": "^1.2.5",
     "purifycss-webpack": "^0.7.0",
+    "react-hot-loader": "^4.3.11",
     "resolve-url-loader": "^3.0.0",
     "style-loader": "^0.23.0",
     "typescript": "^3.0.3",

@@ -1,9 +1,11 @@
 import React from 'react';
 import Editor from './editor.js';
 import View from './view.js';
+import {draft} from './draft.js';
 
 import {connect} from 'react-redux';
 import {concat} from './utils.js';
+import {hot} from 'react-hot-loader';
 
 import './edit.css';
 
@@ -19,7 +21,9 @@ class Edit extends React.Component {
 	}
 
 	render() {
-		const {navisible, draft} = this.props;
+		const {navisible} = this.props;
+		const {draft} = this.state;
+
 		return(	
 			<div className={concat('edit', 'on-nav', navisible)} styleName='edit'>
 				<div className='editor'>
@@ -41,4 +45,4 @@ const map = state => {
 	}
 }
 
-export default connect(map)(Edit);
+export default hot(module)(connect(map)(Edit));

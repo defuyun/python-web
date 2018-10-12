@@ -13,19 +13,16 @@ const webpack = require('webpack');
 const workspace = path.join(__dirname, 'src');
 
 module.exports = env => {
+	env['BASE_URL'] = JSON.stringify((env.mode === 'development' ?  'http://localhost:8080' : ''));
+	const chunkhash = env.hot === 'hot' ? '[hash:5]' : '[chunkhash:5]';
+	const contenthash = env.hot === 'hot' ? '[hash:5]' : '[contenthash:5]';
 
-  if (env.mode === 'development'){
-    env['BASE_URL'] = JSON.stringify('http://localhost:8080');
-  } else {
-    env['BASE_URL'] = JSON.stringify('');
-  }
-
-  return {
+  let config = {
     mode : env.mode,
-  
+
     output : {
-      filename : '[name].[chunkhash:5].js',
-      chunkFilename : '[name].[chunkhash:5].js',
+      filename : `[name].${chunkhash}.js`,
+      chunkFilename :  `[name].${chunkhash}.js`,
     },
 
     entry : {
@@ -36,7 +33,9 @@ module.exports = env => {
       rules : [
         {
           test : /\.css$/,
+					exclude : /node_modules/,
           use : [
+						env.hot === 'hot' ? 'style-loader' : MiniCssExtractPlugin.loader,
             {
               loader : "css-loader",
               options : {
@@ -48,6 +47,7 @@ module.exports = env => {
                 importLoaders : 1,
                 modules : true,
                 localIdentName : 'whitelist[hash:base64:10]',
+								sourceMap : true,
               }
             },
             {
@@ -57,14 +57,13 @@ module.exports = env => {
                   require('autoprefixer'),
                   require('precss'),
                   require('postcss-calc'),
-                  require('postcss-import'),
                 ]),
               }
             }
           ],
         },
         {
-          test : /\.(png|jpg|gif)$/i,
+          test : /\.(png|jpg|gif|svg)$/i,
           use : {
             loader : 'url-loader',
             options : {
@@ -74,12 +73,8 @@ module.exports = env => {
           }
         },
         {
-          test : /\.(svg)$/,
-          use : 'file-loader'
-        },
-        {
           test : /\.(ts|js|tsx|jsx)$/,
-          exclude : '/node_modules/',
+          exclude : /node_modules/,
           use : {
             loader : 'babel-loader',
             options : {
@@ -94,6 +89,7 @@ module.exports = env => {
                 '@babel/plugin-transform-runtime',
                 '@babel/plugin-syntax-dynamic-import',
                 ['react-css-modules',{exclude : '/node_modules/', generateScopedName : 'whitelist[hash:base64:10]'}],
+								'react-hot-loader/babel',
               ],
             }
           }
@@ -101,8 +97,9 @@ module.exports = env => {
         {
           test: /\.(ttf|eot|woff|woff2)$/,
           use: {
-            loader: 'file-loader',
+            loader: 'url-loader',
             options: {
+							limit : 8192,
               name: 'fonts/[name].[ext]',
             }, 
           }
@@ -131,7 +128,7 @@ module.exports = env => {
       }),
       new ReactRootPlugin(),
       new MiniCssExtractPlugin({
-        filename : '[name].[contenthash:5].css'
+        filename : `[name].${contenthash}.css`
       }),
       new PurifyCssPlugin({
         paths : glob.sync(`${workspace}/**/*.js`, {nodir : true}),
@@ -143,4 +140,10 @@ module.exports = env => {
       new CleanWebpackPlugin(['dist']),
     ]
   }
+
+	if (env.hot === 'hot') {
+		config.plugins.push(new webpack.HotModuleReplacementPlugin());
+	}
+
+	return config;
 }

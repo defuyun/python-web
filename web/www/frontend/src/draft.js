@@ -69,7 +69,7 @@ class draft {
 		this.tagmap[tag] = true;
 		this.update();
 	}
-	
+
 	removetag(tag) {
 		remove(this.tags, tag);
 		delete this.tagmap[tag];

@@ -8,6 +8,7 @@ import * as log from 'loglevel';
 import {draft} from './draft.js';
 import {connect} from 'react-redux';
 import {concat} from './utils.js';
+import {hot} from 'react-hot-loader';
 
 import './editor.css';
 
@@ -20,12 +21,12 @@ class Editor extends React.Component {
 	}
 
 	titleChange(event) {
-		this.state.draft.settitle(event.target.value);
+		this.props.draft.settitle(event.target.value);
 	}
 
 	save() {
-		const {dispatch} = this.props;
-		dispatch({type : 'API_CALL', id : 'save', params : this.state.draft});
+		const {dispatch, draft} = this.props;
+		dispatch({type : 'API_CALL', id : 'save', params : draft});
 	}
 
 
@@ -46,11 +47,11 @@ class Editor extends React.Component {
 						<Button icon='save' onClick={this.save} inversible={1}/>
 						<Input inputProps={{placeholder : 'add a title', onChange : this.titleChange}} />
 					</div>
-					<AceEditor resize={cogshow * 10 + navisible} draft={this.state.draft} />
+					<AceEditor resize={cogshow * 10 + navisible} draft={draft} />
 				</div>
 			</div>
 		);
 	}	
 }
 
-export default connect()(Editor);
+export default hot(module)(connect()(Editor));
