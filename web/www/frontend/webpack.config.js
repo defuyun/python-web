@@ -13,9 +13,11 @@ const webpack = require('webpack');
 const workspace = path.join(__dirname, 'src');
 
 module.exports = env => {
-	env['BASE_URL'] = JSON.stringify((env.mode === 'development' ?  'http://localhost:8080' : ''));
-	const chunkhash = env.hot === 'hot' ? '[hash:5]' : '[chunkhash:5]';
-	const contenthash = env.hot === 'hot' ? '[hash:5]' : '[contenthash:5]';
+  env['BASE_URL'] = JSON.stringify((env.mode === 'development' ?  'http://localhost:8080' : ''));
+  env['HOT'] = JSON.stringify(env.hot);
+
+  const chunkhash = env.hot ? '[hash:5]' : '[chunkhash:5]';
+  const contenthash = env.hot ? '[hash:5]' : '[contenthash:5]';
 
   let config = {
     mode : env.mode,
@@ -33,21 +35,16 @@ module.exports = env => {
       rules : [
         {
           test : /\.css$/,
-					exclude : /node_modules/,
+          exclude : /node_modules/,
           use : [
-						env.hot === 'hot' ? 'style-loader' : MiniCssExtractPlugin.loader,
+            env.hot ? 'style-loader' : MiniCssExtractPlugin.loader,
             {
               loader : "css-loader",
               options : {
-                // the importLoaders options tells us how many loaders after css-loader do we apply to @import css files
-                // you have 2 files style.css, body.css and in style.css you import body.css
-                // without importLoader option set, only style.css will be parsed by postcss-loader （or should I say postcss-loader does not
-                // deal with import, leaves it alone and throws it into css-loader, css-loader sees the import and if importLoader is set, it will
-                // ask postcss-loader to parse this import)
                 importLoaders : 1,
                 modules : true,
                 localIdentName : 'whitelist[hash:base64:10]',
-								sourceMap : true,
+                sourceMap : true,
               }
             },
             {
@@ -89,7 +86,7 @@ module.exports = env => {
                 '@babel/plugin-transform-runtime',
                 '@babel/plugin-syntax-dynamic-import',
                 ['react-css-modules',{exclude : '/node_modules/', generateScopedName : 'whitelist[hash:base64:10]'}],
-								'react-hot-loader/babel',
+                'react-hot-loader/babel',
               ],
             }
           }
@@ -97,9 +94,8 @@ module.exports = env => {
         {
           test: /\.(ttf|eot|woff|woff2)$/,
           use: {
-            loader: 'url-loader',
+            loader: 'file-loader',
             options: {
-							limit : 8192,
               name: 'fonts/[name].[ext]',
             }, 
           }
@@ -141,9 +137,9 @@ module.exports = env => {
     ]
   }
 
-	if (env.hot === 'hot') {
-		config.plugins.push(new webpack.HotModuleReplacementPlugin());
-	}
+  if (env.hot === 'hot') {
+    config.plugins.push(new webpack.HotModuleReplacementPlugin());
+  }
 
-	return config;
+  return config;
 }
