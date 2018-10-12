@@ -1,72 +1,11 @@
 @import './constants.css';
 
 .cog {
-	position : absolute;
-	top : 0;
-	bottom : 0;
-	left : calc(-1 * $editor-side-width);
-	min-width : $editor-side-width;
-	z-index : $editor-side-z;
+	width : $editor-cog-width;
 	display : flex;
-	transition : all 0.5s linear;
-	opacity : 0.7;
-	border-top : 1px solid lightgray;
-	background : ghostwhite;
 	flex-direction : column;
-}
-
-.cog:global(.display) {
-	left : 0;
-}
-
-.cog > :global(.side-toggle) {
-	position : absolute;
-	top : 0;
-	bottom : 0;
-	right : -10px;
-	display : flex;
-	border : 1px solid lightgray;
-	border-left : 0;
-	background : ghostwhite;
-	border-radius : 0 15px 15px 0;
-	opacity : 0.5;
-}
-
-.cog > :global(.side-toggle):hover {
-	opacity : 1;
-}
-
-.cog > :global(.side-toggle) > :global(.button){
-	min-width : 10px !important;
-	max-width : 10px !important;
-}
-
-.cog:global(.display) > :global(.side-toggle) > :global(.button){
-	transform : rotate(180deg);
-}
-
-.list {
-	padding : $editor-side-toggle-width;	
-	height : 100%;
-	display : none;
-}
-
-.list:global(.active) {
-	display : flex;
 }
 
 .cog > :global(.headers) {
 	display : flex;
-}
-
-.cog > :global(.headers) > :global(.header-button:hover) {
-	background : lightgray;
-}
-
-.cog > :global(.headers) > :global(.header-button.active) {
-	border-bottom : 2px solid lightblue;
-}
-
-.cog > :global(.headers) :global(.button-text) {
-	padding : 0px;
 }

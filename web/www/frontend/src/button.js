@@ -11,7 +11,7 @@ class Button extends React.Component {
 	}
 
 	render() {
-		const {text, icon, inversible, border, disable} = this.props;
+		const {className, text, icon, inversible, border, disable} = this.props;
 
 		if (text === undefined && icon === undefined) {
 			log.error('[BUTTON] both text and icon are not defined');
@@ -32,7 +32,7 @@ class Button extends React.Component {
 		
 		return (
 			<div
-				className = {'button'}
+				className = {'button' + (className ? ` ${className}` : '')}
 				styleName = {buttonStylename}
 				{...this.props}
 			>

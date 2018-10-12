@@ -140,8 +140,8 @@ class Model(dict, metaclass=ModelMetaClass):
         if not len(row) > 0:
             logging.warn('[MODEL] find returned nothing')
             return None
-        
-        return cls(**cls.mapRow(row[0]))
+
+        return cls(**cls.mapRow(row[0])) if len(row) == 1 else list(map(lambda r : cls(**cls.mapRow(r)), row))
 
     @classmethod
     async def findAll(cls, **kw):
@@ -237,6 +237,13 @@ class Post(Model):
     post = TextField(id='post')
     created = DateField(id='created')
     modified = DateField(id='modified')
+
+class Tag(Model):
+    __table__ = 'tag'
+
+    relId = StringField(id='relId', ddl='CHAR(40)', primary=True)
+    postId = StringField(id='postId', ddl='CHAR(38)')
+    tagname = StringField(id='tagname', ddl='VARCHAR(25)')
 
 class Session(Model):
     __table__ = 'session'

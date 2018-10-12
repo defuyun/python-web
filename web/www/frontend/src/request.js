@@ -84,22 +84,32 @@ class RequestDispatcher {
         delete configLocal['url'];
 
         if (configLocal.method === 'POST') {
-            if ('body' in configLocal) {
-                log.warn(`[REQUEST] body already exists in config of the request, ${configLocal.body}, replacing it with ${args}`);
-            }
-            
-            configLocal.body = JSON.stringify(args);
-            if (!('headers' in configLocal)) {
-                configLocal.headers = {}
-            }
+					if ('body' in configLocal) {
+							log.warn(`[REQUEST] body already exists in config of the request, ${configLocal.body}, replacing it with ${args}`);
+					}
+					
+					configLocal.body = JSON.stringify(args);
+					if (!('headers' in configLocal)) {
+							configLocal.headers = {}
+					}
 
-            configLocal.headers['content-type'] = 'application/json';
-            
-						log.info(`[REQUEST] constructed POST request config ${JSON.stringify(configLocal)}`);
-        } else if (configLocal.method = 'GET') {
-            url += constructQueryString(args);
-            log.info(`[REQUEST] constructed GET request config ${JSON.stringify(configLocal)}`);
-        }
+					configLocal.headers['content-type'] = 'application/json';
+					
+					log.info(`[REQUEST] constructed POST request config ${JSON.stringify(configLocal)}`);
+        } else if (configLocal.method === 'GET') {
+					url += constructQueryString(args);
+					log.info(`[REQUEST] constructed GET request config ${JSON.stringify(configLocal)}`);
+        } else if (configLocal.method === 'FILE') {
+					configLocal.method = 'POST';
+					let data = new FormData();
+					args.map(item => {
+						log.info(`[REQUEST] adding file to data-from : {${item.name}, ${item.path || item.filename}, ${item.data.substring(0,10)}}`)
+						data.append(item.name, new File([item.data], item.name), item.path || item.filename);
+					});
+					
+					log.info(`[REQUEST] constructed POST request data-form ${JSON.stringify(data.entries())}]`);
+					configLocal.body = data;
+				}
 
         return fetch(url, configLocal);
     };

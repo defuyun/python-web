@@ -1,0 +1,25 @@
+.resources {
+	display : flex;
+	flex-direction : column;
+}
+
+.resources > :global(.tag), 
+.resources > :global(.file) {
+	display : flex;
+	justify-content : space-between;
+}
+
+.resources > :global(.tag) > :global(.button),
+.resources > :global(.file) > :global(.button) {
+	width : 20px;
+}
+
+.resources :global(.file-name),
+.resources :global(.tag-name) {
+	overflow : hidden;
+	max-width : 80%;
+}
+
+.resources :global(.error) {
+	overflow : break-word;
+}

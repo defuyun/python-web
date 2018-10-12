@@ -38,7 +38,6 @@ module.exports = env => {
 					test : /\.css$/,
 					exclude : '/node_modules/',
 					use : [
-						MiniCssExtractPlugin.loader,
 						{
 							loader : "css-loader",
 							options : {
@@ -67,15 +66,13 @@ module.exports = env => {
 				},
 				{
 					test : /\.(png|jpg|gif)$/i,
-					use : [
-						{
-							loader : 'url-loader',
-							options : {
-								limit : 8192,
-								name : './images/[name].[hash:5].[ext]'
-							}
+					use : {
+						loader : 'url-loader',
+						options : {
+							limit : 8192,
+							name : './images/[name].[hash:5].[ext]'
 						}
-					]
+					}
 				},
 				{
 					test : /\.(svg)$/,
@@ -100,6 +97,15 @@ module.exports = env => {
 								['react-css-modules',{exclude : '/node_modules/', generateScopedName : 'whitelist[hash:base64:10]'}],
 							],
 						}
+					}
+				},
+				{
+					test: /\.(ttf|eot|woff|woff2)$/,
+					use: {
+						loader: 'file-loader',
+						options: {
+							name: 'fonts/[name].[ext]',
+						}, 
 					}
 				}
 			]

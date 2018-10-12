@@ -48,15 +48,10 @@ $modal-button-width : 100px;
 $modal-button-top-padding : 20px;
 
 $editor-side-toggle-width : 10px;
-$editor-side-width-raw : 200px;
-$editor-side-width : calc($editor-side-width-raw + $editor-side-toggle-width);
-$editor-tools-button-max-width : 50px;
-$editor-tools-input-left-padding : 40px;
-$editor-tools-input-width: 200px;
-
-$editor-min-width : calc($editor-tools-input-width + $editor-tools-input-left-padding + 4 * $editor-tools-button-max-width);
-
+$editor-cog-width : 200px;
+$editor-sidebar-width : calc($editor-cog-width + $editor-side-toggle-width);
 $editor-tools-height : 30px;
+$editor-tools-btn-width : 40px;
 
 $nav-z : 100;
 $modal-z : 103;

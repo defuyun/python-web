@@ -1,45 +1,49 @@
 import React from 'react';
 import Button from './button.js';
+import {concat} from './utils.js';
+import {Resources, Errors, Tags} from './cog-components.js';
 
+import * as log from 'loglevel';
 import './cog.css';
 
 class Cog extends React.Component {
 	constructor(props) {
 		super(props);
-		const {lists} = this.props;
-		this.state = {display : false, active : lists[0] ? lists[0].key : null}
+		const {draft} = this.props;
+		this.update = this.update.bind(this);
+		draft.setupdate(this.update);
+		this.state = {active : 'resources'};
+		this.headers = ['resources','errors','tags'];
+		this.components = {
+			resources : Resources,
+			errors : Errors,
+			tags : Tags,
+		}
+		this.setActive = this.setActive.bind(this);
 	}
 
-	render(){
-		const {lists} = this.props;
-		const {display, active} = this.state;
+	update() {
+		log.info('[COG] update called');
+		this.setState({});
+	}
 
+	setActive(active) {
+		return () => this.setState({active});
+	}
+
+	render() {
+		const {active} = this.state;
+		const content = React.createElement(this.components[active], this.props);
 		return (
-			<div className={'cog' + (display ? ' display' : '')} styleName='cog'>
-				<div className='side-toggle'>
-					<Button icon='angle-right' onClick={() => this.setState({display : !display})} />
-				</div>
+			<div className='cog' styleName='cog'>
 				<div className='headers'>
-					{lists.map(list => 
-						<div key={list.key} className={'header-button' + (active === list.key ? ' active' : '')}>
-							<Button text={list.header} onClick={() => this.setState({active : list.key})}/> 
+					{this.headers.map(header => 
+						<div key={header} className={concat(header,'active', header === active)}>
+							<Button text={header} inversible={1} onClick={this.setActive(header)}/>
 						</div>
 					)}
 				</div>
-				
-				{lists.map(list => {
-					return (
-						<div key={list.key} className={active === list.key ? 'active' : ''} styleName='list'>
-							<div className='items'>
-								{list.items.map(item =>
-									<div className='list-item'>
-										{item.text}
-									</div>
-								)}
-							</div>
-						</div>		
-					);									 
-				})}
+				{content}
 			</div>
 		);
 	}

@@ -1,104 +1,56 @@
 import React from 'react';
-import Input from './input.js';
-import Button from './button.js';
+import AceEditor from './ace-editor.js';
 import Cog from './cog.js';
-import AceEditor from './text-editor.js';
+import Button from './button.js';
+import Input from './input.js';
 
+import * as log from 'loglevel';
+import {draft} from './draft.js';
 import {connect} from 'react-redux';
-import {guid} from './utils.js';
+import {concat} from './utils.js';
 
 import './editor.css';
 
 class Editor extends React.Component {
 	constructor(props) {
 		super(props);
-		const {draft} = this.props;
-		if (draft && draft.id) {
-			this.state = {...draft};
-		} else {
-			this.state = {...this.genp()};
-		}
-
-		this.newp = this.newp.bind(this);
+		this.state = {cogshow : true};
 		this.save = this.save.bind(this);
-		this.upload = this.upload.bind(this);
-		this.erase = this.erase.bind(this);
+		this.titleChange = this.titleChange.bind(this);
 	}
 
-	genp() {
-		return {
-			title : null,
-			id : guid(),
-			content : null,
-			filelist : [],
-		}
-	}
-
-	newp() {
-		this.setState({...this.genp()})
+	titleChange(event) {
+		this.state.draft.settitle(event.target.value);
 	}
 
 	save() {
-	
-	}
-
-	upload() {
-	
-	}
-
-	erase() {
-		this.setState({
-			title : null,
-			id : this.state.id,
-			content : null,
-			filelist : this.state.filelist,
-		})
-	}
-
-	componentWillUnmount() {
 		const {dispatch} = this.props;
-		const {title, id, files, content} = this.state;
-
-		dispatch({type : 'CACHE_DRAFT', draft : {title, id, files, content}})
+		dispatch({type : 'API_CALL', id : 'save', params : this.state.draft});
 	}
+
 
 	render() {
-		const title = this.state.title || '';
-		const {errors, files} = this.state;
-		const lists = [
-			{key : 'files', header : 'files', items : files || []},
-			{key : 'errors', header : 'errors', items : errors || []},
-		];
-		
+		const {navisible, draft} = this.props;
+		const {cogshow} = this.state;
+
 		return (
 			<div className='editor' styleName='editor'>
-				<div className='tools'>
-					<Input inputProps={{
-						onChange : event => this.setState({title : event.target.value}),
-						placeholder : 'input a title to start editing',
-						value : title,
-					}}/>
-					<div className='button-group'>
-						<Button key='new' icon='plus' onClick={this.newp} inversible={1} />
-						<Button key='save' icon='save' onClick={this.save} inversible={1}/>
-						<Button key='upload' icon='file-upload' onClick={this.upload} inversible={1}/>
-						<Button key='erase' icon='eraser' onClick={this.erase} inversible={1}/>
+				<div className={concat('sidebar', 'display', cogshow)} styleName='sidebar'>
+					<div className='sidebar-button'>
+						<Button icon='angle-right' onClick={() => this.setState({cogshow : !cogshow})} />
 					</div>
+					<Cog draft={draft}/>
 				</div>
-				<div className='text-editor'>
-					<Cog lists={lists} />
-					<AceEditor onChange={content => this.setState({content})}/>
+				<div className={concat('txt-editor','cog', cogshow)} styleName='txt-editor'>
+					<div className='tools' styleName='tools'>
+						<Button icon='save' onClick={this.save} inversible={1}/>
+						<Input inputProps={{placeholder : 'add a title', onChange : this.titleChange}} />
+					</div>
+					<AceEditor resize={cogshow * 10 + navisible} draft={this.state.draft} />
 				</div>
 			</div>
-		);		
+		);
 	}	
 }
 
-const map = state => {
-	return {
-		draft : state.draft,
-		navisible : state.navisible,
-	}
-}
-
-export default connect(map)(Editor);
+export default connect()(Editor);

@@ -1,9 +1,9 @@
 import React from 'react';
 import Button from './button.js';
-
-import style from './input.css';
-
 import * as log from 'loglevel';
+
+import './input.css';
+
 
 class Input extends React.Component {
 	constructor(props) {
@@ -11,8 +11,8 @@ class Input extends React.Component {
 	}
 
 	render() {
-		const {iconProps, inputProps} = this.props;
-		const iconDisabled = iconProps && (iconProps.callback === undefined || iconProps.callback === null);
+		const {iconProps, inputProps, className} = this.props;
+		const iconDisabled = iconProps && !(iconProps.onClick instanceof Function);
 
 		const IconElement = iconProps ? 
 			(<div className='input-icon'>
@@ -28,7 +28,7 @@ class Input extends React.Component {
 		/>);
 
 		return (
-			<div className={'input'} styleName='input'>
+			<div className={'input' + (className ? ` ${className}` : '')} styleName='input'>
 				{IconElement}
 				{InputElement}
 			</div>

@@ -99,8 +99,10 @@ class RequestHandler(object):
                     part = await reader.next()
                     if part is None:
                         break
-                    
+
                     filename = part.filename;
+                    logging.debug('[HANDLER] received file (%s)' % part.filename)
+
                     ext_index = filename.rfind('.')
                     extension = None if ext_index == -1 or ext_index + 1 == len(filename) else filename[ext_index:] 
 

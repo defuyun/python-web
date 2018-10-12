@@ -2,7 +2,6 @@ import {combineReducers} from 'redux';
 import * as log from 'loglevel';
 
 const navisible = (state = false, action) => {
-	log.info(`[REDUCER] triggered reducer {navisible},`);
 	if (action.type === 'NAV_VISIBLE') {
 		log.info(`[REDUCER] returning reducer {navisible} : ${action.visible}`);
 		return action.visible;
@@ -11,7 +10,6 @@ const navisible = (state = false, action) => {
 }
 
 const completeInit = (state = false, action) => {
-	log.info(`[REDUCER] triggered reducer {completeInit},`);
 	if (action.type === 'INIT_PAGE') {
 		log.info(`[REDUCER] returning reducer {completeInit} : false`);
 		return false;	
@@ -23,7 +21,6 @@ const completeInit = (state = false, action) => {
 }
 
 const modal = (state = {}, action) => {
-	log.info(`[REDUCER] triggered reducer {modal},`);
 	if (action.type === 'UPDATE_MODAL') {
 		log.info(`[REDUCER] returning reducer {modal} : ${JSON.stringify(action.modal)},`);
 		return action.modal;
@@ -32,7 +29,6 @@ const modal = (state = {}, action) => {
 }
 
 const userInfo = (state ={}, action) => {
-	log.info(`[REDUCER] triggered reducer {userInfo},`);
 	if (action.type === 'USER_INFO') {
 		log.info(`[REDUCER] returning reducer {userInfo} : ${JSON.stringify(action.userInfo)},`);
 		return action.userInfo;
@@ -41,10 +37,17 @@ const userInfo = (state ={}, action) => {
 }
 
 const activeNavItem = (state = 'home', action) => {
-	log.info(`[REDUCER] triggered reducer {navItemChange},`);
 	if (action.type === 'NAV_ITEM_CHANGE') {
 		log.info(`[REDUCER] returning reducer {navItemChange} : ${JSON.stringify(action.id)},`);
 		return action.id;
+	}
+	return state;
+}
+
+const draft = (state = null, action) => {
+	if (action.type === 'CACHE_DRAFT') {
+		log.info(`[REDUCER] returning reducer {draft} : ${JSON.stringify(action.draft)},`);
+		return action.draft;
 	}
 	return state;
 }
@@ -55,6 +58,7 @@ const rootReducer = combineReducers({
 	modal,
 	completeInit,
 	navisible,
+	draft,
 });
 
 export {rootReducer};

@@ -2,45 +2,60 @@
 
 .editor {
 	position : relative;
-	left : 0;
+	height : 100%;
+	width : 100%;
+	display : flex;
+}
+
+.sidebar {
+	position : absolute;
+	display : flex;
+	width : $editor-sidebar-width;
 	top : 0;
 	bottom : 0;
-	height : 100%;
-	width : 50%;
-	min-width : 440px;
+	left : calc(-1 * $editor-sidebar-width + $editor-side-toggle-width);
+	transition : all 0.5s linear;
+}
+
+.sidebar:global(.display) {
+	left : 0;
+}
+
+.sidebar > :global(.sidebar-button) {
+	position : absolute;
+	top : 0;
+	bottom : 0;
+	right : 0;
+	width : 10px;
+	display : flex;
+	transition : all 0.5s linear;
+}
+
+.sidebar:global(.display) > :global(.sidebar-button) {
+	transform : rotate(180deg);
+}
+
+.sidebar > :global(.sidebar-button) > :global(.button) {
+	min-width : 10px !important;
+}
+
+.txt-editor {
+	width : 100%;
 	display : flex;
 	flex-direction : column;
+	transition : all 0.5s linear;
+	padding-left : $editor-side-toggle-width;
 }
 
-.editor > :global(.tools) {
+.txt-editor:global(.cog) {
+	padding-left : $editor-sidebar-width;
+}
+
+.tools {
 	display : flex;
-	min-height : $editor-tools-height;
+	height : $editor-tools-height;
 }
 
-.editor > :global(.tools) > :global(.input) {
-	min-width : $editor-tools-input-width;
-	width : 100%;
-	padding-left : $editor-tools-input-left-padding;
-}
-
-.editor > :global(.text-editor) {
-	position : relative;
-	height : 100%;
-	display : flex;
-}
-
-.editor > :global(.tools) > :global(.button-group) {
-	display : flex;
-	justify-content : center;
-}
-
-.editor > :global(.tools) > :global(.button-group) > :global(.button){
-	max-width : $editor-tools-button-max-width;
-}
-
-.ace-editor {
-	width : 100%;
-	height : 100%;
-	display : flex;
-	position : relative;
+.tools :global(.button) {
+	width : $editor-tools-btn-width; 
 }

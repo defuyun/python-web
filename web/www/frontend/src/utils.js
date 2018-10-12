@@ -108,3 +108,73 @@ function createAggregate(append,orig) {
 }
 
 export {empty ,lessThan, moreThan, match, createAggregate};
+
+export const find = (arr, key) => {
+	if (! (arr instanceof Array)) {
+		log.error('[UTILS] input is not an array');
+		return;
+	}
+	
+	for (let i = 0; i < arr.length ; i++) {
+		if (arr[i] === key) {
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+export const remove = (arr, key) => {
+	if (! (arr instanceof Array)) {
+		log.error('[UTILS] input is not an array');
+		return;
+	}
+	
+	let j = 0;
+	for (let i = 0; i < arr.length ; i++) {
+		if (arr[i] !== key) {
+			arr[j] = arr[i];
+			j++;
+		}
+	}
+
+	arr.length = j;
+	return arr;
+}
+
+export const getItemByKey = (arr, key) => {
+	for (let item of arr) {
+		if (item && item.key === key) {
+			return {...item};
+		}
+	}
+}
+
+export const removeItemByKey = (arr, key) => {
+	if (! (arr instanceof Array)) {
+		log.error('[UTILS] input is not an array');
+		return;
+	}
+
+	let j = 0;
+	for (let i = 0; i < arr.length ; i++) {
+		if (arr[i].key !== key) {
+			arr[j] = arr[i];
+			j++;
+		}
+	}
+
+	arr.length = j;
+}
+
+export const concat = (str1, str2, filter, sep) => {
+	let fres = false;
+
+	if(filter instanceof Function) {
+		fres = filter();	
+	} else {
+		fres = filter;
+	}
+
+	return fres ? (str1 + (sep ? sep : ' ') + str2) : str1;
+}

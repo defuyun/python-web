@@ -13,3 +13,7 @@
 .edit:global(.on-nav) {
 	padding-top : $nav-height;
 }
+
+.edit > :global(.editor), .edit > :global(.view) {
+	width : 50%;
+}

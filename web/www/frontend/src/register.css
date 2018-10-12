@@ -1,4 +1,4 @@
-@import './constants.css';
+@import 'constants.css';
 
 .register {
 	max-width : $form-max-width;

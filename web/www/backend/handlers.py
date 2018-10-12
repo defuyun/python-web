@@ -11,7 +11,7 @@ import re
 
 from aiohttp import web
 from coroweb import get, post
-from model import User, Post, Session
+from model import User, Tag, Post, Session
 
 from config.constants import constants
 from config.config import config
@@ -40,47 +40,104 @@ def __make_auth_response__(user:User, cookie, age=config.cookie_expire_duration_
 
     return resp
 
-@post('/api/edit/new')
-async def editNew(request, *, post:dict):
+def __new_tag__(postId, tagname):
+    s = '%s-%s' % (postId, tagname)
+    sha1 = hashlib.sha1(s.encode('utf-8')).hexdigest()
+    return Tag(relId=sha1, postId=postId, tagname=tagname)
+
+async def __sync_tags__(postId:str, dbtags:list, cltags:list):
+    i = j = 0
+
+    dbtags.sort(key=lambda t : t.tagname)
+    cltags.sort()
+    
+    logging.debug('[SYNC_TAG] db tags are [%s]' % ','.join(list(map(lambda t : t.tagname, dbtags))))
+    logging.debug('[SYNC_TAG] received client tags are [%s]' % ','.join(cltags))
+    
+    while i < len(dbtags) and j < len(cltags):
+        if dbtags[i].tagname == cltags[j]:
+            i+=1;j+=1;
+        elif dbtags[i].tagname < cltags[j]:
+            await dbtags[i].delete()
+            i+=1;
+        else:
+            newtg = __new_tag__(postId, cltags[j])
+            await newtg.save()
+            j+=1;
+    
+    while i < len(dbtags):
+        await dbtags[i].delete()
+        i+=1
+
+    while j < len(cltags):
+        newtg = __new_tag__(postId, cltags[j])
+        await newtg.save()
+        j+=1
+
+def __sync_resources__(userId : str, postId :str, resources : list):
+    postpath = os.path.join(config.resources, os.path.join(userId, postId))
+    localfiles = list(filter(lambda f : not f.startswith('.'), os.listdir(postpath)))
+
+    localfiles.sort()
+    resources.sort()
+    
+    logging.debug('[SYNC_RES] filtered local files are [%s]' % ','.join(localfiles))
+    logging.debug('[SYNC_RES] received client files are [%s]' % ','.join(resources))
+
+    i = j = 0
+    while i < len(localfiles) and j < len(resources):
+        if localfiles[i] == resources[j]:
+            i+=1
+            j+=1
+        elif localfiles[i] < resources[j]:
+            filepath = os.path.join(postpath, localfiles[i])
+            if os.path.exists(filepath):
+                os.remove(filepath)
+            i+=1
+        else:
+            j+=1
+
+    while i < len(localfiles):
+        filepath = os.path.join(postpath, localfiles[i])
+        if os.path.exists(filepath):
+            os.remove(filepath)
+        i+=1
+
+
+@post('/api/edit/save')
+async def editSave(request, *, postId, title, content, resources, tags):
     if not request.user:
         return web.HTTPBadRequest(body='not authenticated')
     
-    if not post.postId or not post.title or not post.text:
-        return web.HTTPBadRequest(body='missing one of the parameters')
+    dbtags = await Tag.find(key='postId', value=postId)
+    if dbtags is None:
+        dbtags = []
+    elif not isinstance(_tags, list):
+        dbtags = [dbtags]
 
-    created = modified = getCurrentDateTime()
-    post = Post(postId=post.postId, post=post.post, title=post.title, created=created, modified=modified)
-
-    success = await post.save()
-
-    if not success:
-        return web.HTTPBadRequest(body='failed to create new post')
+    await __sync_tags__(postId, dbtags, tags)
     
+    __sync_resources__(request.user.userId, postId, resources)
+
+    post = await Post.find(key='postId', value=postId)
+    if post:
+        post.title = title
+        post.post = content
+        post.modified = getCurrentDateTime()
+        
+        success = await post.update()
+        if not success:
+            return web.HTTPBadRequest(body='failed to update post')
+    else :
+        created = modified = getCurrentDateTime()
+        post = Post(postId=postId, post=content, title=title, created=created, modified=modified)
+        
+        success = await post.save()
+        if not success:
+            return web.HTTPBadRequest(body='failed to create new post')
+
     return web.HTTPOk()
 
-@post('/api/edit/publish')
-async def editPublish(request, *, post:dict):
-    if not request.user:
-        return web.HTTPBadRequest(body='not authenticated')
-
-    if not post.postId or not post.title or not post.text:
-        return web.HTTPBadRequest(body='missing one of the parameters')
-
-    _post = await Post.find(key='postId', value=post.postId)
-
-    if not _post:
-        return web.HTTPBadRequest(body='invalid postId')
-
-    _post.title = post.title
-    _post.post = post.post
-    _post.modified = getCurrentDateTime()
-
-    success = await _post.update()
-
-    if not success:
-        return web.HTTPBadRequest(body='failed to update post')
-    
-    return web.HTTPOk()
 
 @post('/api/edit/delete')
 async def editDelete(request,*, post:dict):
@@ -226,26 +283,30 @@ async def editUpload(request,*,files):
     if not request.user:
         return web.HTTPBadRequest(body='not authenticated')
     
-    fails = []
+    ret = []
     for file in files:
-        extension = file[extension]
-        
+        extension = file['extension']
+        filename = file['filename']
+
         if extension is None:
-            fails.append({'filename' : file['filename'], 'error': 'NO_EXTENSION'})
+            ret.append({'filename' : filename, 'error': 'NO_EXTENSION'})
             continue
 
-        directory = os.path.join(config.resources, request.user.userId)
-        if not os.path.exists(directory):
-            os.makedir(directory)
+        fullpath = os.path.join(os.path.join(config.resources, request.user.userId), filename);
+        directory = os.path.dirname(fullpath);
 
-        filename = os.path.join(directory, file['filename']))
-        
-        if os.path.isfile(filename):
-            fails.append({'filename': file['filename'], 'error' : 'FILE_EXISTS'})
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        if os.path.isfile(fullpath):
+            ret.append({'filename': filename, 'error' : 'FILE_EXISTS'})
             continue
 
         mode = 'wb' if re.match('^\.(jpg|png|gif|svg)$',file['extension'], flags=re.IGNORECASE) else 'w'
-        async with aiofiles.open(filename, mode=mode) as f:
+        async with aiofiles.open(fullpath, mode=mode) as f:
+            logging.debug('[UPLOAD] adding new file %s' % fullpath)
             await f.write(file['data'])
+        
+        ret.append({'filename' : filename, 'path' : fullpath})
 
-    return {'fails' : fails}
+    return {'files' : ret}

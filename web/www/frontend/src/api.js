@@ -23,3 +23,15 @@ export const loginApi = request.createRestApi({
 	method : 'POST',
 	credentials : 'include',
 })
+
+export const saveApi = request.createRestApi({
+	url : BASE_URL + '/api/edit/save',
+	method : 'POST',
+	credentials : 'include',
+})
+
+export const uploadApi = request.createRestApi({
+	url : BASE_URL + '/api/edit/upload',
+	method : 'FILE',
+	credentials : 'include',
+});

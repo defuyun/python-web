@@ -2,6 +2,9 @@ import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {library} from '@fortawesome/fontawesome-svg-core';
 import {faAngleUp, 
+	faTimes,
+	faPlusSquare,
+	faHeading,
 	faAngleRight,
 	faSave,
 	faEraser,
@@ -26,6 +29,9 @@ import {faAngleUp,
 import * as log from 'loglevel';
 
 library.add(faSpinner, 
+	faTimes,
+	faPlusSquare,
+	faHeading,
 	faAngleRight,
 	faSave,
 	faSave,

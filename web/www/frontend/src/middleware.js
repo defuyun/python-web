@@ -11,17 +11,25 @@ export const initMiddleware = store => next => action => {
 	if (action.type === 'INIT_PAGE') {
 		setTimeout(() => store.dispatch({type : 'API_CALL', id : 'userInfo'}), 200);
 	}
-
 	next(action);
+}
+
+const delayModalUpdate = (modal, store, action) => {
+	if (action.type === 'DISPLAY_SPINNER' && modal.msgType === 'spinner') {
+		return;
+	}
+
+	store.dispatch({type : 'UPDATE_MODAL', modal : {display : false}});
+	setTimeout(() => store.dispatch({...action}), 500);
 }
 
 export const modalMiddleware = store => next => action => {
 	log.info('[MIDDLEWARE] enter modal middleware');
+	
 	if (action.type === 'DISPLAY_MESSAGE' || action.type === 'DISPLAY_SPINNER') {
 		const {modal} = store.getState();
 		if (modal.display) {
-			store.dispatch({type : 'UPDATE_MODAL', modal : {display : false}});
-			setTimeout(() => store.dispatch({...action}), 500);
+			delayModalUpdate(modal, store, action);
 			return next(action);
 		}
 	}
@@ -37,7 +45,9 @@ export const modalMiddleware = store => next => action => {
 			msgType, text, icon, display : true, manual : false, component : TextMessage,
 		}});
 	} else if (action.type === 'HIDE_SPINNER') {
-		store.dispatch({type : 'UPDATE_MODAL', modal : {display : false}});
+		const {modal} = store.getState();
+		modal.display && modal.msgType === 'spinner' &&
+			store.dispatch({type : 'UPDATE_MODAL', modal : {display : false}});
 	}
 
 	next(action);
@@ -48,31 +58,24 @@ export const requestMiddleware = store => next => action => {
 	if (action.type === 'API_CALL') {
 		const {id, params} = action;
 		const genericResponseHandler = module => response => {
-				log.info(`[MIDDLEWARE] received response from ${module} ${JSON.stringify(response)}`);
-				if (response.status === 400 || response.status === 401) {
-					return response.text();
-				}
-				return response.json();
+			log.info(`[MIDDLEWARE] received response from ${module} ${JSON.stringify(response)}`);
+			return response.status === 200 ? response.json() : response.text();
 		};
 
 		const genericBodyHandler = (filter, callback) => body => {
 			if(filter(body)) {
-				const dontHide = callback(body);
-				if (!dontHide) {
-					setTimeout(() => store.dispatch({type : 'HIDE_SPINNER'}),1000);
-				}
+				callback(body);
+				setTimeout(() => store.dispatch({type : 'HIDE_SPINNER'}),1000);
 			} else {
 				throw body;
 			}
 		}
 
-		const genericErrorHandler = module => error => {
-			store.dispatch({
-				type : 'DISPLAY_MESSAGE',
-				msgType : 'error', 
-				text : `There was an error trying to fetch ${module} ${error.toString()}`
-			})
-		};
+		const genericErrorHandler = module => error => store.dispatch({
+			type : 'DISPLAY_MESSAGE',
+			msgType : 'error', 
+			text : `There was an error trying to fetch ${module} ${error.toString()}`
+		});
 
 		store.dispatch({type : 'DISPLAY_SPINNER'});
 		
@@ -110,10 +113,8 @@ export const requestMiddleware = store => next => action => {
 			api.logoutApi({}).then(genericResponseHandler(id))
 			.then(genericBodyHandler(
 				body => body.user,
-				({user}) => {
-					store.dispatch({type : 'USER_INFO', userInfo : user});
-				}		
-			))
+				({user}) => 
+					store.dispatch({type : 'USER_INFO', userInfo : user})))
 			.catch(genericErrorHandler(id));
 		}
 
@@ -124,11 +125,38 @@ export const requestMiddleware = store => next => action => {
 			api.loginApi(args).then(genericResponseHandler(id))
 			.then(genericBodyHandler(
 				body => body.user,
-				({user}) => {
-					store.dispatch({type : 'USER_INFO', userInfo : user});
-				}		
-			))
+				({user}) => store.dispatch({type : 'USER_INFO', userInfo : user})))
 			.catch(genericErrorHandler(id));
+		}
+
+		if (id === 'save') {
+			const {uploaded} = action;
+			if (!uploaded) {
+				store.dispatch({type : 'API_CALL',id : 'upload', params, save : true});
+			} else {
+				api.saveApi(params.tosave()).then(response => {
+					if (response.status === 200) {
+						store.dispatch({type : 'DISPLAY_MESSAGE', msgType : 'info', text : 'post has been saved'});
+					} else {
+						throw 'save was not successful'
+					}
+				}).catch(genericErrorHandler(id));
+			}
+		}
+
+		if (id === 'upload') {
+			const files = params.getunsynced();
+			if (files.length !== 0) {
+				api.uploadApi(files).then(response => {
+					if( response.status !== 200) {
+						throw 'upload was not successful';
+					}
+				}).catch(genericErrorHandler(id));
+			}
+			
+			if(action.save) {
+				setTimeout(() => store.dispatch({type : 'API_CALL', id : 'save', params, uploaded : true}),1000);
+			}
 		}
 	}
 
