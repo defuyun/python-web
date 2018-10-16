@@ -20,6 +20,7 @@
 .inverse:hover {
 	background : blue;
 	border-color : blue;
+	box-shadow : 0px 0px 1px black;
 }
 
 .inverse:hover > :global(.button-text), .inverse:hover > :global(.button-icon) {

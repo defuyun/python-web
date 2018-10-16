@@ -6,4 +6,9 @@
 	display : flex;
 	align-items: center;
 	padding : $search-bar-padding;
+	box-sizing : border-box;
+}
+
+.search-bar :global(.button) {
+	width : 20px !important;
 }

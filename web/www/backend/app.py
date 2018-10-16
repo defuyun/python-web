@@ -41,6 +41,8 @@ async def init(loop:AbstractEventLoop):
 
     await init_db(app, loop)
     coroweb.add_routes(app, constants.web_handler_module)
+    coroweb.add_statics(app, config.resources, constants.resources_dirname)
+
     srv = await loop.create_server(app.make_handler(), '127.0.0.1', 8080)
     logging.info('[APP] server started on 127.0.0.1:8080')
     return srv

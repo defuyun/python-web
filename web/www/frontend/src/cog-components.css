@@ -1,16 +1,43 @@
+@import './constants.css';
+
 .resources {
 	display : flex;
 	flex-direction : column;
+	padding : 10px;
 }
 
-.resources > :global(.tag), 
-.resources > :global(.file) {
+.resources > :global(.feedback-input-item) {
+	padding-top : 5px;
+	padding-bottom : 5px;
+	border-bottom : 1px solid $border-color;
+}
+
+.resources :global(.invalid-feedback) {
+	padding-top : $invalid-feedback-top-padding;
+	font-size : 80%;
+	color : red;
+}
+
+.resources :global(.tag-wrapper),
+.resources :global(.file-wrapper) {
+	padding : 5px;
+	border-bottom : 1px solid;
+	transition : all 0.3s linear;
+}
+
+.resources :global(.tag-wrapper.out),
+.resources :global(.file-wrapper.out) {
+	opacity : 0;
+}
+
+.resources :global(.tag), 
+.resources :global(.file) {
 	display : flex;
 	justify-content : space-between;
 }
 
-.resources > :global(.tag) > :global(.button),
-.resources > :global(.file) > :global(.button) {
+.resources :global(.tag) > :global(.button),
+.resources :global(.file) > :global(.button) {
 	width : 20px;
 }
 
@@ -23,3 +50,38 @@
 .resources :global(.error) {
 	overflow : break-word;
 }
+
+.resources > :global(.file-upload) {
+	position : absolute;
+	opacity : 0;
+}
+
+.resources > :global(.file-u-wrapper) > :global(.file-upload-label) {
+	width : 100%;
+	text-align : center;
+	padding : 5px;
+	box-shadow : 0 0 1px darkgray;
+	background : ghostwhite;
+	color : darkgray;
+	opacity : 0.7;
+	transition : all 0.5s linear;
+	border : 1px dashed darkgrey;
+}
+
+.resources > :global(.file-u-wrapper) > :global(.file-upload-label:hover) {
+	opacity: 1;
+	color : gray;
+	padding : 10px;
+	cursor : pointer;
+}
+
+.resources > :global(.file-u-wrapper) > :global(.file-upload-label:active) {
+	box-shadow : 0 0 1px darkgrey inset;
+}
+
+.resources > :global(.file-u-wrapper) {
+	padding : 10px;
+	display : flex;
+	justify-content : center;
+}
+

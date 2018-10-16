@@ -1,9 +1,9 @@
 import React from 'react';
 import Button from './button.js';
+import {concat} from './utils.js';
 import * as log from 'loglevel';
 
 import './input.css';
-
 
 class Input extends React.Component {
 	constructor(props) {
@@ -28,7 +28,7 @@ class Input extends React.Component {
 		/>);
 
 		return (
-			<div className={'input' + (className ? ` ${className}` : '')} styleName='input'>
+			<div className={concat('input', className, className)} styleName='input'>
 				{IconElement}
 				{InputElement}
 			</div>

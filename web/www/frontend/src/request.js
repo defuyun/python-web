@@ -104,7 +104,7 @@ class RequestDispatcher {
 					let data = new FormData();
 					args.map(item => {
 						log.info(`[REQUEST] adding file to data-from : {${item.name}, ${item.path || item.filename}, ${item.data.substring(0,10)}}`)
-						data.append(item.name, new File([item.data], item.name), item.path || item.filename);
+						data.append(item.name, item.file, item.path || item.filename);
 					});
 					
 					log.info(`[REQUEST] constructed POST request data-form ${JSON.stringify(data.entries())}]`);

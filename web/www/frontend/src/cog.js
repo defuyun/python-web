@@ -6,14 +6,12 @@ import {Resources, Errors, Tags} from './cog-components.js';
 import * as log from 'loglevel';
 import './cog.css';
 
-import {hot} from 'react-hot-loader';
-
 class Cog extends React.Component {
 	constructor(props) {
 		super(props);
 		const {draft} = this.props;
 		this.update = this.update.bind(this);
-		draft.setupdate(this.update);
+		draft.addupdate('cog', this.update);
 		this.state = {active : 'resources'};
 		this.headers = ['resources','errors','tags'];
 		this.components = {
@@ -36,8 +34,8 @@ class Cog extends React.Component {
 	render() {
 		const {draft} = this.props;
 		
-		if (draft.update !== this.update) {
-			draft.setupdate(this.update);
+		if (draft.updateFunc['cog'] !== this.update) {
+			draft.addupdate('cog', this.update);
 		}
 
 		const {active} = this.state;
@@ -57,4 +55,4 @@ class Cog extends React.Component {
 	}
 }
 
-export default hot(module)(Cog);
+export default Cog;

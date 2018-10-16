@@ -8,7 +8,6 @@ import * as log from 'loglevel';
 import {draft} from './draft.js';
 import {connect} from 'react-redux';
 import {concat} from './utils.js';
-import {hot} from 'react-hot-loader';
 
 import './editor.css';
 
@@ -18,10 +17,20 @@ class Editor extends React.Component {
 		this.state = {cogshow : true};
 		this.save = this.save.bind(this);
 		this.titleChange = this.titleChange.bind(this);
+		this.descripChange = this.descripChange.bind(this);
+		this.rerender = this.rerender.bind(this);
+	}
+
+	rerender() {
+		this.setState({});
 	}
 
 	titleChange(event) {
 		this.props.draft.settitle(event.target.value);
+	}
+
+	descripChange(event) {
+		this.props.draft.setdescrip(event.target.value);
 	}
 
 	save() {
@@ -29,23 +38,31 @@ class Editor extends React.Component {
 		dispatch({type : 'API_CALL', id : 'save', params : draft});
 	}
 
-
 	render() {
 		const {navisible, draft} = this.props;
 		const {cogshow} = this.state;
 
+		if (draft.rerenderFunc['editor'] !== this.rerender) {
+			draft.addrerender('editor', this.rerender);
+		}
 		return (
-			<div className='editor' styleName='editor'>
+			<div className='editor' styleName='editor' >
 				<div className={concat('sidebar', 'display', cogshow)} styleName='sidebar'>
 					<div className='sidebar-button'>
 						<Button icon='angle-right' onClick={() => this.setState({cogshow : !cogshow})} />
 					</div>
 					<Cog draft={draft}/>
 				</div>
-				<div className={concat('txt-editor','cog', cogshow)} styleName='txt-editor'>
+				<div className={concat('txt-editor','cog', cogshow)} styleName='txt-editor' >
 					<div className='tools' styleName='tools'>
-						<Button icon='save' onClick={this.save} inversible={1}/>
-						<Input inputProps={{placeholder : 'add a title', onChange : this.titleChange}} />
+						<div className='buttons'>
+							<Button icon='save' onClick={this.save} inversible={1}/>
+							<Button icon='file' onClick={draft.clear} inversible={1}/>
+						</div>
+						<Input inputProps={{placeholder : 'add a title', onChange : this.titleChange, value : draft.title}} />
+					</div>
+					<div className='descrip' styleName='descrip'>
+						<Input inputProps={{placeholder : 'add descriptions', onChange : this.descripChange, value : draft.descrip}} />
 					</div>
 					<AceEditor resize={cogshow * 10 + navisible} draft={draft} />
 				</div>
@@ -54,4 +71,4 @@ class Editor extends React.Component {
 	}	
 }
 
-export default hot(module)(connect()(Editor));
+export default connect()(Editor);

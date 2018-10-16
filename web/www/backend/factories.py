@@ -22,6 +22,8 @@ async def authenticate_cookie(cookie, user_agent):
     if not user:
         return web.HTTPBadRequest(body='invalid cookie: user not found')
     
+    user = user[0]
+
     s = '%s-%s' % (userId, user_agent)
 
     sessionId = hashlib.sha1(s.encode('utf-8')).hexdigest()
@@ -29,7 +31,9 @@ async def authenticate_cookie(cookie, user_agent):
     session = await Session.find(key='sessionId', value=sessionId)
     if not session:
         return web.HTTPBadRequest(body='invalid cookie: session not found')
-        
+    
+    session = session[0]
+
     s = '%s-%s-%s-%s-%s' % (user.username, user.password, session.expire, user.email, config.cookie_key)
     db_sha1 = hashlib.sha1(s.encode('utf-8')).hexdigest()
     

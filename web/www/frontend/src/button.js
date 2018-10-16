@@ -1,9 +1,9 @@
 import React from 'react';
 import * as log from 'loglevel';
 import Icon from './icon.js';
-import {propsFilter} from './utils.js';
+import {propsFilter, concat} from './utils.js';
 
-import style from './button.css';
+import './button.css';
 
 class Button extends React.Component {
 	constructor(props) {
@@ -22,17 +22,12 @@ class Button extends React.Component {
 		const iconElement = icon ? <Icon className='button-icon' icon={icon} /> : null;
 		const textElement = text ? <div className={'button-text'}>{text}</div> : null;
 		
-		const baseStylename = 'style.button';
-		const buttonInverse = inversible ? ' style.inverse' : '';
-		const buttonBorder = border ? ' style.border' : '';
-		const buttonDisable = disable ? ' style.disable' : '';
-		
-		const buttonStylename = baseStylename + buttonInverse + buttonBorder + buttonDisable;
+		const buttonStylename = concat(concat(concat('button', 'inverse', inversible), 'border', border), 'disable', disable);
 		log.info(`[BUTTON] button style name for ${text || icon} : ${buttonStylename}`);
 		
 		return (
 			<div
-				className = {'button' + (className ? ` ${className}` : '')}
+				className = {concat(buttonStylename, className, className)}
 				styleName = {buttonStylename}
 				{...this.props}
 			>

@@ -8,6 +8,7 @@ import aiofiles
 import os
 import datetime
 import re
+import shutil
 
 from aiohttp import web
 from coroweb import get, post
@@ -15,6 +16,9 @@ from model import User, Tag, Post, Session
 
 from config.constants import constants
 from config.config import config
+
+def getAbsPathToRes(userId, postId):
+    return os.path.join(config.resources, os.path.join(userId, postId))
 
 def getExpireDateTime(days):
     return str((datetime.datetime.now() + datetime.timedelta(days=days)).strftime('%Y-%m-%d %H:%M:%S'))
@@ -76,7 +80,7 @@ async def __sync_tags__(postId:str, dbtags:list, cltags:list):
 
 def __sync_resources__(userId : str, postId :str, resources : list):
     postpath = os.path.join(config.resources, os.path.join(userId, postId))
-    localfiles = list(filter(lambda f : not f.startswith('.'), os.listdir(postpath)))
+    localfiles = list(filter(lambda f : not f.startswith('.'), os.listdir(postpath))) if os.path.exists(postpath) else []
 
     localfiles.sort()
     resources.sort()
@@ -105,14 +109,14 @@ def __sync_resources__(userId : str, postId :str, resources : list):
 
 
 @post('/api/edit/save')
-async def editSave(request, *, postId, title, content, resources, tags):
+async def editSave(request, *, postId, title, description, content, resources, tags):
     if not request.user:
         return web.HTTPBadRequest(body='not authenticated')
     
     dbtags = await Tag.find(key='postId', value=postId)
     if dbtags is None:
         dbtags = []
-    elif not isinstance(_tags, list):
+    elif not isinstance(dbtags, list):
         dbtags = [dbtags]
 
     await __sync_tags__(postId, dbtags, tags)
@@ -121,16 +125,19 @@ async def editSave(request, *, postId, title, content, resources, tags):
 
     post = await Post.find(key='postId', value=postId)
     if post:
+        post = post[0]
         post.title = title
         post.post = content
+        post.description = description
         post.modified = getCurrentDateTime()
-        
+        post.author = request.user.username
+
         success = await post.update()
         if not success:
             return web.HTTPBadRequest(body='failed to update post')
     else :
         created = modified = getCurrentDateTime()
-        post = Post(postId=postId, post=content, title=title, created=created, modified=modified)
+        post = Post(postId=postId, post=content,author=request.user.username, description=description, title=title, created=created, modified=modified)
         
         success = await post.save()
         if not success:
@@ -140,36 +147,81 @@ async def editSave(request, *, postId, title, content, resources, tags):
 
 
 @post('/api/edit/delete')
-async def editDelete(request,*, post:dict):
+async def editDelete(request,*, postId):
     if not request.user:
         return web.HTTPBadRequest(body='not authenticated')
     
-    if not post.postId:
+    if not postId:
         return web.HTTPBadRequest(body='missing post id')
 
-    _post = Post(postId=post.postId)
+    _post = Post(postId=postId)
 
     success = await _post.delete()
-
+    
     if not success:
         return web.HTTPBadRequest(body='failed to delete post')
+    
+    tags = await Tag.find(key='postId', value=postId)
+    
+    if tags:
+        for t in tags:
+            await t.delete()
+    
+    res = getAbsPathToRes(request.user.userId, postId)
+
+    if os.path.exists(res):
+        shutil.rmtree(res)
 
     return web.HTTPOk()
+
+@get('/api/tags')
+async def getTags(request):
+    tags = await Tag.findAll()
+
+    return {
+        'tags' : tags
+    }
 
 @get('/api/posts')
 async def getPosts(request):
     posts = await Post.findAll(orderBy='created', DESC=True)
 
+    result = list(map(lambda p : {
+        'id' : p.postId,
+        'title' : p.title,
+        'description' : p.description,
+        'author' : p.author,
+        'created' : p.created,
+        'modified' : p.modified}, posts));
+    
     return {
-        'posts': posts
+        'posts': result
     }
 
 @get('/api/post')
 async def getPost(request,*,postId:str):
-    post = await Post.find(key='postId', value=id)
-
+    post = await Post.find(key='postId', value=postId)
+    
     if not post:
         return web.HTTPBadRequest(body='post does not exist')
+    
+    post = post[0]
+
+    user = await User.find(key='username', value=post.author)
+
+    if not user:
+        return  web.HTTPBadRequest(body='this author\'s posts are not available')
+
+    user = user[0]
+
+    path = os.path.join(user.userId, postId)
+    url = os.path.join('/%s' % constants.resources_dirname, path)
+    resdir = os.path.join(config.resources,path)
+
+    post.resources = [] if not os.path.exists(resdir) else list(map(lambda x : {'name' : x, 'data': os.path.join(url, x)}, os.listdir(resdir)))
+    
+    tags = await Tag.find(key='postId', value=postId)
+    post.tags = [] if not tags else list(map(lambda t : t.tagname, tags))
 
     return {
         'post': post
@@ -182,6 +234,8 @@ async def userAuth(request,*,email:str,password:str):
     if not user:
         return web.HTTPBadRequest(body='user does not exist')
     
+    user = user[0]
+
     if user.password != password:
         return web.HTTPBadRequest(body='incorrect password')
     
@@ -197,6 +251,7 @@ async def userAuth(request,*,email:str,password:str):
         session = Session(sessionId=s_id, userId=user.userId, userAgent=u_agent, expire=getExpireDateTime(config.cookie_expire_days))
         success = await session.save()
     else :
+        session = session[0]
         session.expire = getExpireDateTime(config.cookie_expire_days)
         success = await session.update()
 

@@ -52,13 +52,22 @@ const draft = (state = null, action) => {
 	return state;
 }
 
+const posts = (state = null, action) => {
+	if (action.type === 'CACHE_POSTS') {
+		log.info(`[REDUCER] returning reducer {draft} : ${JSON.stringify(action.draft)},`);
+		return action.posts;
+	}
+	return state;
+}
+
 const rootReducer = combineReducers({
+	draft,
 	userInfo,
 	activeNavItem,
 	modal,
 	completeInit,
 	navisible,
-	draft,
+	posts,
 });
 
 export {rootReducer};

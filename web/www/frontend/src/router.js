@@ -67,7 +67,7 @@ class __Router{
 			if (componentUrl.length !== url.length) {
 				continue;
 			}
-			const props = {};
+			let props = {};
 			let matched = true;
 
 			for (let i = 0; i < componentUrl.length; i++) {
@@ -207,7 +207,7 @@ class Router extends React.Component {
 		}
 
 		if (component) {
-			return React.createElement(component, {props});
+			return React.createElement(component, props);
 		}
 
 		return null;

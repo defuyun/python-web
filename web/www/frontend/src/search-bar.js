@@ -4,7 +4,7 @@ import Input from './input.js';
 import style from './search-bar.css';
 
 const SearchBar = ({onClick}) =>
-	<div className='search-bar' styleName={'style.search-bar'}> 
+	<div className='search-bar'styleName='search-bar'> 
 		<Input 
 				iconProps={
 					{

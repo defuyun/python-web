@@ -3,10 +3,16 @@
 .input {
 	display : flex;
 	align-items : center;
+	width : 100%;
 }
 
 .input > :global(.input-icon) {
 	max-width : $icon-max-width;
+	padding-left : 5px;
+}
+
+.input :global(.button-icon) {
+	width : 16px;
 }
 
 .input > :global(.input-text) {

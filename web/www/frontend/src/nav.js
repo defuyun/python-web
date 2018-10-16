@@ -3,6 +3,7 @@ import Logo from './logo.js'
 import Button from './button.js';
 import SearchBar from './search-bar.js';
 import Dropdown from './dropdown.js';
+import {concat} from './utils.js';
 
 import {connect} from 'react-redux';
 
@@ -99,15 +100,15 @@ class Nav extends React.Component {
 		const {buttonItems, dropdownItems} = this.state;
 		const visible = this.props.navisible;
 
-		const baseStylename = 'style.navbar';
-		const visibleStylename = visible ? ' style.display' : ' style.hide';
+		const baseStylename = 'navbar';
+		const visibleStylename = visible ? ' display' : ' hide';
 
 		const navStylename = baseStylename + visibleStylename;
 
 		// const stylename = visible ? 'style.navbar' : ' style.navbar-hide';
 
 		return (
-			<div styleName={navStylename}>
+			<div className={navStylename} styleName={navStylename}>
 				<Logo img={egg} />
 				<SingleButtons buttonItems={buttonItems} />
 				<SearchGroupButtons dropdownItems={dropdownItems} />

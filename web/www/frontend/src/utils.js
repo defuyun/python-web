@@ -142,6 +142,20 @@ export const remove = (arr, key) => {
 	return arr;
 }
 
+export const rfind = (arr, key) => {
+	if (! (arr instanceof Array || typeof key === 'string')) {
+		log.error('[UTILS] input is not an array or string');
+		return -1;
+	}
+
+	for(let i = arr.length; i >= 0; i--) {
+		if (arr[i] === key) {
+			return i;
+		}
+	}
+	return -1;
+}
+
 export const getItemByKey = (arr, key) => {
 	for (let item of arr) {
 		if (item && item.key === key) {
@@ -177,4 +191,12 @@ export const concat = (str1, str2, filter, sep) => {
 	}
 
 	return fres ? (str1 + (sep ? sep : ' ') + str2) : str1;
+}
+
+export const createArr = (length, val) => {
+	let arr = Array(length);
+	for(let i = 0; i < length; i++) {
+		arr[i] = val;
+	}
+	return arr;
 }

@@ -1,11 +1,11 @@
 @import './constants.css';
 
-.ace-editor {
+.ace-editor-container {
 	height : 100%;
 	width : 100%;
 }
 
-.ace-editor > :global(.ace-editor) {
+.ace-editor-container > :global(.ace-editor) {
 	height : 100%;
 	width : 100%;
 }

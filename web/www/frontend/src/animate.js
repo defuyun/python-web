@@ -1,5 +1,6 @@
 import React from 'react';
 import * as log from 'loglevel';
+import {concat} from './utils.js';
 
 import './animate.css';
 
@@ -23,7 +24,7 @@ const animate = component => class extends React.Component {
 		const append = delay ? 'exit' : stage;
 		log.info(`[ANIMATE] append class for animate became ${append}`);
 		return (
-			<div className={append} styleName='animate'>
+			<div className={concat('animate',append,true)} styleName='animate'>
 				{React.createElement(component, {...this.props})}
 			</div>
 		)

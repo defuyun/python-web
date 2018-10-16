@@ -4,7 +4,7 @@ import Form from './form.js';
 import {connect} from 'react-redux';
 import menu from './menu-model.js';
 
-import style from './login.css';
+import './login.css';
 import {empty, lessThan, moreThan, match} from './utils.js';
 import * as log from 'loglevel';
 
@@ -79,7 +79,7 @@ class Login extends React.Component {
 
 	render() {
 		return (
-			<div key='login' className='login-box' styleName='login'>
+			<div key='login' className='login-box' styleName='login-box'>
 				<Form inputGroup={inputGroup} submitButton={submitButton} />
 				<div className='to-register'> {'or if you don\'t have an account'}	<a href={menu.register.url}> register </a></div>
 			</div>		

@@ -141,7 +141,7 @@ class Model(dict, metaclass=ModelMetaClass):
             logging.warn('[MODEL] find returned nothing')
             return None
 
-        return cls(**cls.mapRow(row[0])) if len(row) == 1 else list(map(lambda r : cls(**cls.mapRow(r)), row))
+        return list(map(lambda r : cls(**cls.mapRow(r)), row))
 
     @classmethod
     async def findAll(cls, **kw):
@@ -235,6 +235,8 @@ class Post(Model):
     postId = StringField(id='postId', ddl='CHAR(38)', primary=True)
     title = StringField(id='title')
     post = TextField(id='post')
+    author = StringField(id='author', ddl='VARCHAR(255)')
+    description = StringField(id='description', ddl='VARCHAR(255)')
     created = DateField(id='created')
     modified = DateField(id='modified')
 

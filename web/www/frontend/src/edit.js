@@ -5,7 +5,6 @@ import {draft} from './draft.js';
 
 import {connect} from 'react-redux';
 import {concat} from './utils.js';
-import {hot} from 'react-hot-loader';
 
 import './edit.css';
 
@@ -25,7 +24,7 @@ class Edit extends React.Component {
 		const {draft} = this.state;
 
 		return(	
-			<div className={concat('edit', 'on-nav', navisible)} styleName='edit'>
+			<div className={concat('edit', 'on-nav', navisible)} styleName='edit' >
 				<div className='editor'>
 					<Editor draft={draft} navisible={navisible} />
 				</div>
@@ -45,4 +44,4 @@ const map = state => {
 	}
 }
 
-export default hot(module)(connect(map)(Edit));
+export default connect(map)(Edit);

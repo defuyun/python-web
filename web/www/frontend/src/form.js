@@ -5,7 +5,7 @@ import * as log from 'loglevel';
 import {createAggregate} from './utils.js';
 import {connect} from 'react-redux';
 
-import style from './form.css';
+import './form.css';
 
 const _getInputByKey = (key, inputGroup) => {
 	for(const value of inputGroup) {
@@ -120,7 +120,7 @@ class Form extends React.Component {
 		const {inputGroup, submitButton} = this.props;
 
 		return (
-				<div className='form' styleName='style.form'>
+				<div className='form' styleName='form' >
 					{
 						inputGroup.map(item => {
 							return (<FeedbackInput 

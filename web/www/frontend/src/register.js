@@ -109,7 +109,7 @@ class Register extends React.Component {
 
 	render() {
 		return (
-			<div key='register' className='register-box' styleName='register'>
+			<div key='register' className='register-box' styleName='register-box'>
 				<Form inputGroup={inputGroup} submitButton={submitButton} />
 				<div className='to-login'> or if you already have an account <a href={menu.login.url}> login </a></div>
 			</div>		

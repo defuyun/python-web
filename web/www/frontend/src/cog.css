@@ -8,4 +8,7 @@
 
 .cog > :global(.headers) {
 	display : flex;
+	background : lightgray;
+	box-shadow : 0 1px 1px darkgray;
 }
+

@@ -5,7 +5,7 @@
 }
 
 .hide {
-	top : -$nav-height;
+	top :calc(-1 * $nav-height);
 }
 
 .navbar {
@@ -24,11 +24,12 @@
 	padding-left : $nav-padding-side;
 	padding-right : $nav-padding-side;
 	transition : top 0.5s linear;
+	box-shadow : 0px 0px 1px darkgrey;
 	z-index : $nav-z;
 }
 
 .navbar :global(.button) {
-	max-width : $nav-button-max-width;
+	width : 90px;
 }
 
 .navbar > :global(.single-button), :global(.search-group-button){
@@ -42,6 +43,10 @@
 
 .navbar > :global(.single-button) {
 	flex : 7 2 auto;
+}
+
+.navbar > :global(.single-button) > :global(.button:hover) {
+	box-shadow : 0px 0px 1px black;
 }
 
 .navbar > :global(.search-group-button) {

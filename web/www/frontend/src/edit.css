@@ -8,6 +8,7 @@
 	bottom : 0;
 	left : 0;
 	right : 0;
+	padding-top : 0px;
 }
 
 .edit:global(.on-nav) {
@@ -15,5 +16,6 @@
 }
 
 .edit > :global(.editor), .edit > :global(.view) {
+	box-sizing : border-box;
 	width : 50%;
 }

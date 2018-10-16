@@ -6,6 +6,8 @@ import {TextMessage} from './message.js';
 
 import crypto from 'crypto-js';
 
+let spinnerLock = 0;
+
 export const initMiddleware = store => next => action => {
 	log.info('[MIDDLEWARE] enter init middleware');
 	if (action.type === 'INIT_PAGE') {
@@ -15,6 +17,10 @@ export const initMiddleware = store => next => action => {
 }
 
 const delayModalUpdate = (modal, store, action) => {
+	if (action.type === 'DISPLAY_SPINNER') {
+		spinnerLock += 1;
+	}
+
 	if (action.type === 'DISPLAY_SPINNER' && modal.msgType === 'spinner') {
 		return;
 	}
@@ -36,17 +42,20 @@ export const modalMiddleware = store => next => action => {
 
 	if (action.type === 'DISPLAY_MESSAGE') {
 		const {msgType, text} = action;
+		spinnerLock = 0;
 		store.dispatch({type : 'UPDATE_MODAL', modal : {
 			msgType, text, display : true, manual : true, component : TextMessage,
 		}});
 	} else if (action.type === 'DISPLAY_SPINNER') {
+		spinnerLock += 1;
 		const msgType = 'spinner', text = 'loading', icon = 'spinner';
 		store.dispatch({type : 'UPDATE_MODAL', modal : {
 			msgType, text, icon, display : true, manual : false, component : TextMessage,
 		}});
 	} else if (action.type === 'HIDE_SPINNER') {
 		const {modal} = store.getState();
-		modal.display && modal.msgType === 'spinner' &&
+		spinnerLock -= 1;
+		modal.display && modal.msgType === 'spinner' && spinnerLock === 0 &&
 			store.dispatch({type : 'UPDATE_MODAL', modal : {display : false}});
 	}
 
@@ -56,7 +65,8 @@ export const modalMiddleware = store => next => action => {
 export const requestMiddleware = store => next => action => {
 	log.info('[MIDDLEWARE] enter request middleware');
 	if (action.type === 'API_CALL') {
-		const {id, params} = action;
+		const {id, params, callback} = action;
+		
 		const genericResponseHandler = module => response => {
 			log.info(`[MIDDLEWARE] received response from ${module} ${JSON.stringify(response)}`);
 			return response.status === 200 ? response.json() : response.text();
@@ -157,6 +167,37 @@ export const requestMiddleware = store => next => action => {
 			if(action.save) {
 				setTimeout(() => store.dispatch({type : 'API_CALL', id : 'save', params, uploaded : true}),1000);
 			}
+		}
+
+		if (id === 'posts') {
+			api.postsApi({}).then(genericResponseHandler(id)).then(genericBodyHandler(
+				body => body.posts,
+				callback		
+			)).catch(genericErrorHandler(id));
+		}
+
+		if (id === 'tags') {
+			api.tagsApi({}).then(genericResponseHandler(id)).then(genericBodyHandler(
+				body => body.tags,
+				callback		
+			)).catch(genericErrorHandler(id));
+		}
+
+		if (id === 'post') {
+			api.postApi(params).then(genericResponseHandler(id)).then(genericBodyHandler(
+				body => body.post,
+				callback		
+			)).catch(genericErrorHandler(id));
+		}
+
+		if (id === 'delete') {
+			api.deleteApi(params.tosave()).then(response => {
+				if (response.status !== 200) {
+					throw 'failed to delete post'; 
+				}
+				store.dispatch({type : 'HIDE_SPINNER'});
+				store.dispatch({type : 'NAV_ITEM_CHANGE', id : 'posts'});
+			}).catch(genericErrorHandler(id));
 		}
 	}
 

@@ -1,0 +1,39 @@
+.post {
+	padding-top : 10px;
+	height : 100%;
+	box-sizing : border-box;
+	width : 100%;
+	position : relative;
+	display : flex;
+}
+
+.side, .nav {
+	width : 10%;
+	box-sizing : border-box;
+}
+
+.side {
+	opacity : 0.7;
+	padding-top: 10px;
+	display : flex;
+	flex-direction : column;
+	font-size : 80%;
+}
+
+.side > :global(.btn) {
+	padding : 5px;
+}
+
+.view {
+	width : 80%;
+	box-sizing : border-box;
+}
+
+.view > :global(.view) {
+	padding : 0 !important;
+	box-shadow : 0 0 0 !important;
+}
+
+.view > :global(.view) > :global(.title) {
+	box-shadow : 0 1px 1px darkgrey;
+}

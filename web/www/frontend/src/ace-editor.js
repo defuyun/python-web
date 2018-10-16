@@ -12,6 +12,7 @@ import * as log from 'loglevel';
 class AceEditor extends React.Component {
 	constructor(props) {
 		super(props);
+		const {draft} = this.props;
 		this.addEditor = this.addEditor.bind(this);
 		this.onChange = this.onChange.bind(this);
 		
@@ -23,6 +24,7 @@ class AceEditor extends React.Component {
 		editor.setTheme('ace/theme/tomorrow');
 		editor.setKeyboardHandler('ace/keyboard/vim');
 		editor.getSession().setUseWrapMode(true);
+		editor.getSession().setValue(draft.content);
 		editor.getSession().on('change', this.onChange);
 
 		this.editor = editor;
@@ -46,7 +48,7 @@ class AceEditor extends React.Component {
 	}
 
 	render() {
-		return <div ref={this.addEditor} className='ace-editor-container' styleName='ace-editor' />;
+		return <div ref={this.addEditor} className='ace-editor-container' styleName='ace-editor-container' />;
 	}
 }
 

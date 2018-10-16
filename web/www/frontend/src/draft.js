@@ -1,26 +1,21 @@
-import {guid, remove, removeItemByKey} from './utils.js';
+import {guid, remove, removeItemByKey, rfind} from './utils.js';
 
 class resource {
-	constructor(id, name, data, fromurl) {
+	constructor(id, name, data, fromurl, file) {
 		this.key = name;
 		this.name = name;
-		this.data = data;
+		this.data = fromurl ? BASE_URL + data : data;
 		this.path = id + '/' + name;
 		this.fromurl = fromurl;
+		this.file = file;
+		const extIndex = rfind(name, '.');
+		this.noext = extIndex === -1 ? name : name.substr(0, extIndex);
 	}
 }
 
 class draft {
 	constructor({id}) {
-		this.id = id ? id : guid();
-		this.title = '';
-		this.content = '';
-		this.resources = [];
-		this.resmap = {};
-		this.tags = [];
-		this.tagmap = {};
-		this.errors = [];
-
+		this.newp = this.newp.bind(this);
 		this.addres = this.addres.bind(this);
 		this.removeres = this.removeres.bind(this);
 		this.addtag = this.addtag.bind(this);
@@ -29,12 +24,45 @@ class draft {
 		this.clearerror = this.clearerror.bind(this);
 		this.setcontent = this.setcontent.bind(this);
 		this.settitle = this.settitle.bind(this);
-		this.setupdate = this.setupdate.bind(this);
-		this.setrerender = this.setrerender.bind(this);
+		this.addupdate = this.addupdate.bind(this);
+		this.addrerender = this.addrerender.bind(this);
 		this.tosave = this.tosave.bind(this);
+		this.clear = this.clear.bind(this);
 
-		this.update = () => {};
-		this.rerender = () => {};
+		this.update = this.update.bind(this);
+		this.rerender = this.rerender.bind(this);
+		this.updateFunc = {};
+		this.rerenderFunc = {};
+		this.newp();
+	}
+	
+	static makeDraft(post) {
+		let ret = new draft({});
+		ret.id = post.postId;
+		ret.title = post.title;
+		ret.content = post.post;
+		ret.resources = post.resources.map(res => new resource(post.postId, res.name, res.data,true));
+		ret.tags = post.tags;
+		ret.descrip = post.description;
+		return ret;
+	}
+
+	newp() {
+		this.id = guid();
+		this.title = '';
+		this.content = '';
+		this.resources = [];
+		this.resmap = {};
+		this.tags = [];
+		this.tagmap = {};
+		this.errors = [];
+		this.descrip = '';
+	}
+
+	clear() {
+		this.newp();
+		this.update();
+		this.rerender();
 	}
 
 	tosave() {
@@ -42,6 +70,7 @@ class draft {
 		return {
 			postId : this.id,
 			title : this.title,
+			description : this.descrip,
 			content : this.content,
 			tags : this.tags,
 			resources : filenames
@@ -88,6 +117,7 @@ class draft {
 
 	setcontent(content) {
 		this.content = content;
+		this.clearerror();
 		this.rerender();
 	}
 
@@ -96,16 +126,38 @@ class draft {
 		this.rerender();
 	}
 
-	setupdate(update) {
-		this.update = update;
+	setdescrip(descrip) {
+		this.descrip = descrip;
+		this.rerender();
 	}
 
-	setrerender(rerender) {
-		this.rerender = rerender;
+	rerender() {
+		Object.values(this.rerenderFunc).map(render => render());
+	}
+
+	update() {
+		Object.values(this.updateFunc).map(update => update());
+	}
+
+	addupdate(name, update) {
+		if (! (update instanceof Function)) {
+			log.error('[DRAFT] upate is not a function');
+			return;
+		}
+		this.updateFunc[name] = update;
+	}
+
+	addrerender(name, rerender) {
+		if (! (rerender instanceof Function)) {
+			log.error('[DRAFT] rerender is not a function');
+			return;
+		}
+		this.rerenderFunc[name] = rerender;
 	}
 
 	render() {
-		return this.content;
+		const content = this.resources.map(resource => `[${resource.noext}]: ${resource.data}`).join('\n\n') + '\n\n' + this.content;
+		return content;
 	}
 }
 

@@ -21,6 +21,10 @@ module.exports = env => {
 
   let config = {
     mode : env.mode,
+		
+		devServer : {
+			hot : env.hot ? true : false,
+		},
 
     output : {
       filename : `[name].${chunkhash}.js`,
@@ -35,30 +39,40 @@ module.exports = env => {
       rules : [
         {
           test : /\.css$/,
-          exclude : /node_modules/,
+					include : path.join(__dirname, 'src'),
           use : [
             env.hot ? 'style-loader' : MiniCssExtractPlugin.loader,
             {
               loader : "css-loader",
               options : {
-                importLoaders : 1,
-                modules : true,
-                localIdentName : 'whitelist[hash:base64:10]',
+								modules : true,
+								localIdentName : 'whitelist[hash:base64:10]',
                 sourceMap : true,
+                importLoaders : 1,
               }
             },
             {
               loader : 'postcss-loader',
               options : {
-                plugins: () => ([
+								sourceMap : true,
+								ident : 'postcss',
+                plugins: [
                   require('autoprefixer'),
                   require('precss'),
                   require('postcss-calc'),
-                ]),
+                ],
               }
             }
           ],
         },
+				{
+					test : /\.css$/,
+					include : path.join(__dirname, 'node_modules'),
+					use : [
+						env.hot ? 'style-loader' : MiniCssExtractPlugin.loader,
+						'css-loader?sourceMap=true'
+					]
+				},
         {
           test : /\.(png|jpg|gif|svg)$/i,
           use : {
@@ -76,16 +90,13 @@ module.exports = env => {
             loader : 'babel-loader',
             options : {
               presets : [
-                // esmodule (I don't know what this is) is needed for transform runtime to compile,
-                // or rather the compiled code from transform runtime is fed into preset env, and since transform
-                // runtime uses this esmodule standard you need to set this option in order for preset env to understand the code
                 ['@babel/preset-env', {targets: {'esmodules': true}}],
                 ['@babel/preset-react', {development : env.mode === 'development'}],
               ],
               plugins : [
                 '@babel/plugin-transform-runtime',
                 '@babel/plugin-syntax-dynamic-import',
-                ['react-css-modules',{exclude : '/node_modules/', generateScopedName : 'whitelist[hash:base64:10]'}],
+								['react-css-modules',{exclude : '/node_modules/', generateScopedName : 'whitelist[hash:base64:10]'}],
                 'react-hot-loader/babel',
               ],
             }
@@ -126,18 +137,13 @@ module.exports = env => {
       new MiniCssExtractPlugin({
         filename : `[name].${contenthash}.css`
       }),
-      new PurifyCssPlugin({
-        paths : glob.sync(`${workspace}/**/*.js`, {nodir : true}),
-        purifyOptions : {
-          whitelist : ['*whitelist*'],
-        },
-      }),
       new webpack.DefinePlugin(env),
       new CleanWebpackPlugin(['dist']),
     ]
   }
 
-  if (env.hot === 'hot') {
+  if (env.hot) {
+		console.log('[HOT] pushing plugin');
     config.plugins.push(new webpack.HotModuleReplacementPlugin());
   }
 

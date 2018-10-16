@@ -11,10 +11,9 @@ import 'prismjs/components/prism-cpp';
 import 'prismjs/components/prism-csharp';
 import 'prismjs/components/prism-python';
 import 'prismjs/components/prism-glsl';
+import 'prismjs/themes/prism-coy.css';
 
 import style from './view.css';
-
-import {hot} from 'react-hot-loader';
 
 class View extends React.Component {
 	constructor(props) {
@@ -42,12 +41,13 @@ class View extends React.Component {
 		this.rerender = this.rerender.bind(this);
 		this.setContent = this.setContent.bind(this);
 		this.setContentRef = this.setContentRef.bind(this);
-		draft.setrerender(this.rerender);
+		draft.addrerender('view', this.rerender);
 	}
 
 	setContentRef(element) {
 		if (element) {
 			this.contentNode = element;
+			this.setContent();
 		}
 	}
 
@@ -108,12 +108,12 @@ class View extends React.Component {
 		const content = this.props.draft.render();
 		const title = this.props.draft.title;
 		
-		if (draft.rerender !== this.rerender) {
-			draft.setrerender(this.rerender);
+		if (draft.rerenderFunc['view'] !== this.rerender) {
+			draft.addrerender('view', this.rerender);
 		}
 
 		return (
-			<div className='view' styleName='style.view'>
+			<div className='view' styleName='view'>
 				<div className='title'> {title} </div>
 				<div className='content' ref={this.setContentRef}/>
 			</div>
@@ -121,4 +121,4 @@ class View extends React.Component {
 	}
 }
 
-export default hot(module)(View);
+export default View;

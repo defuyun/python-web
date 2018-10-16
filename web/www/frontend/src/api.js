@@ -35,3 +35,27 @@ export const uploadApi = request.createRestApi({
 	method : 'FILE',
 	credentials : 'include',
 });
+
+export const postsApi = request.createRestApi({
+	url : BASE_URL + '/api/posts',
+	method : 'GET',
+	credentials : 'include',
+})
+
+export const postApi = request.createRestApi({
+	url : BASE_URL + '/api/post',
+	method : 'GET',
+	credentials : 'include',
+});
+
+export const tagsApi = request.createRestApi({
+	url : BASE_URL + '/api/tags',
+	method : 'GET',
+	credentials : 'include',
+});
+
+export const deleteApi = request.createRestApi({
+	url : BASE_URL + '/api/edit/delete',
+	method : 'POST',
+	credentials : 'include',
+});

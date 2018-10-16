@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import Button from './button.js';
 import * as log from 'loglevel';
+import {concat} from './utils.js';
 
 import './modal.css';
 
@@ -44,7 +45,6 @@ class Modal extends React.Component {
 
 	render() {
 		const {display, component, manual} = this.props;
-		const className = (display ? ' display ' : '');
 		
 		if (display && manual) {
 			addEventListener('click', this.hijackClick, true);
@@ -54,7 +54,7 @@ class Modal extends React.Component {
 		const displayComponent = component ? <div className='message'> {React.createElement(component, {...this.props})} </div>: null;
 
 		return (
-				<div className={'modal-container' + className} styleName='modal'>
+				<div className={concat('modal-container','display', display)} styleName='modal'>
 					{displayComponent}
 					{button}
 			</div>

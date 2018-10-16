@@ -1,0 +1,64 @@
+.posts {
+	padding : 15px;
+	box-sizing : border-box;
+	width : 100%;
+	display : flex;
+	position : relative;
+	height : 100%;
+}
+
+.animate {
+	box-sizing : border-box;
+	width : 60%;
+	display : flex;
+	position : relative;
+	justify-content : center;
+	height : 100%;
+	opacity : 0;
+	transition : all 0.3s linear;
+}
+
+.animate:global(.show) {
+	opacity : 1;
+}
+
+.tags {
+	width : 20%;
+	position : relative;
+}
+
+.tags > :global(.wrapper) {
+	position : fixed;
+	top : 30px;
+	left : 20px;
+	transition : top 0.5s linear;
+}
+
+.tags:global(.nav) > :global(.wrapper) {
+	top : 110px;
+}
+
+.posts > :global(.prev-btn), .posts > :global(.nxt-btn) {
+	position : fixed;
+	top : 45%;
+	width : 10px;
+	z-index : 10;
+	transition : font-size 0.3s linear;
+}
+
+.posts > :global(.prev-btn.disable), .posts > :global(.nxt-btn.disable) {
+	opacity : 0.3;
+	cursor : default;
+}
+
+.posts > :global(.prev-btn:hover), .posts > :global(.nxt-btn:hover) {
+	font-size : 130%;
+}
+
+.posts > :global(.prev-btn) {
+	left : 18%;
+}
+
+.posts > :global(.nxt-btn) {
+	right : 18%;
+}
