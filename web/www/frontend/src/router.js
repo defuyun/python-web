@@ -1,6 +1,16 @@
 import * as log from 'loglevel';
 import React from 'react';
 
+import animate from './animate.js';
+
+import Register from './register.js';
+import Login from './login.js';
+import Edit from './edit.js';
+import Posts from './posts.js';
+import Post from './post.js';
+
+import menu from './menu-model.js';
+
 class __Router{
 	constructor() {
 		log.info('[ROUTER] constructing new router');
@@ -167,6 +177,12 @@ class __Router{
 };
 
 const router = new __Router();
+
+router.registerComponent(menu.register.url, animate(Register));
+router.registerComponent(menu.login.url, animate(Login));
+router.registerComponent(menu.edit.url, animate(Edit));
+router.registerComponent(menu.posts.url, animate(Posts));
+router.registerComponent(menu.post.url, animate(Post));
 
 class Router extends React.Component {
 	constructor(props) {

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "./src/index.js",
   "scripts": {
-		"start": "webpack-dev-server -d --env.mode development --port 8000",
+    "start": "webpack-dev-server -d --env.mode development --port 8000",
     "start:hot": "webpack-dev-server -d --env.mode development --env.hot hot --port 8000",
     "build": "webpack --env.mode production",
     "build:stat": "npm run build -- --json > stat.json",

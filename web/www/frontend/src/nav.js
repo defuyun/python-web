@@ -64,6 +64,11 @@ class Nav extends React.Component {
 		dispatch({type : 'NAV_VISIBLE', visible : false})
 	}
 
+	componentWillMount() {
+		const {dispatch} = this.props;
+		setTimeout(() => dispatch({type : 'NAV_VISIBLE', visible : true}), 500);
+	}
+
 	componentDidUpdate(prevp) {
 		const {navisible, dispatch} = this.props;
 		
@@ -79,10 +84,6 @@ class Nav extends React.Component {
 			if (! shouldDisplay(menu[this.props.activeNavItem].display, this.props.userInfo)) {
 				dispatch({type : 'NAV_ITEM_CHANGE', id : 'home'});
 			}
-		}
-
-		if (prevp.completeInit !== this.props.completeInit) {
-			setTimeout(() => dispatch({type : 'NAV_VISIBLE', visible : true}), 500);
 		}
 	}
 
@@ -124,7 +125,6 @@ class Nav extends React.Component {
 const map = state => {
 	return {
 		userInfo : state.userInfo,
-		completeInit : state.completeInit,
 		activeNavItem : state.activeNavItem,
 		navisible : state.navisible,
 	}

@@ -5,7 +5,6 @@ const ReactRootPlugin = require('html-webpack-root-plugin');
 const UglifyJsPlugin = require('webpack-uglify-harmony-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-
 const path = require('path');
 const glob = require('glob');
 const webpack = require('webpack');

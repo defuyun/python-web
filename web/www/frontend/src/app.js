@@ -1,28 +1,15 @@
 import React from 'react';
-import Nav from './nav.js';
-import Router, {router} from './router.js';
-import menu from './menu-model.js';
 import Modal from './modal.js';
 import {connect} from 'react-redux';
 import {getCookie} from './utils.js';
 
-import animate from './animate.js';
-import Register from './register.js';
-import Login from './login.js';
-import Edit from './edit.js';
-import Posts from './posts.js';
-import Post from './post.js';
+import AsyncComponent from './async-component.js';
 
 import {concat} from './utils.js';
 import {hot} from 'react-hot-loader';
 
 import './app.css';
 
-router.registerComponent(menu.register.url, animate(Register));
-router.registerComponent(menu.login.url, animate(Login));
-router.registerComponent(menu.edit.url, animate(Edit));
-router.registerComponent(menu.posts.url, animate(Posts));
-router.registerComponent(menu.post.url, animate(Post));
 
 class App extends React.Component {
 	constructor(props) {
@@ -42,9 +29,9 @@ class App extends React.Component {
 			<div className='app' styleName='app'>
 				<div className={concat('cover','on-modal', display)} />
 				<Modal {...this.props.modal} />
-				<Nav /> 
+				<AsyncComponent loader={() => import('./nav.js')} />
 				<div className={concat(concat('container', 'on-modal',display), 'on-nav', navisible)}>
-					<Router /> 
+					<AsyncComponent loader={() => import('./router.js')} />
 				</div>
 			</div>
 		);

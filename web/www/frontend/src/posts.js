@@ -79,13 +79,13 @@ class Posts extends React.Component {
 						<Tags model={model} />
 					</div>
 				</div>
-				<div className={concat('prev-btn','disable',!enablePrev)}>
+				<div className={concat(concat('prev-btn','disable',!enablePrev), 'nav',navisible)}>
 					<Button icon='angle-left' onClick={enablePrev ? model.prevPage : () => {}} />
 				</div>
 				<div ref={this.animate} styleName='animate'>
 					<List model={model} />
 				</div>
-				<div className={concat('nxt-btn','disable',!enableNext)}>
+				<div className={concat(concat('nxt-btn','disable',!enableNext), 'nav', navisible)}>
 					<Button icon='angle-right' onClick={enableNext ? model.nextPage : () => {}} />
 				</div>
 			</div>
