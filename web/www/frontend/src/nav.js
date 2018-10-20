@@ -59,7 +59,7 @@ class Nav extends React.Component {
 			}
 		}
 
-		const [buttonItems, dropdownItems]= partition(constructNavMenu({menu}), (val) => !Array.isArray(val));
+		const [buttonItems, dropdownItems]= partition(constructNavMenu({menu, userInfo : this.props.userInfo}), (val) => !Array.isArray(val));
 		this.state = {buttonItems, dropdownItems};
 		dispatch({type : 'NAV_VISIBLE', visible : false})
 	}

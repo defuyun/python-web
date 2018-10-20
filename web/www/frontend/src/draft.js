@@ -16,6 +16,7 @@ class resource {
 class draft {
 	constructor({id}) {
 		this.newp = this.newp.bind(this);
+		this.syncall = this.syncall.bind(this);
 		this.addres = this.addres.bind(this);
 		this.removeres = this.removeres.bind(this);
 		this.addtag = this.addtag.bind(this);
@@ -34,6 +35,10 @@ class draft {
 		this.updateFunc = {};
 		this.rerenderFunc = {};
 		this.newp();
+	}
+
+	syncall() {
+		this.resources.map(resource => resource.fromurl = true);
 	}
 	
 	static makeDraft(post) {

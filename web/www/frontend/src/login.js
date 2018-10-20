@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import menu from './menu-model.js';
 
 import './login.css';
-import {empty, lessThan, moreThan, match} from './utils.js';
+import {empty, lessThan, moreThan, match, encryptPassword} from './utils.js';
 import * as log from 'loglevel';
 
 const inputGroup = [
@@ -74,7 +74,7 @@ class Login extends React.Component {
 		const {email, password} = this.state;
 		
 		log.info(`[LOGIN] dispatching api with val : ${email}`);
-		dispatch({type : 'API_CALL', id : 'login', params : {email,password}});
+		dispatch({type : 'API_CALL', id : 'login', params : {email, password : encryptPassword({email,password})}});
 	}
 
 	render() {

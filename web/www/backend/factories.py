@@ -10,17 +10,29 @@ from model import User, Session
 
 import datetime
 
+def __make_auth_response__(user:User, cookie, age=config.cookie_expire_duration_second):
+    user.password = '******'
+    logging.debug('[USER] userInfo : %s' % user)
+    resp = web.json_response({
+        'user': user
+    })
+    resp.set_cookie(config.cookie_name, cookie, max_age=age, httponly=True)
+
+    return resp
+
 async def authenticate_cookie(cookie, user_agent):
     cookie_list = cookie.split('-')
     if len(cookie_list) != 2:
-        return web.HTTPBadRequest(body='invalid cookie %s' % cookie_list)
+        # return __make_auth_response__(User(), None, age=-1)
+        return web.HTTPBadRequest(body='invalid coookie')
 
     userId,sha1 = cookie.split('-')
     
     user = await User.find(key='userId', value=userId)
     
     if not user:
-        return web.HTTPBadRequest(body='invalid cookie: user not found')
+        return web.HTTPBadRequest(body='invalid coookie')
+        #return __make_auth_response__(User(), None, age=-1)
     
     user = user[0]
 
@@ -30,7 +42,8 @@ async def authenticate_cookie(cookie, user_agent):
 
     session = await Session.find(key='sessionId', value=sessionId)
     if not session:
-        return web.HTTPBadRequest(body='invalid cookie: session not found')
+        return web.HTTPBadRequest(body='invalid coookie')
+        # return __make_auth_response__(User(), None, age=-1)
     
     session = session[0]
 
@@ -40,7 +53,8 @@ async def authenticate_cookie(cookie, user_agent):
     logging.debug('[AUTHENTICATE] sha1 fetched from db %s generated from %s' % (db_sha1, s))
 
     if sha1 != db_sha1:
-        return web.HTTPBadRequest(body='invalid cookie: failed to validate credentials')
+        return web.HTTPBadRequest(body='invalid coookie')
+        # return __make_auth_response__(User(), None, age=-1)
 
     return [user, session]
 

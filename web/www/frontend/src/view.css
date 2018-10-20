@@ -25,11 +25,20 @@
 	font-size: 200%;
 	border-bottom : 1px solid darkgrey;
 	box-shadow : 0px 1px 1px -1px darkgrey;
-	z-index : -1;
+	z-index : 10;
 }
 
 .view > :global(.content) * {
-	overflow-x : auto;
+	overflow : visible !important;
+}
+
+.view > :global(.content) img {
+	max-width : 100%;
+	height : auto;
+}
+
+.view > :global(.content) :global(.language-latex) {
+	border : 0 solid;
 }
 
 .view > :global(.content) {

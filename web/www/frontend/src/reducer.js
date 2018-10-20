@@ -10,10 +10,10 @@ const navisible = (state = false, action) => {
 }
 
 const completeInit = (state = false, action) => {
-	if (action.type === 'INIT_PAGE') {
+	if (action.type === 'INIT') {
 		log.info(`[REDUCER] returning reducer {completeInit} : false`);
 		return false;	
-	} else if (action.type === 'COMPLETE_PAGE') {
+	} else if (action.type === 'COMPLETE_INIT') {
 		log.info(`[REDUCER] returning reducer {completeInit} : true`);
 		return true;
 	}

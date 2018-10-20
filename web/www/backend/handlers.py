@@ -16,6 +16,8 @@ from model import User, Tag, Post, Session
 
 from config.constants import constants
 from config.config import config
+from factories import __make_auth_response__
+
 
 def getAbsPathToRes(userId, postId):
     return os.path.join(config.resources, os.path.join(userId, postId))
@@ -33,16 +35,6 @@ async def __user2cookie__(user:User, session:Session):
     logging.debug('[AUTHENTICATE] sha1 generated for user %s generated from %s' % (sha1, s))
 
     return '%s-%s' % (user.userId, sha1) 
-
-def __make_auth_response__(user:User, cookie, age=config.cookie_expire_duration_second):
-    user.password = '******'
-
-    resp = web.json_response({
-        'user': user
-    })
-    resp.set_cookie(config.cookie_name, cookie, max_age=age, httponly=True)
-
-    return resp
 
 def __new_tag__(postId, tagname):
     s = '%s-%s' % (postId, tagname)

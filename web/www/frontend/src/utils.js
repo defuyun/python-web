@@ -1,4 +1,5 @@
 import * as log from 'loglevel';
+import crypto from 'crypto-js';
 
 export const parseDate = (datetime) => {
     const [date, time] = datetime.split(' ')
@@ -99,7 +100,9 @@ function match(regex) {
 
 function createAggregate(append,orig) {
 	function aggregatedFunction(...args) {
-		append(...args);
+		if (append instanceof Function) {
+			append(...args);
+		}
 		if (orig instanceof Function) {
 			orig(...args);
 		}
@@ -199,4 +202,8 @@ export const createArr = (length, val) => {
 		arr[i] = val;
 	}
 	return arr;
+}
+
+export const encryptPassword = (user) => {
+	return crypto.SHA1(user.email + user.password).toString();
 }

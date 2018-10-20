@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 
 import menu from './menu-model.js';
 import style from './register.css';
-import {empty, lessThan, moreThan, match} from './utils.js';
+import {empty, lessThan, moreThan, match, encryptPassword} from './utils.js';
 import * as log from 'loglevel';
 
 let inputGroup = [
@@ -103,8 +103,8 @@ class Register extends React.Component {
 		const {dispatch} = this.props;
 		const {username, email, password, secret} = this.state;
 		
-		log.info(`[REGISTER] dispatching api with val : ${username}, ${email}, ${secret}`);
-		dispatch({type : 'API_CALL', id : 'register', params : {username,email,password,secret}});
+		log.debug(`[REGISTER] dispatching api with val : ${username}, ${email}, ${secret}`);
+		dispatch({type : 'API_CALL', id : 'register', params : {username,email,password : encryptPassword({username, email, password}),secret}});
 	}
 
 	render() {

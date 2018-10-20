@@ -18,7 +18,7 @@ class App extends React.Component {
 
 	componentDidMount() {
 		const {dispatch} = this.props;
-		dispatch({type : 'INIT_PAGE'});
+		dispatch({type : 'INIT'});
 	}
 
 	render() {

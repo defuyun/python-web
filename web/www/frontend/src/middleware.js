@@ -1,17 +1,45 @@
 import menu from './menu-model.js';
 import * as log from 'loglevel';
 import {router} from './router.js';
-import * as api from './api.js';
+import {api} from './api.js';
 import {TextMessage} from './message.js';
-
-import crypto from 'crypto-js';
+import {createAggregate} from './utils.js';
 
 let spinnerLock = 0;
 
+const genericResponseHandler = module => store => successMsg => response => {
+	log.info(`[MIDDLEWARE] received response from ${module}: <status : ${response.status}>`);
+	if (response.status === 200) {
+		if (successMsg) {
+			store.dispatch({type : 'DISPLAY_MESSAGE', msgType : 'info', text : successMsg})
+		}
+		return response.headers.get('content-type').indexOf('application/json') !== -1 ? response.json() : null;
+	} else {
+		return response.text();
+	}
+};
+
+const genericBodyHandler = store => (filter, callback) => body => {
+	if (typeof(body) === 'string') {
+		throw body;
+	}
+
+	const performCb = filter instanceof Function ? filter(body) : filter;
+	if(performCb) {
+		callback(body);
+	}
+	store.dispatch({type : 'HIDE_SPINNER'});
+}
+
+const genericErrorHandler = module => store => error => store.dispatch({
+	type : 'DISPLAY_MESSAGE',
+	msgType : 'error', 
+	text : `There was an error trying to fetch ${module} ${error.toString()}`
+});
+
 export const initMiddleware = store => next => action => {
-	log.info('[MIDDLEWARE] enter init middleware');
-	if (action.type === 'INIT_PAGE') {
-		setTimeout(() => store.dispatch({type : 'API_CALL', id : 'userInfo'}), 200);
+	if (action.type === 'INIT') {
+		store.dispatch({type : 'API_CALL', id : 'userInfo', callback : () => store.dispatch({type : 'COMPLETE_INIT'}) });
 	}
 	next(action);
 }
@@ -30,8 +58,6 @@ const delayModalUpdate = (modal, store, action) => {
 }
 
 export const modalMiddleware = store => next => action => {
-	log.info('[MIDDLEWARE] enter modal middleware');
-	
 	if (action.type === 'DISPLAY_MESSAGE' || action.type === 'DISPLAY_SPINNER') {
 		const {modal} = store.getState();
 		if (modal.display) {
@@ -47,6 +73,7 @@ export const modalMiddleware = store => next => action => {
 			msgType, text, display : true, manual : true, component : TextMessage,
 		}});
 	} else if (action.type === 'DISPLAY_SPINNER') {
+	store.dispatch({type : 'HIDE_SPINNER'});
 		spinnerLock += 1;
 		const msgType = 'spinner', text = 'loading', icon = 'spinner';
 		store.dispatch({type : 'UPDATE_MODAL', modal : {
@@ -55,6 +82,7 @@ export const modalMiddleware = store => next => action => {
 	} else if (action.type === 'HIDE_SPINNER') {
 		const {modal} = store.getState();
 		spinnerLock -= 1;
+		if (spinnerLock < 0) spinnerLock = 0;
 		modal.display && modal.msgType === 'spinner' && spinnerLock === 0 &&
 			store.dispatch({type : 'UPDATE_MODAL', modal : {display : false}});
 	}
@@ -62,150 +90,81 @@ export const modalMiddleware = store => next => action => {
 	next(action);
 }
 
-export const requestMiddleware = store => next => action => {
-	log.info('[MIDDLEWARE] enter request middleware');
-	if (action.type === 'API_CALL') {
-		const {id, params, callback} = action;
-		
-		const genericResponseHandler = module => response => {
-			log.info(`[MIDDLEWARE] received response from ${module} ${JSON.stringify(response)}`);
-			return response.status === 200 ? response.json() : response.text();
-		};
-
-		const genericBodyHandler = (filter, callback) => body => {
-			if(filter(body)) {
-				callback(body);
-				setTimeout(() => store.dispatch({type : 'HIDE_SPINNER'}),1000);
-			} else {
-				throw body;
-			}
+export const redirectMiddleware = store => next => action => {
+	if (action.id === 'save') {
+		const params = action.params;
+		const unsyncedFiles = params.getunsynced();
+		if (unsyncedFiles.length !== 0) {
+			store.dispatch({type : 'API_CALL', id : 'upload', params, callback : () => store.dispatch({...action})});
+			return;
 		}
+	}
 
-		const genericErrorHandler = module => error => store.dispatch({
-			type : 'DISPLAY_MESSAGE',
-			msgType : 'error', 
-			text : `There was an error trying to fetch ${module} ${error.toString()}`
-		});
+	if (action.id === 'delete') {
+		action.callback = createAggregate(action.callback, () => store.dispatch({type : 'NAV_ITEM_CHANGE', id : 'posts'}));
+	}
+
+	next(action)
+}
+
+export const requestMiddleware = store => next => action => {
+	if (action.type === 'API_CALL') {
+		const {id} = action;
+		let params = action.params || {};
+		let callback = action.callback || (() => {});
 
 		store.dispatch({type : 'DISPLAY_SPINNER'});
 		
-		if (id === 'register') { 			
-			let args = {...params};
-			args.password = crypto.SHA1(args.email + args.password).toString();
+		const respHandlerMaker = genericResponseHandler(id)(store);
+		const respBodyHandlerMaker = genericBodyHandler(store);
+		const errorHandler = genericErrorHandler(id)(store);
+	
 
-			api.registerApi(args).then(genericResponseHandler(id))
-			.then(genericBodyHandler(
-				body => body.user, 
-				({user}) => {
-					store.dispatch({type : 'USER_INFO', userInfo : user});
-					setTimeout(() => store.dispatch({type : 'DISPLAY_MESSAGE', msgType : 'info', text : 'you have succesfully registered'}),500);
-					return true;
-				}
-			))
-			.catch(genericErrorHandler(id));
-		}
+		let respHandler = respHandlerMaker();
+		let respBodyHandler = respBodyHandlerMaker(true, callback);
+
+		if (id === 'register' || id === 'userInfo' || id === 'logout' || id === 'login') {
+			callback = createAggregate(({user}) => store.dispatch({type : 'USER_INFO', userInfo : user}), callback);
+			respHandler = id === 'register' ? respHandlerMaker('you have successfully registered') : respHandler;
+			respBodyHandler = respBodyHandlerMaker(body => body.user, callback);
+		} 
 		
-		if (id === 'userInfo') {
-			api.userInfoApi({}).then(genericResponseHandler(id))
-			.then(genericBodyHandler(
-				body => body.user,
-				({user}) => {
-					store.dispatch({type : 'USER_INFO', userInfo : user});
-					if (!store.getState().completeInit) {
-						setTimeout(() => store.dispatch({type : 'COMPLETE_PAGE'}), 1000);
-					}
-				}			
-			))
-			.catch(genericErrorHandler(id));
+		else if (id === 'save') {
+			params = params.tosave();
+			respHandler = respHandlerMaker('post has been saved');
+		} 
+		
+		else if (id === 'upload') {
+			const sync = params.syncall;
+			params = params.getunsynced();
+			callback = createAggregate(sync, callback);
+			respBodyHandler = respBodyHandlerMaker(true, callback);
 		}
 
-		if (id === 'logout') {
-			api.logoutApi({}).then(genericResponseHandler(id))
-			.then(genericBodyHandler(
-				body => body.user,
-				({user}) => 
-					store.dispatch({type : 'USER_INFO', userInfo : user})))
-			.catch(genericErrorHandler(id));
+		else if (id === 'posts') {
+			respBodyHandler = respBodyHandlerMaker(body => body.posts, callback);
 		}
 
-		if (id === 'login') {
-			let args = {...params};
-			args.password = crypto.SHA1(args.email + args.password).toString();
-			
-			api.loginApi(args).then(genericResponseHandler(id))
-			.then(genericBodyHandler(
-				body => body.user,
-				({user}) => store.dispatch({type : 'USER_INFO', userInfo : user})))
-			.catch(genericErrorHandler(id));
+		else if (id === 'post') {
+			respBodyHandler = respBodyHandlerMaker(body => body.post, callback);
 		}
 
-		if (id === 'save') {
-			const {uploaded} = action;
-			if (!uploaded) {
-				store.dispatch({type : 'API_CALL',id : 'upload', params, save : true});
-			} else {
-				api.saveApi(params.tosave()).then(response => {
-					if (response.status === 200) {
-						store.dispatch({type : 'DISPLAY_MESSAGE', msgType : 'info', text : 'post has been saved'});
-					} else {
-						throw 'save was not successful'
-					}
-				}).catch(genericErrorHandler(id));
-			}
+		else if (id === 'tags') {
+			respBodyHandler = respBodyHandlerMaker(body => body.tags, callback);
 		}
 
-		if (id === 'upload') {
-			const files = params.getunsynced();
-			if (files.length !== 0) {
-				api.uploadApi(files).then(response => {
-					if( response.status !== 200) {
-						throw 'upload was not successful';
-					}
-				}).catch(genericErrorHandler(id));
-			}
-			
-			if(action.save) {
-				setTimeout(() => store.dispatch({type : 'API_CALL', id : 'save', params, uploaded : true}),1000);
-			}
+		else if (id === 'delete') {
+			params = params.tosave();
 		}
+		const request = api[id];
 
-		if (id === 'posts') {
-			api.postsApi({}).then(genericResponseHandler(id)).then(genericBodyHandler(
-				body => body.posts,
-				callback		
-			)).catch(genericErrorHandler(id));
-		}
-
-		if (id === 'tags') {
-			api.tagsApi({}).then(genericResponseHandler(id)).then(genericBodyHandler(
-				body => body.tags,
-				callback		
-			)).catch(genericErrorHandler(id));
-		}
-
-		if (id === 'post') {
-			api.postApi(params).then(genericResponseHandler(id)).then(genericBodyHandler(
-				body => body.post,
-				callback		
-			)).catch(genericErrorHandler(id));
-		}
-
-		if (id === 'delete') {
-			api.deleteApi(params.tosave()).then(response => {
-				if (response.status !== 200) {
-					throw 'failed to delete post'; 
-				}
-				store.dispatch({type : 'HIDE_SPINNER'});
-				store.dispatch({type : 'NAV_ITEM_CHANGE', id : 'posts'});
-			}).catch(genericErrorHandler(id));
-		}
+		request(params).then(respHandler).then(respBodyHandler).catch(errorHandler);
 	}
 
 	next(action);
 }
 
 export const navigationMiddleware = store => next => action => {
-	log.info('[MIDDLEWARE] enter navigation middleware');
 	if (action.type === 'NAV_ITEM_CHANGE') {
 		const item = menu[action.id];
 		if(item) {

@@ -3,7 +3,7 @@ import {render} from 'react-dom';
 import {Provider} from 'react-redux';
 import {createStore, applyMiddleware} from 'redux';
 import {rootReducer} from './reducer.js';
-import {initMiddleware, modalMiddleware, requestMiddleware, navigationMiddleware} from './middleware.js';
+import {initMiddleware, redirectMiddleware, modalMiddleware, requestMiddleware, navigationMiddleware} from './middleware.js';
 
 import App from './app.js';
 
@@ -16,7 +16,7 @@ const initialState = {
 const store = createStore(
 	rootReducer,
 	initialState,
-	applyMiddleware(initMiddleware, modalMiddleware, requestMiddleware, navigationMiddleware)
+	applyMiddleware(initMiddleware,  redirectMiddleware, modalMiddleware, requestMiddleware, navigationMiddleware)
 );
 
 render(
