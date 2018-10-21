@@ -37,13 +37,6 @@ const genericErrorHandler = module => store => error => store.dispatch({
 	text : `There was an error trying to fetch ${module} ${error.toString()}`
 });
 
-export const initMiddleware = store => next => action => {
-	if (action.type === 'INIT') {
-		store.dispatch({type : 'API_CALL', id : 'userInfo', callback : () => store.dispatch({type : 'COMPLETE_INIT'}) });
-	}
-	next(action);
-}
-
 const delayModalUpdate = (modal, store, action) => {
 	if (action.type === 'DISPLAY_SPINNER') {
 		spinnerLock += 1;
@@ -68,6 +61,7 @@ export const modalMiddleware = store => next => action => {
 
 	if (action.type === 'DISPLAY_MESSAGE') {
 		const {msgType, text} = action;
+		log.debug(`[MIDDLEWARE] display message triggered with msg : <${msgType}>`);
 		spinnerLock = 0;
 		store.dispatch({type : 'UPDATE_MODAL', modal : {
 			msgType, text, display : true, manual : true, component : TextMessage,

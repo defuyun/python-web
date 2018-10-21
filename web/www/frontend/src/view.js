@@ -52,7 +52,10 @@ class View extends React.Component {
 	}
 
 	componentDidUpdate() {
-		this.setContent();
+		const {draft} = this.props;
+		if (draft.renderFlag) {
+			this.setContent();
+		}
 	}
  
 	setContent() {
@@ -64,7 +67,7 @@ class View extends React.Component {
 		
 		let errors = [];
 		const {draft} = this.props;
-		const content = draft.render();
+		const content = draft.render(true);
 		container.innerHTML = content ? this.converter.makeHtml(content) : '';
 		
 		container.querySelectorAll('code').forEach(element =>{
@@ -89,6 +92,7 @@ class View extends React.Component {
 					log.info(`[VIEW] caught compile error ${error.message}`);
 					errors.push(error.message);
 				}
+				element.classList.remove('language-latex');
 			} else if (element.classList.length !== 0) {
 				Prism.highlightElement(element);
 			}

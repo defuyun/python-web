@@ -1,14 +1,15 @@
 #! /usr/bin/python3
 
-import logging; logging.basicConfig(level=logging.DEBUG)
+from config.config import config
+from config.constants import constants
+
+import logging; logging.basicConfig(level=config.loglevel)
 
 from aiohttp import web
 from asyncio import AbstractEventLoop
 from database import init_db
 from factories import authentication_factory, cors_factory
 
-from config.config import config
-from config.constants import constants
 
 import asyncio
 import aiomysql

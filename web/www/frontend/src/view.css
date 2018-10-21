@@ -28,19 +28,16 @@
 	z-index : 10;
 }
 
-.view > :global(.content) * {
-	overflow : visible !important;
-}
-
 .view > :global(.content) img {
 	max-width : 100%;
 	height : auto;
 }
 
-.view > :global(.content) :global(.language-latex) {
-	border : 0 solid;
-}
-
 .view > :global(.content) {
 	overflow-y : auto;
+}
+
+:not(pre) > code[class*="latex"] {
+	color : #c92c2c;
+	padding : .2em;
 }

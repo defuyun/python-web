@@ -18,7 +18,7 @@ class App extends React.Component {
 
 	componentDidMount() {
 		const {dispatch} = this.props;
-		dispatch({type : 'INIT'});
+		dispatch({type : 'API_CALL', id : 'userInfo', callback : () => dispatch({type : 'COMPLETE_INIT'}) });
 	}
 
 	render() {

@@ -23,7 +23,6 @@ class Button extends React.Component {
 		const textElement = text ? <div className={'button-text'}>{text}</div> : null;
 		
 		const buttonStylename = concat(concat(concat('button', 'inverse', inversible), 'border', border), 'disable', disable);
-		log.info(`[BUTTON] button style name for ${text || icon} : ${buttonStylename}`);
 		
 		return (
 			<div

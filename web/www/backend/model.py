@@ -133,7 +133,7 @@ class Model(dict, metaclass=ModelMetaClass):
     
     @classmethod
     async def find(cls, key, value):
-        logging.debug('[MODEL] executing query %s with args %s' % (cls.__select__.replace('?', key), value))
+        logging.info('[MODEL] executing query %s with args %s' % (cls.__select__.replace('?', key), value))
         row = await select(cls.__select__.replace('?', key), (value))
         logging.debug('[MODEL] row from find : %s with args : %s in table %s' % (row, (value), cls.__table__))
         
@@ -148,13 +148,12 @@ class Model(dict, metaclass=ModelMetaClass):
         query = cls.__selectAll__
         args = []
         if 'orderBy' in kw:
-            query += ' order by %s'
-            args.append(kw['orderBy'])
+            query += ' order by `%s`' % kw['orderBy']
 
             if 'DESC' in kw:
                 query += ' DESC'
 
-        logging.debug('[MODEL] executing query %s with args %s' % (query, kw))
+        logging.info('[MODEL] executing query %s with args %s' % (query, args))
         rows = await select(query, args)
         logging.debug('[MODEL] rows from findAll : %s with args : %s in table %s' % (rows, kw, cls.__table__))
 
@@ -167,7 +166,7 @@ class Model(dict, metaclass=ModelMetaClass):
     async def save(self):
         args = list(map(lambda field : self.getValue(field) ,self.__fields__))
         
-        logging.debug('[MODEL] executing query %s with args %s' % (self.__insert__,args))
+        logging.info('[MODEL] executing query %s with args %s' % (self.__insert__,args))
         try:
             rows = await execute(self.__insert__, args)
         except pymysql.err.IntegrityError as err:
@@ -184,7 +183,7 @@ class Model(dict, metaclass=ModelMetaClass):
         args = list(map(lambda field : self.getValue(field) ,self.__updatable__))
         args.append(self.getValue(self.__primary__))
 
-        logging.debug('[MODEL] executing query %s with args %s' % (self.__update__,args))
+        logging.info('[MODEL] executing query %s with args %s' % (self.__update__,args))
         rows = await execute(self.__update__, args)
 
         if rows != 1:
@@ -196,7 +195,7 @@ class Model(dict, metaclass=ModelMetaClass):
         
     async def delete(self):
         args = [self.getValue(self.__primary__)]
-        logging.debug('[MODEL] executing query %s with args %s' % (self.__destroy__,args))
+        logging.info('[MODEL] executing query %s with args %s' % (self.__destroy__,args))
         rows = await execute(self.__destroy__, args)
 
         if rows != 1:

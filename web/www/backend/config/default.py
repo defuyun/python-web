@@ -1,4 +1,5 @@
 import os
+import logging
 from config.constants import constants
 
 class config_default(object):
@@ -22,3 +23,5 @@ class config_default(object):
     cookie_expire_days = 3
 
     secret = 'wululu'
+
+    loglevel = logging.INFO

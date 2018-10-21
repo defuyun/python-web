@@ -3,7 +3,9 @@ import {render} from 'react-dom';
 import {Provider} from 'react-redux';
 import {createStore, applyMiddleware} from 'redux';
 import {rootReducer} from './reducer.js';
-import {initMiddleware, redirectMiddleware, modalMiddleware, requestMiddleware, navigationMiddleware} from './middleware.js';
+import {redirectMiddleware, modalMiddleware, requestMiddleware, navigationMiddleware} from './middleware.js';
+
+import * as log from 'loglevel';
 
 import App from './app.js';
 
@@ -16,7 +18,7 @@ const initialState = {
 const store = createStore(
 	rootReducer,
 	initialState,
-	applyMiddleware(initMiddleware,  redirectMiddleware, modalMiddleware, requestMiddleware, navigationMiddleware)
+	applyMiddleware(redirectMiddleware, modalMiddleware, requestMiddleware, navigationMiddleware)
 );
 
 render(

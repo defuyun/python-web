@@ -49,6 +49,7 @@ class draft {
 		ret.resources = post.resources.map(res => new resource(post.postId, res.name, res.data,true));
 		ret.tags = post.tags;
 		ret.descrip = post.description;
+		ret.renderFlag = true;
 		return ret;
 	}
 
@@ -62,6 +63,7 @@ class draft {
 		this.tagmap = {};
 		this.errors = [];
 		this.descrip = '';
+		this.renderFlag = true;
 	}
 
 	clear() {
@@ -121,9 +123,17 @@ class draft {
 	}
 
 	setcontent(content) {
+		if (this.contentRefreshEvt) {
+			clearTimeout(this.contentRefrshEvt);
+		}
+
 		this.content = content;
-		this.clearerror();
-		this.rerender();
+		
+		this.contentRefreshEvt = setTimeout(() => {
+			this.renderFlag = true;
+			this.clearerror();
+			this.rerender();
+		}, 5000);
 	}
 
 	settitle(title) {
@@ -160,8 +170,12 @@ class draft {
 		this.rerenderFunc[name] = rerender;
 	}
 
-	render() {
+	render(flush) {
 		const content = this.resources.map(resource => `[${resource.noext}]: ${resource.data}`).join('\n\n') + '\n\n' + this.content;
+		if (flush) {
+			this.renderFlag = false;
+		}
+
 		return content;
 	}
 }

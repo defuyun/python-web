@@ -24,15 +24,8 @@ class Posts extends React.Component {
 
 	componentWillMount() {
 		const {dispatch} = this.props;
-		dispatch({type : 'API_CALL', id : 'posts', callback : ({posts}) => {
-			log.info(`[POSTS] received callback on posts: ${JSON.stringify(posts)}`);
-			this.setState({posts : posts})
-		}});
-
-		dispatch({type : 'API_CALL', id : 'tags', callback : ({tags}) => {
-			log.info(`[POSTS] received callback on tags: ${JSON.stringify(tags)}`);
-			this.setState({tags : tags})
-		}});
+		dispatch({type : 'API_CALL', id : 'posts', callback : ({posts}) => this.setState({posts : posts})});
+		dispatch({type : 'API_CALL', id : 'tags', callback : ({tags}) => this.setState({tags : tags})});
 	}
 
 	refresh() {
