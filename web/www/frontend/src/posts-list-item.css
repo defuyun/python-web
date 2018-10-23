@@ -57,6 +57,7 @@
 
 .description > :global(.read-more) {
 	padding-right : 5px;
+	min-width : 75px;
 }
 
 .description > :global(.read-more) :global(.button) {

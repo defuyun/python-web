@@ -15,7 +15,7 @@ class resource {
 
 class draft {
 	constructor({id}) {
-		this.newp = this.newp.bind(this);
+		this.reset = this.reset.bind(this);
 		this.syncall = this.syncall.bind(this);
 		this.addres = this.addres.bind(this);
 		this.removeres = this.removeres.bind(this);
@@ -34,7 +34,24 @@ class draft {
 		this.rerender = this.rerender.bind(this);
 		this.updateFunc = {};
 		this.rerenderFunc = {};
-		this.newp();
+		this.events = {};
+		this.reset({});
+	}
+
+	addEventListener(eventName, funcId, func) {
+		if (!this.events[eventName]) {
+			this.events[eventName] = {};
+		}
+
+		this.events[eventName][funcId] = func;
+	}
+
+	removeEventListener(eventName, funcId, func) {
+		if(!this.events[eventName]) {
+			log.error(`[DRAFT] cannot remove event from <${eventName}> : ${eventName} does not exist`);
+		}
+		
+		delete this.events[eventName][funcId];
 	}
 
 	syncall() {
@@ -43,32 +60,31 @@ class draft {
 	
 	static makeDraft(post) {
 		let ret = new draft({});
-		ret.id = post.postId;
-		ret.title = post.title;
-		ret.content = post.post;
-		ret.resources = post.resources.map(res => new resource(post.postId, res.name, res.data,true));
-		ret.tags = post.tags;
-		ret.descrip = post.description;
-		ret.renderFlag = true;
+		ret.reset({...post, id : post.postId, content : post.post});
 		return ret;
 	}
 
-	newp() {
-		this.id = guid();
-		this.title = '';
-		this.content = '';
+	reset({id, title, content, resources, tags, description}) {
+		this.id = id || guid();
+		this.title = title || '';
+		this.content = content || '';
 		this.resources = [];
 		this.resmap = {};
 		this.tags = [];
 		this.tagmap = {};
 		this.errors = [];
-		this.descrip = '';
+		this.description = description || '';
 		this.renderFlag = true;
+		this.stealFocus = false;
+
+		resources && resources.map(res => res instanceof resource ? this.addres(res) : this.addres(new resource(id, res.name, res.data, true)));
+		tags && tags.map(tag => this.addtag(tag));
 	}
 
 	clear() {
-		this.newp();
+		this.reset({});
 		this.update();
+		Object.values(this.events['new']).map(evt => evt());
 		this.rerender();
 	}
 
@@ -77,7 +93,7 @@ class draft {
 		return {
 			postId : this.id,
 			title : this.title,
-			description : this.descrip,
+			description : this.description,
 			content : this.content,
 			tags : this.tags,
 			resources : filenames
@@ -124,7 +140,7 @@ class draft {
 
 	setcontent(content) {
 		if (this.contentRefreshEvt) {
-			clearTimeout(this.contentRefrshEvt);
+			clearTimeout(this.contentRefreshEvt);
 		}
 
 		this.content = content;
@@ -133,7 +149,7 @@ class draft {
 			this.renderFlag = true;
 			this.clearerror();
 			this.rerender();
-		}, 5000);
+		},1000);
 	}
 
 	settitle(title) {
@@ -141,8 +157,8 @@ class draft {
 		this.rerender();
 	}
 
-	setdescrip(descrip) {
-		this.descrip = descrip;
+	setdescrip(description) {
+		this.description = description;
 		this.rerender();
 	}
 
@@ -151,7 +167,10 @@ class draft {
 	}
 
 	update() {
-		Object.values(this.updateFunc).map(update => update());
+		if (this.updateEvt) {
+			clearTimeout(this.updateEvt)
+		}
+		this.updateEvt = setTimeout(() => Object.values(this.updateFunc).map(update => update()), 500);
 	}
 
 	addupdate(name, update) {
@@ -173,6 +192,7 @@ class draft {
 	render(flush) {
 		const content = this.resources.map(resource => `[${resource.noext}]: ${resource.data}`).join('\n\n') + '\n\n' + this.content;
 		if (flush) {
+			this.stealFocus = true;
 			this.renderFlag = false;
 		}
 

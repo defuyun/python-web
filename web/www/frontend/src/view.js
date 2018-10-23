@@ -4,6 +4,8 @@ import Showdown from 'showdown';
 import Prism from 'prismjs';
 import Katex from 'katex';
 
+import {diff} from './utils.js';
+
 import 'katex/dist/katex.css';
 import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-c';
@@ -42,6 +44,8 @@ class View extends React.Component {
 		this.setContent = this.setContent.bind(this);
 		this.setContentRef = this.setContentRef.bind(this);
 		draft.addrerender('view', this.rerender);
+
+		this.contentNode = null;
 	}
 
 	setContentRef(element) {
@@ -54,7 +58,7 @@ class View extends React.Component {
 	componentDidUpdate() {
 		const {draft} = this.props;
 		if (draft.renderFlag) {
-			this.setContent();
+			setTimeout(this.setContent, 0);
 		}
 	}
  
@@ -70,6 +74,9 @@ class View extends React.Component {
 		const content = draft.render(true);
 		container.innerHTML = content ? this.converter.makeHtml(content) : '';
 		
+		const modifiedNode = diff(this.prevNode, container);
+		this.prevNode = container.cloneNode(true);
+		
 		container.querySelectorAll('code').forEach(element =>{
 			log.info(`[VIEW] parsing code segment ${element.innerHTML}`);
 			if (element.classList.length === 0) {
@@ -81,6 +88,9 @@ class View extends React.Component {
 					element.classList.add(`language-${firstword}`);
 				}
 			}
+			
+			
+			Prism.highlightElement(element);
 
 			if (element.classList.contains('latex')) {
 				try {
@@ -93,13 +103,16 @@ class View extends React.Component {
 					errors.push(error.message);
 				}
 				element.classList.remove('language-latex');
-			} else if (element.classList.length !== 0) {
-				Prism.highlightElement(element);
 			}
 		});
 
 		if (errors.length !== 0) {
 			draft.adderror(errors);
+		}
+		
+		if (modifiedNode) {
+			modifiedNode.focus();
+			modifiedNode.onblur = () => draft.stealFocus = false;
 		}
 	}
 

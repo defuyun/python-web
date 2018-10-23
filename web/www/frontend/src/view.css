@@ -41,3 +41,9 @@
 	color : #c92c2c;
 	padding : .2em;
 }
+
+pre > code[class*="latex"] {
+	overflow : auto;
+	display : flex;
+	padding : 1em;
+}

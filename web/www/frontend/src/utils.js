@@ -207,3 +207,39 @@ export const createArr = (length, val) => {
 export const encryptPassword = (user) => {
 	return crypto.SHA1(user.email + user.password).toString();
 }
+
+const _diff = (prev, current) => {
+	if(prev.nodeName !== current.nodeName || prev.className !== current.className) {
+		return current;
+	}
+	
+	const prevChildren = prev.children;
+	const currentChildren = current.children;
+	
+	if (currentChildren.length === 0 && prev.innerHTML !== current.innerHTML) {
+		return current;
+	}
+
+	for (let i = 0; i < Math.min(prevChildren.length, currentChildren.length); i++){
+		const changeNode = _diff(prevChildren[i], currentChildren[i]);
+		if (changeNode) {
+			changeNode.setAttribute('tabindex','0');
+			return changeNode;
+		}
+	}
+
+	if (prevChildren.length !== currentChildren.length) {
+		return currentChildren[currentChildren.length - 1];
+	}
+
+	return null;
+}
+
+export const diff = (prev, current) => {
+	if (!prev || !current) {
+		return null;
+	}
+
+	const changeNode = _diff(prev, current);
+	return changeNode;
+}

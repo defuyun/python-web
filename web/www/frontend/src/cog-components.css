@@ -83,5 +83,6 @@
 	padding : 10px;
 	display : flex;
 	justify-content : center;
+	min-height : 30px;
 }
 

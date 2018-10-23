@@ -15,7 +15,8 @@ class AceEditor extends React.Component {
 		const {draft} = this.props;
 		this.addEditor = this.addEditor.bind(this);
 		this.onChange = this.onChange.bind(this);
-		
+		this.hijackKeyPress = this.hijackKeyPress.bind(this);
+
 		const element = document.createElement('div');
 		element.className = 'ace-editor';
 
@@ -26,9 +27,25 @@ class AceEditor extends React.Component {
 		editor.getSession().setUseWrapMode(true);
 		editor.getSession().setValue(draft.content);
 		editor.getSession().on('change', this.onChange);
-
+		editor.$blockScrolling = 'Infinity';
 		this.editor = editor;
-		this.state = {element}
+		this.state = {element};
+		
+		draft.addEventListener('new', 'aceeditor', () => editor.getSession().setValue(draft.content));
+
+		addEventListener('keydown', this.hijackKeyPress);
+	}
+
+	hijackKeyPress(event) {
+		const {draft} = this.props;
+		if (draft.stealFocus) {
+			draft.stealFocus = false;
+			this.editor.focus();
+		}
+	}
+
+	componentWillUnmount() {
+		removeEventListener('keydown', this.hijackKeyPress);
 	}
 
 	onChange(delta) {

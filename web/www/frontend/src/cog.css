@@ -4,11 +4,13 @@
 	width : $editor-cog-width;
 	display : flex;
 	flex-direction : column;
+	overflow-y : auto;
 }
 
 .cog > :global(.headers) {
 	display : flex;
 	background : lightgray;
 	box-shadow : 0 1px 1px darkgray;
+	min-height : 28px;
 }
 
